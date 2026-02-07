@@ -1,0 +1,28 @@
+:root {
+  /* colors */
+  --black: #000;
+  --white: #fff;
+  --offwhite: oklch(99.06% 0.01 78.28);
+  --accent: oklch(47.72% 0.19 23.59);
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Rubik", sans-serif;
+
+  /* font size */
+  --fs-sm: clamp(0.85rem, 0.2vi + 0.8rem, 0.95rem);
+  --fs-base: clamp(1rem, 0.34vi + 0.91rem, 1.19rem);
+  --fs-md: clamp(1.25rem, 0.61vi + 1.1rem, 1.58rem);
+  --fs-lg: clamp(1.56rem, 1vi + 1.31rem, 2.11rem);
+  --fs-xl: clamp(1.95rem, 1.56vi + 1.56rem, 2.81rem);
+  --fs-xxl: clamp(2.44rem, 2.38vi + 1.85rem, 3.75rem);
+  --fs-xxxl: clamp(3.05rem, 3.54vi + 2.17rem, 5rem);
+  --fs-headline: clamp(3.25rem, 4vi + 2.25rem, 5.25rem);
+
+  /* sizing */
+  --container-width: 768px;
+
+  --br-sm: 0.25rem;
+  --br-lg: 1rem;
+  --br-full: 999px;
+  --br-circle: 50%;
+}

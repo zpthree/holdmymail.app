@@ -1,0 +1,47 @@
+html {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--offwhite);
+  font-family: var(--font-sans);
+}
+
+#main {
+  padding-top: 5rem;
+}
+
+html.noscroll,
+body.noscroll {
+  overflow: hidden;
+}
+
+.hidden-visually {
+  border: 0;
+  clip: rect(0 0 0 0);
+  position: absolute;
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.centered {
+  display: grid;
+  place-items: center;
+}

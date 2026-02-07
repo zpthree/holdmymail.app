@@ -1,0 +1,64 @@
+{
+  "Svelte If Block": {
+    "scope": "svelte",
+    "prefix": ["#if", "{#if"],
+    "body": ["{#if ${1:condition}}", "\t$0", "{/if}"],
+    "description": "Svelte {#if} block",
+  },
+  "Svelte If/Else Block": {
+    "scope": "svelte",
+    "prefix": ["#ifelse", "{#if else"],
+    "body": ["{#if ${1:condition}}", "\t$2", "{:else}", "\t$0", "{/if}"],
+    "description": "Svelte {#if}{:else} block",
+  },
+  "Svelte If/Else If Block": {
+    "scope": "svelte",
+    "prefix": ["#ifelseif", "{#if elseif"],
+    "body": [
+      "{#if ${1:condition}}",
+      "\t$2",
+      "{:else if ${3:condition}}",
+      "\t$0",
+      "{/if}",
+    ],
+    "description": "Svelte {#if}{:else if} block",
+  },
+  "Svelte Each Block": {
+    "scope": "svelte",
+    "prefix": ["#each", "{#each"],
+    "body": ["{#each ${1:items} as ${2:item}}", "\t$0", "{/each}"],
+    "description": "Svelte {#each} block",
+  },
+  "Svelte Each Block with Index": {
+    "scope": "svelte",
+    "prefix": ["#eachi", "{#each index"],
+    "body": ["{#each ${1:items} as ${2:item}, ${3:i}}", "\t$0", "{/each}"],
+    "description": "Svelte {#each} block with index",
+  },
+  "Svelte Await Block": {
+    "scope": "svelte",
+    "prefix": ["#await", "{#await"],
+    "body": [
+      "{#await ${1:promise}}",
+      "\t<p>Loading...</p>",
+      "{:then ${2:value}}",
+      "\t$0",
+      "{:catch ${3:error}}",
+      "\t<p>{${3:error}.message}</p>",
+      "{/await}",
+    ],
+    "description": "Svelte {#await} block",
+  },
+  "Svelte Snippet Block": {
+    "scope": "svelte",
+    "prefix": ["#snippet", "{#snippet"],
+    "body": ["{#snippet ${1:name}(${2:})}", "\t$0", "{/snippet}"],
+    "description": "Svelte {#snippet} block",
+  },
+  "Svelte Key Block": {
+    "scope": "svelte",
+    "prefix": ["#key", "{#key"],
+    "body": ["{#key ${1:expression}}", "\t$0", "{/key}"],
+    "description": "Svelte {#key} block",
+  },
+}

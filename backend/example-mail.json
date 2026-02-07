@@ -1,0 +1,123 @@
+{
+  "FromName": "Zach Patrick",
+  "MessageStream": "inbound",
+  "From": "zach@zachpatrick.com",
+  "FromFull": {
+    "Email": "zach@zachpatrick.com",
+    "Name": "Zach Patrick",
+    "MailboxHash": ""
+  },
+  "To": "a4fd7e758d8c9adfc420db163547f473@inbound.postmarkapp.com",
+  "ToFull": [
+    {
+      "Email": "a4fd7e758d8c9adfc420db163547f473@inbound.postmarkapp.com",
+      "Name": "",
+      "MailboxHash": ""
+    }
+  ],
+  "Cc": "",
+  "CcFull": [],
+  "Bcc": "",
+  "BccFull": [],
+  "OriginalRecipient": "a4fd7e758d8c9adfc420db163547f473@inbound.postmarkapp.com",
+  "Subject": "Fwd: testing postmark",
+  "MessageID": "400d8fc1-0a29-4628-8524-f704a6e5d469",
+  "ReplyTo": "",
+  "MailboxHash": "",
+  "Date": "Wed, 4 Feb 2026 06:44:42 -0500",
+  "TextBody": "---------- Forwarded message ---------\nFrom: Zach Patrick <zach@zachpatrick.com>\nDate: Wed, Feb 4, 2026 at 6:42\u202fAM\nSubject: Fwd: testing postmark\nTo: <ksdhfkjsdh@inbox.holdmymail.app>\n\n\n\n\n---------- Forwarded message ---------\nFrom: Zach Patrick <zach@zachpatrick.com>\nDate: Wed, Feb 4, 2026 at 6:30\u202fAM\nSubject: testing postmark\nTo: <ksdhfkjsdh@inbox.holdmymail.app>\n\n\nhello friend, this is a test\n\n\n\n-- \nZach Patrick\nPatrick Web Co.\n[image: mobilePhone] (330) 324-5201 <3303245201>\n[image: emailAddress] zach@zachpatrick.com\n[image: website] zachpatrick.com\n<https:\/\/zachpatrick.com?utm_campaign=email+signature&utm_source=email&utm_medium=email>\n\n\n\n-- \nZach Patrick\nPatrick Web Co.\n[image: mobilePhone] (330) 324-5201 <3303245201>\n[image: emailAddress] zach@zachpatrick.com\n[image: website] zachpatrick.com\n<https:\/\/zachpatrick.com?utm_campaign=email+signature&utm_source=email&utm_medium=email>\n\n\n\n-- \nZach Patrick\nPatrick Web Co.\n[image: mobilePhone] (330) 324-5201 <3303245201>\n[image: emailAddress] zach@zachpatrick.com\n[image: website] zachpatrick.com\n<https:\/\/zachpatrick.com?utm_campaign=email+signature&utm_source=email&utm_medium=email>\n",
+  "HtmlBody": "<div dir=\"ltr\"><div class=\"gmail_default\" style=\"font-family:verdana,sans-serif;font-size:small\"><br><\/div><br><div class=\"gmail_quote gmail_quote_container\"><div dir=\"ltr\" class=\"gmail_attr\">---------- Forwarded message ---------<br>From: <strong class=\"gmail_sendername\" dir=\"auto\">Zach Patrick<\/strong> <span dir=\"auto\">&lt;<a href=\"mailto:zach@zachpatrick.com\">zach@zachpatrick.com<\/a>&gt;<\/span><br>Date: Wed, Feb 4, 2026 at 6:42\u202fAM<br>Subject: Fwd: testing postmark<br>To:  &lt;<a href=\"mailto:ksdhfkjsdh@inbox.holdmymail.app\">ksdhfkjsdh@inbox.holdmymail.app<\/a>&gt;<br><\/div><br><br><div dir=\"ltr\"><div style=\"font-family:verdana,sans-serif;font-size:small\"><br><\/div><br><div class=\"gmail_quote\"><div dir=\"ltr\" class=\"gmail_attr\">---------- Forwarded message ---------<br>From: <strong class=\"gmail_sendername\" dir=\"auto\">Zach Patrick<\/strong> <span dir=\"auto\">&lt;<a href=\"mailto:zach@zachpatrick.com\" target=\"_blank\">zach@zachpatrick.com<\/a>&gt;<\/span><br>Date: Wed, Feb 4, 2026 at 6:30\u202fAM<br>Subject: testing postmark<br>To:  &lt;<a href=\"mailto:ksdhfkjsdh@inbox.holdmymail.app\" target=\"_blank\">ksdhfkjsdh@inbox.holdmymail.app<\/a>&gt;<br><\/div><br><br><div dir=\"ltr\"><div><div style=\"font-family:verdana,sans-serif;font-size:small\">hello friend, this is a test<\/div><br clear=\"all\"><\/div><div><div style=\"font-family:verdana,sans-serif;font-size:small\"><br><\/div><br><\/div><span class=\"gmail_signature_prefix\">-- <\/span><br><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;font-size:medium;font-family:Verdana\"><tbody><tr><td><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:top\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"text-align:center\"><img src=\"https:\/\/images.prismic.io\/zachpatrick\/Z-vP9XdAxsiBwK2a_headshot.webp?auto=format,compress\" width=\"96\" style=\"max-width:128px;display:block\" height=\"96\"><\/td><\/tr><\/tbody><\/table><\/td><td width=\"46\"><div style=\"width:46px\"><\/div><\/td><td style=\"padding:0px;vertical-align:middle\"><h2 style=\"margin:0px;font-size:18px;color:rgb(0,0,0)\">Zach\u00a0Patrick<\/h2><div style=\"margin:0px;color:rgb(0,0,0);font-size:14px;line-height:22px\">Patrick Web Co.<\/div><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;width:100%\"><tbody><tr><td height=\"15\"><\/td><\/tr><tr><td width=\"auto\" style=\"width:100%;height:1px;border-bottom:1px solid #e2e2e0;border-left:none;display:block\"><\/td><\/tr><tr><td height=\"15\"><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/phone-icon-2x.png\" alt=\"mobilePhone\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"tel:3303245201\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">(330) 324-5201<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/email-icon-2x.png\" alt=\"emailAddress\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"mailto:zach@zachpatrick.com\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zach@zachpatrick.com<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/link-icon-2x.png\" alt=\"website\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"https:\/\/zachpatrick.com?utm_campaign=email+signature&amp;utm_source=email&amp;utm_medium=email\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zachpatrick.com<\/a><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td height=\"30\"><\/td><\/tr><\/tbody><\/table><\/td><td colspan=\"3\" style=\"max-width:300px;font-size:12px;padding-top:1rem\"><div><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><\/div><\/td><\/tr><\/tbody><\/table><\/td><\/tr><\/tbody><\/table><\/div><\/div><\/div>\n<\/div><div><br clear=\"all\"><\/div><div><br><\/div><span class=\"gmail_signature_prefix\">-- <\/span><br><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;font-size:medium;font-family:Verdana\"><tbody><tr><td><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:top\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"text-align:center\"><img src=\"https:\/\/images.prismic.io\/zachpatrick\/Z-vP9XdAxsiBwK2a_headshot.webp?auto=format,compress\" width=\"96\" style=\"max-width:128px;display:block\" height=\"96\"><\/td><\/tr><\/tbody><\/table><\/td><td width=\"46\"><div style=\"width:46px\"><\/div><\/td><td style=\"padding:0px;vertical-align:middle\"><h2 style=\"margin:0px;font-size:18px;color:rgb(0,0,0)\">Zach\u00a0Patrick<\/h2><div style=\"margin:0px;color:rgb(0,0,0);font-size:14px;line-height:22px\">Patrick Web Co.<\/div><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;width:100%\"><tbody><tr><td height=\"15\"><\/td><\/tr><tr><td width=\"auto\" style=\"width:100%;height:1px;border-bottom:1px solid #e2e2e0;border-left:none;display:block\"><\/td><\/tr><tr><td height=\"15\"><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/phone-icon-2x.png\" alt=\"mobilePhone\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"tel:3303245201\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">(330) 324-5201<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/email-icon-2x.png\" alt=\"emailAddress\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"mailto:zach@zachpatrick.com\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zach@zachpatrick.com<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/link-icon-2x.png\" alt=\"website\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"https:\/\/zachpatrick.com?utm_campaign=email+signature&amp;utm_source=email&amp;utm_medium=email\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zachpatrick.com<\/a><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td height=\"30\"><\/td><\/tr><\/tbody><\/table><\/td><td colspan=\"3\" style=\"max-width:300px;font-size:12px;padding-top:1rem\"><div><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><\/div><\/td><\/tr><\/tbody><\/table><\/td><\/tr><\/tbody><\/table><\/div><\/div><\/div>\n<\/div><div><br clear=\"all\"><\/div><div><br><\/div><span class=\"gmail_signature_prefix\">-- <\/span><br><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;font-size:medium;font-family:Verdana\"><tbody><tr><td><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:top\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"text-align:center\"><img src=\"https:\/\/images.prismic.io\/zachpatrick\/Z-vP9XdAxsiBwK2a_headshot.webp?auto=format,compress\" width=\"96\" style=\"max-width:128px;display:block\" height=\"96\"><\/td><\/tr><\/tbody><\/table><\/td><td width=\"46\"><div style=\"width:46px\"><\/div><\/td><td style=\"padding:0px;vertical-align:middle\"><h2 style=\"margin:0px;font-size:18px;color:rgb(0,0,0)\">Zach\u00a0Patrick<\/h2><div style=\"margin:0px;color:rgb(0,0,0);font-size:14px;line-height:22px\">Patrick Web Co.<\/div><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle;width:100%\"><tbody><tr><td height=\"15\"><\/td><\/tr><tr><td width=\"auto\" style=\"width:100%;height:1px;border-bottom:1px solid #e2e2e0;border-left:none;display:block\"><\/td><\/tr><tr><td height=\"15\"><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/phone-icon-2x.png\" alt=\"mobilePhone\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"tel:3303245201\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">(330) 324-5201<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/email-icon-2x.png\" alt=\"emailAddress\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"mailto:zach@zachpatrick.com\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zach@zachpatrick.com<\/a><\/td><\/tr><tr style=\"vertical-align:middle;height:25px\"><td width=\"30\" style=\"vertical-align:middle\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td style=\"vertical-align:bottom\"><span style=\"display:inline-block;background-color:rgb(49,162,80)\"><img src=\"https:\/\/cdn2.hubspot.net\/hubfs\/53\/tools\/email-signature-generator\/icons\/link-icon-2x.png\" alt=\"website\" width=\"13\" style=\"display:block\"><\/span><\/td><\/tr><\/tbody><\/table><\/td><td style=\"padding:0px;color:rgb(0,0,0)\"><a href=\"https:\/\/zachpatrick.com?utm_campaign=email+signature&amp;utm_source=email&amp;utm_medium=email\" style=\"color:rgb(0,0,0);font-size:14px\" target=\"_blank\">zachpatrick.com<\/a><\/td><\/tr><\/tbody><\/table><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"vertical-align:-webkit-baseline-middle\"><tbody><tr><td height=\"30\"><\/td><\/tr><\/tbody><\/table><\/td><td colspan=\"3\" style=\"max-width:300px;font-size:12px;padding-top:1rem\"><div><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><p style=\"font-size:inherit;margin:0px\"><\/p><\/div><\/td><\/tr><\/tbody><\/table><\/td><\/tr><\/tbody><\/table><\/div><\/div><\/div>\n",
+  "StrippedTextReply": "---------- Forwarded message ---------",
+  "Tag": "",
+  "Headers": [
+    {
+      "Name": "Return-Path",
+      "Value": "<zach@zachpatrick.com>"
+    },
+    {
+      "Name": "Received",
+      "Value": "by p-pm-inboundg03a-aws-euwest1a.inbound.postmarkapp.com (Postfix, from userid 996)\tid 382FAD1CA60; Wed,  4 Feb 2026 11:45:21 +0000 (UTC)"
+    },
+    {
+      "Name": "X-Spam-Checker-Version",
+      "Value": "SpamAssassin 3.4.0 (2014-02-07) on\tp-pm-inboundg03a-aws-euwest1a"
+    },
+    {
+      "Name": "X-Spam-Status",
+      "Value": "No"
+    },
+    {
+      "Name": "X-Spam-Score",
+      "Value": "-0.1"
+    },
+    {
+      "Name": "X-Spam-Tests",
+      "Value": "DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HTML_MESSAGE,\tRCVD_IN_DNSWL_BLOCKED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,\tRCVD_IN_VALIDITY_RPBL_BLOCKED,RCVD_IN_VALIDITY_SAFE_BLOCKED,\tRCVD_IN_ZEN_BLOCKED_OPENDNS,SPF_HELO_NONE,SPF_PASS,URIBL_DBL_BLOCKED_OPENDNS,\tURIBL_ZEN_BLOCKED_OPENDNS"
+    },
+    {
+      "Name": "Received-SPF",
+      "Value": "pass (zachpatrick.com: Sender is authorized to use 'zach@zachpatrick.com' in 'mfrom' identity (mechanism 'include:_spf.google.com' matched)) receiver=p-pm-inboundg03a-aws-euwest1a; identity=mailfrom; envelope-from=\"zach@zachpatrick.com\"; helo=mail-ej1-f46.google.com; client-ip=209.85.218.46"
+    },
+    {
+      "Name": "Received",
+      "Value": "from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])\t(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128\/128 bits))\t(No client certificate requested)\tby p-pm-inboundg03a-aws-euwest1a.inbound.postmarkapp.com (Postfix) with ESMTPS id E0B16D1CA5E\tfor <a4fd7e758d8c9adfc420db163547f473@inbound.postmarkapp.com>; Wed,  4 Feb 2026 11:45:20 +0000 (UTC)"
+    },
+    {
+      "Name": "Received",
+      "Value": "by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-b8842e5a2a1so953052766b.2        for <a4fd7e758d8c9adfc420db163547f473@inbound.postmarkapp.com>; Wed, 04 Feb 2026 03:45:20 -0800 (PST)"
+    },
+    {
+      "Name": "ARC-Seal",
+      "Value": "i=1; a=rsa-sha256; t=1770205520; cv=none;        d=google.com; s=arc-20240605;        b=FFLcCE5j\/o\/nw8k\/maqTJsAHwO5kma8QYSfdqRt8H5RHQEYnZA9UvpT9D24zfsNs\/T         puDCJjRdrnZcmeEYWXCSPKsY8w5U\/+\/4qawYwbfizc3VjUEMSl0qaVyYYpgMDar5nY0R         fPqrBoM9604SScePd9AJSG62LZ5MB1wj0WsGA8QDNDnxB9UdcKhqQFphs8NC+iCZ7jS5         QdCo93PRRk3SgCJUOO3JNmS4m0WjEgy7Z3HBRG7daHO\/LtlWybO1lvK1F9zMiVVsRQLP         Z8F15ebq7uUY1gdyWe28AwmdpQuD6VxvrwHVedxVtAcU0F7B685pkJLmPeG71nEeF0uJ         fjKQ=="
+    },
+    {
+      "Name": "ARC-Message-Signature",
+      "Value": "i=1; a=rsa-sha256; c=relaxed\/relaxed; d=google.com; s=arc-20240605;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :dkim-signature;        bh=s0xQ\/bYsAgKGEkrDgpKHX2pzD2eIkXtb0+TV+Po36ys=;        fh=GCLojGzf7froX9LCmxCzX5OuAleQc9z6VVFgIPve+vs=;        b=GLCfQRky0RK9Q7WA9LBhfZEWzZQnb+b0a1aQTzMPDTTJAHn08A2E7fBmXe6CFhGFq6         w4yxLKVOLiMpdwTk2CXh+6XS+4GE7RpnDJcjuov730TeabS0\/QNiZqH4xdKo5XjuN4m3         F1ygFSZS3ONWIIyurMbg+wHNZSVxcBV6gxo85+O6U8mXQ2X57z5i\/g7NhCfz09kwusM1         yc0+UUpahYJEJ3LjHI\/BM9f9IK6AhyeBH4jXnJuqFEa7ORsbOVPEN6+nFV6lbf3OTYpk         jGrwODSgs4jUHgONyPho70QA80mIOQc02Nrt9HWkfj2LAetz2EBlkyQJQhCxsHc8IWWp         hc+g==;        darn=inbound.postmarkapp.com"
+    },
+    {
+      "Name": "ARC-Authentication-Results",
+      "Value": "i=1; mx.google.com; arc=none"
+    },
+    {
+      "Name": "DKIM-Signature",
+      "Value": "v=1; a=rsa-sha256; c=relaxed\/relaxed;        d=zachpatrick.com; s=google; t=1770205520; x=1770810320; darn=inbound.postmarkapp.com;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :from:to:cc:subject:date:message-id:reply-to;        bh=s0xQ\/bYsAgKGEkrDgpKHX2pzD2eIkXtb0+TV+Po36ys=;        b=YuJfgYSTwWiy9pGjdAPA6GHA+YbrxveF\/TGAursiMeanx7VP2MNM2OsixmYpysRIOX         MKGngWxxOupEMtPkt42IAoX031Y2abTr2HwKUP5pnp59ErbK3FNs\/jRxxOYNg+y83GtA         6nBFhSxFKZ0dtZzoTS0MWXQJtcNnUgF7S20PGYtw84t96cwvOgndWoBRJnAtZRqcD0K8         bSGigbt0yNk9V1azSX7\/sNtlcivYcT6Eojj5w5Mg4mnTDwnZGnf3J\/XAyHQh1Lr38+OY         jTlUCwXiyWvKi\/U\/189tXbCBTn09y0DZ2\/USWOovbOiDYzf1Ed40WwHSAlDg589929yK         7ppQ=="
+    },
+    {
+      "Name": "X-Google-DKIM-Signature",
+      "Value": "v=1; a=rsa-sha256; c=relaxed\/relaxed;        d=1e100.net; s=20230601; t=1770205520; x=1770810320;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id         :reply-to;        bh=s0xQ\/bYsAgKGEkrDgpKHX2pzD2eIkXtb0+TV+Po36ys=;        b=PVegNvuF4aS0wJsaUc4+x9E2FW0VqLt0YIeL41ZHuGwPrLMH7tY8bRv5M1ih9UBt\/P         JInyb5YdaFxrYjUhuaJTLaYAe2t2GlmOG\/6diRpMBIaTD7rWAS3ivUzloKe2Zndbvdpd         B1ksdC6eyNkmk289ENc3l3MV+ZIvbtscOJyvPQUEswXy7IUbTs2oC\/HdYgQE4XczTHZB         cjg6ekhWjq5N+NU7+MuX7D32NdVArs21fzAUF8zdMWIZsCXuQxZfCc9ZVjpW4SXJIM+I         5CJZco+OL9sIuw053q52DheRzFHJZoBUKPLA8vYh8iDq9BxBTM08ZplT\/rNAsxqqDx6e         PreA=="
+    },
+    {
+      "Name": "X-Gm-Message-State",
+      "Value": "AOJu0YxijjR6a5d+mAd5ZKxMsj\/uQoBvbplpp2NJIDtzhSAu5b3P6MF5\trf8qsiCP06p\/b9HTM1Pq0mth6XM0c1yHLveXl2BurG+WQqZeHZt42ufD+6Y3NIeVOMTTIe2Ku0O\tRhoybZWLUscXiUia17mrlKMgM4hNBNdKAHBB1dxXGPYRqDh61uLUXf3Y="
+    },
+    {
+      "Name": "X-Gm-Gg",
+      "Value": "AZuq6aKXyTU64LBhN1azK2pU2hWr2qU9HpzMnPx+p6B8pUlrmDC39MHBYM09aFOwCwY\txePH9ocyaWn1lL5xiY1Sq+DBMSdzvcjeTmmu\/GRU90Pc95l2dk188VHpYjmfaUp7WnBlOQ2rvSX\trRM274N6AXOYP\/9w510ONJ64IUXFEhX97mRrwiHHn2wbnhLBNiLsl2tef5gRpvDNkh6HVL0a4tS\tSY23QMKDIQr15GAA1SoHCaBXn55OpMI3FJebAgjRuiKotYb4zoxrVjsKMqXf6S4VOLRRB1kfbbB\tmRLXJsdwfcefURSipRePWj\/cI\/JLpdh1Y8Iz0oPhUWnTI71tSPVl5knqd7xQSgGwqbAtFr7oT5d\t3SSGrdW8U7Zv9Xap+I8uZnP67mhWM8knexsIBSnL6i8e2VQ0="
+    },
+    {
+      "Name": "X-Received",
+      "Value": "by 2002:a17:907:7b9d:b0:b83:15cb:d4cf with SMTP id a640c23a62f3a-b8e9f0e9e4fmr156980666b.29.1770205520013; Wed, 04 Feb 2026 03:45:20 -0800 (PST)"
+    },
+    {
+      "Name": "MIME-Version",
+      "Value": "1.0"
+    },
+    {
+      "Name": "References",
+      "Value": "<CALHU4C-uX7_GH4TDO0eu8iZNCoiOE312qshKc5ZPdgwAJXK8iw@mail.gmail.com> <CALHU4C_k1p1H+AZEWRwPvfu5UbssJMZr5Qe0aErVQfAsHQcmxw@mail.gmail.com>"
+    },
+    {
+      "Name": "In-Reply-To",
+      "Value": "<CALHU4C_k1p1H+AZEWRwPvfu5UbssJMZr5Qe0aErVQfAsHQcmxw@mail.gmail.com>"
+    },
+    {
+      "Name": "X-Gm-Features",
+      "Value": "AZwV_Qhhc_wVQLBo95p7UltOieCO-C_pR7h2_PMcxRSCsL6Tkqm-k3P3401FeRA"
+    },
+    {
+      "Name": "Message-ID",
+      "Value": "<CALHU4C_3pQHV0V0UwTjwW1Y4ZqU2SQhCGBQr0kYta0h_RORTDw@mail.gmail.com>"
+    }
+  ],
+  "Attachments": []
+}

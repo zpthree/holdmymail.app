@@ -1,0 +1,18 @@
+{
+  "name": "hold-my-mail",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "convex": "convex dev"
+  },
+  "dependencies": {
+    "convex": "^1.31.7",
+    "hono": "^4.0.0",
+    "postmark": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
