@@ -50,7 +50,7 @@ app.get("/preview/digest", (c) => {
       tags: ["dev"],
     },
     {
-      subject: "Important: Confirm your subscription",
+      subject: "Important: Confirm your source",
       fromName: "Adam Wathan",
       fromEmail: "adam@tailwindcss.com",
       date: new Date(Date.now() - 86400000).toISOString(),

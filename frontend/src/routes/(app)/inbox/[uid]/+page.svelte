@@ -26,7 +26,7 @@
   const uid = $derived($page.params.uid);
   const backHref = $derived(data.from ?? "/inbox");
   const backLabel = $derived(
-    backHref.startsWith("/sources") ? "Back to Subscription" : "Back to Inbox",
+    backHref.startsWith("/sources") ? "Back to Source" : "Back to Inbox",
   );
 
   async function handleDelete() {

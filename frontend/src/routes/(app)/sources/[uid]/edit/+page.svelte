@@ -35,8 +35,7 @@
       digestDay = sender.digestDay || "monday";
       digestTime = sender.digestTime || "09:00";
     } catch (err) {
-      error =
-        err instanceof Error ? err.message : "Failed to load subscription";
+      error = err instanceof Error ? err.message : "Failed to load source";
     } finally {
       loading = false;
     }
@@ -80,7 +79,7 @@
   }
 </script>
 
-<div class="edit-subscription">
+<div class="edit-source">
   <nav>
     <a href="/sources/{uid}" class="back">← Back</a>
   </nav>
@@ -198,12 +197,12 @@
       </div>
     </form>
   {:else}
-    <div class="error">Subscription not found</div>
+    <div class="error">Source not found</div>
   {/if}
 </div>
 
 <style>
-  .edit-subscription {
+  .edit-source {
     margin: 0 auto;
     padding: 2rem;
     max-width: 600px;

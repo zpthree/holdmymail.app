@@ -13,15 +13,14 @@
   const uid = $derived($page.params.uid);
 
   async function handleDelete() {
-    if (!$auth.token || !uid || !confirm("Remove this subscription?")) return;
+    if (!$auth.token || !uid || !confirm("Remove this source?")) return;
 
     deleting = true;
     try {
       await senderApi.delete(uid, $auth.token);
       goto("/sources");
     } catch (err) {
-      error =
-        err instanceof Error ? err.message : "Failed to delete subscription";
+      error = err instanceof Error ? err.message : "Failed to delete source";
       deleting = false;
     }
   }
@@ -37,7 +36,7 @@
   }
 </script>
 
-<div class="subscription-detail">
+<div class="source-detail">
   <nav>
     <a href="/sources" class="back">← Sources</a>
     {#if sender}
@@ -102,12 +101,12 @@
       {/if}
     </section>
   {:else}
-    <div class="error">Subscription not found</div>
+    <div class="error">Source not found</div>
   {/if}
 </div>
 
 <style>
-  .subscription-detail {
+  .source-detail {
     margin: 0 auto;
     padding: 2rem;
     max-width: 800px;

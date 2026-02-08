@@ -40,7 +40,7 @@ Convex live queries solve all of these:
 | `frontend/svelte.config.js`                      | Added `@convex` path alias → `../backend/convex/_generated`                                                                               |
 | `frontend/vite.config.ts`                        | No change needed (SvelteKit alias handles both vite + TS)                                                                                 |
 | `frontend/src/routes/(app)/+layout.svelte`       | Removed SSE `connect()`/`disconnect()` lifecycle, removed `liveData` import, removed `onDestroy`                                          |
-| `frontend/src/routes/(app)/inbox/+page.svelte`   | Replaced `liveData.emails` SSE subscription with `liveQuery(api.emails.listByUser, ...)`                                                  |
+| `frontend/src/routes/(app)/inbox/+page.svelte`   | Replaced `liveData.emails` SSE source with `liveQuery(api.emails.listByUser, ...)`                                                        |
 | `frontend/src/routes/(app)/sources/+page.svelte` | Replaced `liveData.senders` with Convex live queries for both `senders.listByUser` and `tags.listByUser`, added client-side tag hydration |
 | `frontend/src/routes/(app)/links/+page.svelte`   | Same pattern as sources — live queries + client-side hydration                                                                            |
 | `frontend/src/routes/(app)/digests/+page.svelte` | Added Convex live query (digests didn't have SSE before, now they get live updates too)                                                   |
@@ -94,7 +94,7 @@ import { liveQuery, api } from "$lib/convex";
 // 2. Get the userId from the auth store
 const userId = $auth.user?.id;
 
-// 3. Create a live query subscription
+// 3. Create a live query source
 const live = userId
   ? liveQuery(api.emails.listByUser, { userId: userId as any }, [])
   : null;
@@ -117,7 +117,7 @@ onDestroy(() => {
 });
 ```
 
-For senders and links, an additional `tags.listByUser` subscription is created and tags are hydrated client-side by joining `tagIds` → tag objects via a `Map`.
+For senders and links, an additional `tags.listByUser` source is created and tags are hydrated client-side by joining `tagIds` → tag objects via a `Map`.
 
 ## Tag Hydration
 

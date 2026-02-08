@@ -1,6 +1,6 @@
 # Hold My Mail — Backend
 
-A Hono + Bun API server that receives inbound email via Postmark webhooks, holds it for users, and delivers scheduled digest emails. Uses Convex as the database and real-time backend.
+A Hono + Bun API server that receives inbound email via Postmark webhooks, holds it for users, and delivers scheduled digest emails. Uses Convex as the database. Provides a REST API with cursor-based pagination for list endpoints.
 
 ## Architecture Overview
 
@@ -10,16 +10,15 @@ A Hono + Bun API server that receives inbound email via Postmark webhooks, holds
 │   Email      │                            │   (Bun runtime) │
 └──────────────┘                            │   Port 3000     │
                                             │                 │
-┌──────────────┐     REST API + SSE         │  Routes:        │
+┌──────────────┐     REST API               │  Routes:        │
 │   SvelteKit  │ ◀════════════════════════▶ │  /auth          │
 │   Frontend   │                            │  /email         │
 └──────────────┘                            │  /sender        │
                                             │  /tag           │
-                                            │  /link          │
-                                            │  /digest        │
-                                            │  /mail          │
-                                            │  /stream (SSE)  │
-                                            └───────┬─────────┘
+┌──────────────┐     REST API               │  /link          │
+│   Chrome     │ ──── POST /link ─────────▶ │  /digest        │
+│   Extension  │                            │  /mail          │
+└──────────────┘                            └───────┬─────────┘
                                                     │
                                             ConvexHttpClient
                                                     │
@@ -55,13 +54,12 @@ backend/
 │   │   └── auth.ts           # Bearer token auth middleware
 │   ├── routes/
 │   │   ├── auth.ts           # Registration, login, logout, token refresh, user CRUD
-│   │   ├── email.ts          # Email CRUD, mark-read, schedule, bulk delete
+│   │   ├── email.ts          # Email CRUD, mark-read, schedule, bulk delete (paginated)
 │   │   ├── mail.ts           # Postmark inbound webhook handler + scheduling logic
-│   │   ├── sender.ts         # Sender (subscription) CRUD with tag hydration
+│   │   ├── sender.ts         # Sender (source) CRUD with tag hydration
 │   │   ├── tag.ts            # Tag CRUD
-│   │   ├── link.ts           # Link CRUD with OG metadata fetching
-│   │   ├── digest.ts         # Digest listing and retrieval
-│   │   └── stream.ts         # SSE endpoint for real-time data push
+│   │   ├── link.ts           # Link CRUD with OG metadata fetching (paginated)
+│   │   └── digest.ts         # Digest listing and retrieval (paginated)
 │   └── emails/
 │       └── digest.ts         # Digest HTML email template (Hono preview version)
 ├── convex/
@@ -97,14 +95,20 @@ backend/
 - **Middleware**: `authMiddleware` validates the `Authorization: Bearer <token>` header and sets `userId` on the Hono context. Applied to all routes except `/mail` (webhook) and `/auth/register|login`.
 - **Password hashing**: Uses Bun's built-in `Bun.password.hash()` / `Bun.password.verify()` (Argon2).
 
-### Real-time Updates (SSE)
+### Pagination
 
-The `/stream` endpoint provides Server-Sent Events for live data:
+List endpoints for emails, links, and digests support cursor-based pagination when the `?limit=` query parameter is present:
 
-- Authenticates via query param (`?token=...`) since `EventSource` can't set headers
-- Polls Convex every 2 seconds, compares hashes of each data type
-- Emits `emails`, `senders`, `links`, and `tags` events only when data changes
-- The frontend subscribes and merges live data with initial page-load data
+- `?limit=N` — Return at most N items (capped at 100, default 25)
+- `?cursor=C` — Continue from a previous page's cursor
+
+When `?limit` is present, the backend calls `paginatedListByUser` (Convex pagination via `paginationOptsValidator`) and returns:
+
+```json
+{ "items": [...], "cursor": "eyJ...", "hasMore": true }
+```
+
+When `?limit` is omitted, the endpoint returns the full array for backwards compatibility.
 
 ### Tag System
 
@@ -161,15 +165,15 @@ Tags are user-scoped labels that can be attached to senders and links:
 
 ### Email Routes (`/email`) — Auth Required
 
-| Method | Endpoint          | Description             |
-| ------ | ----------------- | ----------------------- |
-| GET    | `/email`          | List all emails         |
-| POST   | `/email`          | Create email manually   |
-| GET    | `/email/:id`      | Get single email        |
-| PATCH  | `/email/:id/read` | Mark email as read      |
-| POST   | `/email/schedule` | Schedule email delivery |
-| DELETE | `/email/:id`      | Delete email            |
-| DELETE | `/email/bulk`     | Bulk delete emails      |
+| Method | Endpoint          | Description                                  |
+| ------ | ----------------- | -------------------------------------------- |
+| GET    | `/email`          | List all emails (supports `?limit=&cursor=`) |
+| POST   | `/email`          | Create email manually                        |
+| GET    | `/email/:id`      | Get single email                             |
+| PATCH  | `/email/:id/read` | Mark email as read                           |
+| POST   | `/email/schedule` | Schedule email delivery                      |
+| DELETE | `/email/:id`      | Delete email                                 |
+| DELETE | `/email/bulk`     | Bulk delete emails                           |
 
 ### Sender Routes (`/sender`) — Auth Required
 
@@ -192,29 +196,21 @@ Tags are user-scoped labels that can be attached to senders and links:
 
 ### Link Routes (`/link`) — Auth Required
 
-| Method | Endpoint     | Description                        |
-| ------ | ------------ | ---------------------------------- |
-| GET    | `/link`      | List all links                     |
-| POST   | `/link`      | Create link (auto-fetches OG data) |
-| GET    | `/link/:id`  | Get link details                   |
-| PUT    | `/link/:id`  | Update link                        |
-| DELETE | `/link/:id`  | Delete link                        |
-| DELETE | `/link/bulk` | Bulk delete links                  |
+| Method | Endpoint     | Description                                 |
+| ------ | ------------ | ------------------------------------------- |
+| GET    | `/link`      | List all links (supports `?limit=&cursor=`) |
+| POST   | `/link`      | Create link (auto-fetches OG data)          |
+| GET    | `/link/:id`  | Get link details                            |
+| PUT    | `/link/:id`  | Update link                                 |
+| DELETE | `/link/:id`  | Delete link                                 |
+| DELETE | `/link/bulk` | Bulk delete links                           |
 
 ### Digest Routes (`/digest`) — Auth Required
 
-| Method | Endpoint      | Description        |
-| ------ | ------------- | ------------------ |
-| GET    | `/digest`     | List all digests   |
-| GET    | `/digest/:id` | Get digest details |
-
-### SSE Stream (`/stream`)
-
-| Method | Endpoint                | Description                      |
-| ------ | ----------------------- | -------------------------------- |
-| GET    | `/stream?token=<token>` | Real-time SSE stream of all data |
-
-Events: `emails`, `senders`, `links`, `tags`
+| Method | Endpoint      | Description                                   |
+| ------ | ------------- | --------------------------------------------- |
+| GET    | `/digest`     | List all digests (supports `?limit=&cursor=`) |
+| GET    | `/digest/:id` | Get digest details                            |
 
 ## Digest Templates
 
