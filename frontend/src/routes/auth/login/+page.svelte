@@ -7,10 +7,14 @@
   let password = $state("");
   let error = $state("");
   let loading = $state(false);
+  let unverified = $state(false);
+  let resent = $state(false);
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
     error = "";
+    unverified = false;
+    resent = false;
     loading = true;
 
     try {
@@ -28,9 +32,23 @@
       );
       goto("/");
     } catch (err) {
-      error = err instanceof Error ? err.message : "Login failed";
+      const msg = err instanceof Error ? err.message : "Login failed";
+      if (msg.toLowerCase().includes("verify your email")) {
+        unverified = true;
+      }
+      error = msg;
     } finally {
       loading = false;
+    }
+  }
+
+  async function resendVerification() {
+    if (!email) return;
+    try {
+      await authApi.resendVerification(email);
+      resent = true;
+    } catch {
+      // silent
     }
   }
 </script>
@@ -39,7 +57,17 @@
 
 <form onsubmit={handleSubmit}>
   {#if error}
-    <p class="error">{error}</p>
+    <p class="error">
+      {error}
+      {#if unverified && !resent}
+        <button type="button" class="link-btn" onclick={resendVerification}
+          >Resend verification email</button
+        >
+      {/if}
+      {#if resent}
+        <span class="resent">✓ Verification email sent!</span>
+      {/if}
+    </p>
   {/if}
 
   <label>
@@ -52,20 +80,19 @@
     <input type="password" bind:value={password} required />
   </label>
 
-  <button type="submit" disabled={loading}>
+  <button type="submit" disabled={loading} class="btn btn-black">
     {loading ? "Logging in..." : "Login"}
   </button>
 </form>
 
-<p class="links">
-  <a href="/auth/register">Create an account</a>
+<a href="/auth/register" class="btn btn-white">Create an account</a>
+<p class="links centered">
   <a href="/auth/forgot-password">Forgot password?</a>
 </p>
 
 <style>
   h1 {
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin-bottom: 1rem;
   }
 
   form {
@@ -88,36 +115,32 @@
     font-size: 1rem;
   }
 
-  button {
+  .link-btn {
+    display: inline;
     cursor: pointer;
     border: none;
-    border-radius: 4px;
-    background: #0066cc;
-    padding: 0.75rem;
-    color: white;
-    font-size: 1rem;
+    background: none;
+    padding: 0;
+    color: var(--accent);
+    font-size: inherit;
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--black);
+    }
   }
 
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  .btn-white {
+    margin-top: 1rem;
   }
 
-  .error {
-    border-radius: 4px;
-    background: #ffeeee;
-    padding: 0.75rem;
-    color: #cc0000;
+  .resent {
+    display: block;
+    margin-top: 0.5rem;
+    color: #006600;
   }
 
   .links {
-    display: flex;
-    justify-content: space-between;
     margin-top: 1rem;
-    text-align: center;
-  }
-
-  a {
-    color: #0066cc;
   }
 </style>

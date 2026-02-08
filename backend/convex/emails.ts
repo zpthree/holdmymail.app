@@ -181,7 +181,7 @@ export const deliverDueEmails = internalAction({
           : "";
       const html = buildDigestHtml(digestEmails, new Date(), freq);
 
-      const subject = `Your ${freqCap}Mail Digest – ${emails.length} email${emails.length === 1 ? "" : "s"} waiting`;
+      const subject = `Your ${freqCap}Hold My Mail Digest – ${emails.length} email${emails.length === 1 ? "" : "s"} waiting`;
 
       // Send via Postmark
       await fetch("https://api.postmarkapp.com/email", {
@@ -192,7 +192,7 @@ export const deliverDueEmails = internalAction({
           "X-Postmark-Server-Token": postmarkToken,
         },
         body: JSON.stringify({
-          From: "digest@holdmymail.app",
+          From: "Hold My Mail <digest@holdmymail.app>",
           To: user.email,
           Subject: subject,
           HtmlBody: html,

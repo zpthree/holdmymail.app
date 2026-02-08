@@ -1,6 +1,6 @@
 # Hold My Mail — Frontend
 
-A SvelteKit 2 + Svelte 5 single-page application for managing held emails, subscriptions, saved links, and digest history. Communicates with the Hono/Bun backend API and receives real-time updates via Server-Sent Events.
+A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sources, saved links, and digest history. Communicates with the Hono/Bun backend API for mutations and receives real-time updates via Convex live queries.
 
 ## Architecture Overview
 
@@ -11,8 +11,8 @@ A SvelteKit 2 + Svelte 5 single-page application for managing held emails, subsc
 │  ┌─────────────┐   ┌──────────────┐   ┌──────────┐ │
 │  │  Root Layout │──▶│  (app) Layout│──▶│  Pages   │ │
 │  │  Session     │   │  Auth Guard  │   │  Inbox   │ │
-│  │  Restore     │   │  SSE Connect │   │  Subs    │ │
-│  │  <Header>    │   │  Gate render │   │  Links   │ │
+│  │  Restore     │   │  Gate render │   │  Subs    │ │
+│  │  <Header>    │   │              │   │  Links   │ │
 │  └─────────────┘   └──────────────┘   │  Digests │ │
 │                                        │  User    │ │
 │  ┌─────────────┐                      └──────────┘ │
@@ -22,19 +22,19 @@ A SvelteKit 2 + Svelte 5 single-page application for managing held emails, subsc
 │  └─────────────┘                                    │
 │                                                     │
 │  ┌────────────────────────────────────────────────┐ │
-│  │              Stores                            │ │
+│  │              Stores / Data                     │ │
 │  │  auth (writable) — user, token, loading        │ │
-│  │  stream (SSE)   — emails, senders, links, tags │ │
+│  │  convex (live)  — emails, senders, links, tags │ │
 │  └────────────────────────────────────────────────┘ │
-│                          │                          │
-│                    fetch / SSE                      │
-│                          │                          │
-└──────────────────────────┼──────────────────────────┘
-                           │
-                   ┌───────▼─────────┐
-                   │  Hono Backend   │
-                   │  localhost:3000  │
-                   └─────────────────┘
+│                      │              │               │
+│                    fetch       Convex WS             │
+│                      │              │               │
+└──────────────────────┼──────────────┼───────────────┘
+                       │              │
+               ┌───────▼───────┐  ┌───▼──────────────┐
+               │  Hono Backend │  │  Convex Cloud    │
+               │  localhost:3000│  │  (live queries)  │
+               └───────────────┘  └──────────────────┘
 ```
 
 ## Tech Stack
@@ -57,10 +57,10 @@ frontend/
 │   ├── app.d.ts                        # SvelteKit type augmentations
 │   ├── lib/
 │   │   ├── api.ts                      # API client — typed wrappers for all endpoints
+│   │   ├── convex.ts                   # Convex client — live query store helper
 │   │   ├── index.ts                    # Lib barrel export
 │   │   ├── stores/
-│   │   │   ├── auth.ts                 # Auth store (user, token, loading)
-│   │   │   └── stream.ts              # SSE store (live emails, senders, links, tags)
+│   │   │   └── auth.ts                 # Auth store (user, token, loading)
 │   │   ├── components/
 │   │   │   ├── Header.svelte           # Global nav bar with tab navigation
 │   │   │   └── Logo.svelte             # SVG logo component
@@ -82,7 +82,7 @@ frontend/
 │       │   ├── reset-password/+page.svelte
 │       │   └── verify-email/+page.svelte
 │       └── (app)/
-│           ├── +layout.svelte          # App layout — auth guard, SSE connection
+│           ├── +layout.svelte          # App layout — auth guard
 │           ├── +page.svelte            # Root redirect → /inbox
 │           ├── +page.ts                # Redirect logic
 │           ├── inbox/
@@ -91,7 +91,7 @@ frontend/
 │           │   └── [uid]/
 │           │       ├── +page.svelte    # Email detail (iframe for HTML body)
 │           │       └── +page.ts        # Load email + mark read
-│           ├── subscriptions/
+│           ├── sources/
 │           │   ├── +page.svelte        # Sender list with avatars + tags
 │           │   ├── +page.ts            # Load senders
 │           │   └── [uid]/
@@ -113,7 +113,7 @@ frontend/
 │                   └── +page.ts        # Load digest
 ├── static/
 │   └── robots.txt
-├── svelte.config.js                    # SvelteKit config (adapter-auto)
+├── svelte.config.js                    # SvelteKit config (adapter-auto, @convex alias)
 ├── vite.config.ts                      # Vite config (allowed hosts)
 ├── tsconfig.json
 └── package.json
@@ -166,27 +166,33 @@ frontend/
 - `clearAuth()` — wipes store + `localStorage`
 - `loading: true` initially, set to `false` after session restore completes
 
-#### Live Data Store (`$lib/stores/stream.ts`)
+#### Convex Live Queries (`$lib/convex.ts`)
 
-Wraps an `EventSource` connection to `/stream?token=...`:
+Provides a `liveQuery()` helper that creates a Svelte readable store backed by a Convex live query subscription:
 
 ```typescript
-liveData.emails; // writable<Email[]>
-liveData.senders; // writable<Sender[]>
-liveData.links; // writable<Link[]>
-liveData.tags; // writable<Tag[]>
-liveData.connected; // writable<boolean>
-liveData.connect(token);
-liveData.disconnect();
+import { liveQuery, api } from "$lib/convex";
+
+// Subscribe to a Convex query — auto-updates when data changes
+const live = liveQuery(api.emails.listByUser, { userId }, []);
+
+// Use as a Svelte store
+const unsub = live.subscribe((emails) => { ... });
+
+// Clean up
+live.destroy();
 ```
 
-- Connected in `(app)/+layout.svelte` when authenticated
-- Disconnected on destroy or when token is cleared
-- Pages subscribe to live stores and merge with initial page-load data:
+- Uses `ConvexClient` which maintains a WebSocket connection to Convex Cloud
+- Each page subscribes to its own queries directly (no centralized store)
+- Pages merge live data with initial page-load data for instant renders:
 
 ```typescript
 let emails = $derived(liveEmails.length > 0 ? liveEmails : data.emails);
 ```
+
+- For senders and links, tags are hydrated client-side by subscribing to both the entity query and `tags.listByUser`, then joining `tagIds` to tag objects
+- The `@convex` import alias points to `../backend/convex/_generated` (configured in `svelte.config.js`)
 
 ### API Client (`$lib/api.ts`)
 
@@ -206,7 +212,7 @@ All `+page.ts` loaders follow the same pattern:
 1. Check `browser` — return empty data during SSR
 2. Read `token` from `localStorage`
 3. Call the API and return typed data
-4. Pages use the data as initial state, then merge with SSE live data
+4. Pages use the data as initial state, then merge with Convex live query data
 
 This is a **client-side only** approach — no server-side rendering of authenticated content. The `localStorage` auth model prevents SSR data loading.
 
@@ -250,7 +256,7 @@ Font sizes use fluid `clamp()` scaling from `--fs-sm` through `--fs-headline`.
 The `<Header>` component is a fixed top bar with a pill-shaped nav:
 
 - Logo (left), tabs (center), user avatar (right)
-- Tabs: **Inbox**, **Digests**, **Subscriptions**, **Links**
+- Tabs: **Inbox**, **Digests**, **Sources**, **Links**
 - Active tab detection via `$page.url.pathname`
 - "Alpha" badge in the top-left corner
 
@@ -263,30 +269,31 @@ The `<Header>` component is a fixed top bar with a pill-shaped nav:
 
 ## Route Map
 
-| Path                       | View               | Description                           |
-| -------------------------- | ------------------ | ------------------------------------- |
-| `/`                        | Redirect           | → `/inbox` if logged in               |
-| `/auth/login`              | Login form         | Email + password                      |
-| `/auth/register`           | Register form      | Email + password + username           |
-| `/auth/logout`             | Logout             | Clears session                        |
-| `/auth/forgot-password`    | Forgot password    | Email input                           |
-| `/auth/reset-password`     | Reset password     | New password form                     |
-| `/auth/verify-email`       | Email verification | Verification flow                     |
-| `/inbox`                   | Email list         | Grouped by date, select + bulk delete |
-| `/inbox/:uid`              | Email detail       | Full email with iframe HTML body      |
-| `/subscriptions`           | Sender list        | Colored avatars, tags                 |
-| `/subscriptions/:uid`      | Sender detail      | Sender info + email history           |
-| `/subscriptions/:uid/edit` | Edit sender        | Name, color, tags, digest prefs       |
-| `/links`                   | Link list          | OG metadata previews                  |
-| `/links/:uid`              | Link detail        | Full OG card                          |
-| `/digests`                 | Digest history     | List of sent digests                  |
-| `/digests/:uid`            | Digest detail      | Rendered HTML digest                  |
+| Path                    | View               | Description                           |
+| ----------------------- | ------------------ | ------------------------------------- |
+| `/`                     | Redirect           | → `/inbox` if logged in               |
+| `/auth/login`           | Login form         | Email + password                      |
+| `/auth/register`        | Register form      | Email + password + username           |
+| `/auth/logout`          | Logout             | Clears session                        |
+| `/auth/forgot-password` | Forgot password    | Email input                           |
+| `/auth/reset-password`  | Reset password     | New password form                     |
+| `/auth/verify-email`    | Email verification | Verification flow                     |
+| `/inbox`                | Email list         | Grouped by date, select + bulk delete |
+| `/inbox/:uid`           | Email detail       | Full email with iframe HTML body      |
+| `/sources`              | Sender list        | Colored avatars, tags                 |
+| `/sources/:uid`         | Sender detail      | Sender info + email history           |
+| `/sources/:uid/edit`    | Edit sender        | Name, color, tags, digest prefs       |
+| `/links`                | Link list          | OG metadata previews                  |
+| `/links/:uid`           | Link detail        | Full OG card                          |
+| `/digests`              | Digest history     | List of sent digests                  |
+| `/digests/:uid`         | Digest detail      | Rendered HTML digest                  |
 
 ## Environment Variables
 
-| Variable       | Description                                        |
-| -------------- | -------------------------------------------------- |
-| `VITE_API_URL` | Backend API URL (default: `http://localhost:3000`) |
+| Variable          | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| `VITE_API_URL`    | Backend API URL (default: `http://localhost:3000`) |
+| `VITE_CONVEX_URL` | Convex deployment URL for live queries             |
 
 ## Getting Started
 
@@ -305,8 +312,8 @@ Ensure the backend is running at the URL specified by `VITE_API_URL`.
 ## Key Design Decisions
 
 - **Client-side auth only**: Tokens in `localStorage`, no cookies. This means no SSR for authenticated routes — all data loading happens in the browser. Trade-off: simpler implementation, no CSRF concerns, but no server-side rendering benefits.
-- **SSE for live updates**: Uses `EventSource` (not WebSocket) — simpler, auto-reconnects, one-way server→client. Live data merges with page-load data so initial renders aren't empty.
-- **Svelte 5 runes**: Uses `$state`, `$derived`, `$effect`, `$props` throughout. Stores still use Svelte 4 `writable`/`derived` for cross-component reactivity (auth, stream).
+- **Convex live queries for real-time data**: The frontend connects directly to Convex Cloud via WebSocket using `ConvexClient`. Each list page subscribes to the relevant Convex query (e.g., `emails.listByUser`), getting instant push updates when data changes — no polling, no intermediate server. Senders and links hydrate tags client-side.
+- **Svelte 5 runes**: Uses `$state`, `$derived`, `$effect`, `$props` throughout. Auth store still uses Svelte 4 `writable` for cross-component reactivity.
 - **Sandboxed iframes for email**: HTML email bodies are isolated in sandboxed iframes to prevent style bleed and XSS while still allowing link clicks.
 - **Dual auth guards**: `(app)/+layout.svelte` protects app routes (requires auth), `auth/+layout.svelte` protects auth routes (redirects if already authed). Both use the same `$auth` store to avoid timing mismatches.
 - **No SSR data**: All `+page.ts` loaders gate on `browser` and return empty arrays during SSR. This avoids hydration mismatches and keeps auth client-side.

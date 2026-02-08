@@ -6,6 +6,7 @@ export default defineSchema({
     email: v.string(),
     passwordHash: v.string(),
     username: v.string(), // e.g., "user1" for user1@inbox.holdmymail.app
+    emailVerified: v.optional(v.boolean()),
     deliveryEmail: v.optional(v.string()),
     digestFrequency: v.optional(v.string()), // "daily" | "weekly" | "none"
     digestDay: v.optional(v.string()), // "monday" .. "sunday" (for weekly)
@@ -16,6 +17,18 @@ export default defineSchema({
     .index("by_username", ["username"]),
 
   tokens: defineTable({
+    token: v.string(),
+    userId: v.id("users"),
+    expiresAt: v.number(),
+  }).index("by_token", ["token"]),
+
+  verificationTokens: defineTable({
+    token: v.string(),
+    userId: v.id("users"),
+    expiresAt: v.number(),
+  }).index("by_token", ["token"]),
+
+  passwordResetTokens: defineTable({
     token: v.string(),
     userId: v.id("users"),
     expiresAt: v.number(),

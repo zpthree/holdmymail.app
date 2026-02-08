@@ -10,8 +10,8 @@
 
   // Redirect if viewing another user's page
   $effect(() => {
-    if ($auth.user && uid !== $auth.user.id) {
-      goto(`/user/${$auth.user.id}`);
+    if ($auth.user && uid !== $auth.user.username) {
+      goto(`/user/${$auth.user.username}`);
     }
   });
 
@@ -33,7 +33,6 @@
   let email = $state(initialEmail);
   let currentPassword = $state("");
   let newPassword = $state("");
-  let confirmPassword = $state("");
 
   // Delivery settings
   let deliveryEmail = $state(initialDeliveryEmail || email);
@@ -85,23 +84,21 @@
 
   async function changePassword() {
     if (!$auth.token || !$auth.user) return;
+    if (!currentPassword) return showError("Current password is required");
     if (!newPassword) return showError("New password is required");
     if (newPassword.length < 8)
       return showError("Password must be at least 8 characters");
-    if (newPassword !== confirmPassword)
-      return showError("Passwords don't match");
 
     changingPassword = true;
     error = "";
     try {
       await authApi.updateUser(
         $auth.user.id,
-        { password: newPassword },
+        { currentPassword, password: newPassword },
         $auth.token,
       );
       currentPassword = "";
       newPassword = "";
-      confirmPassword = "";
       showMessage("Password updated");
     } catch (err) {
       showError(
@@ -177,9 +174,9 @@
   {/if}
 
   <!-- Logout -->
-  <section class="card">
+  <section class="card flex">
     <h2>Logout</h2>
-    <button class="btn secondary" onclick={logout}> Logout </button>
+    <a href="/auth/logout" class="btn btn-accent">Log out</a>
   </section>
 
   <!-- Email Section -->
@@ -211,6 +208,10 @@
       }}
     >
       <label>
+        <span>Current Password</span>
+        <input type="password" bind:value={currentPassword} required />
+      </label>
+      <label>
         <span>New Password</span>
         <input
           type="password"
@@ -218,10 +219,6 @@
           minlength="8"
           required
         />
-      </label>
-      <label>
-        <span>Confirm Password</span>
-        <input type="password" bind:value={confirmPassword} required />
       </label>
       <button type="submit" class="btn primary" disabled={changingPassword}>
         {changingPassword ? "Updating…" : "Change Password"}
@@ -366,9 +363,19 @@
     padding: 1.5rem;
   }
 
+  .card.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .card h2 {
-    margin: 0 0 1rem;
+    margin: 0;
     font-size: var(--fs-lg);
+  }
+
+  .card:not(.flex) h2 {
+    margin: 0 0 1rem;
   }
 
   .card .hint {

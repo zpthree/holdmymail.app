@@ -2,9 +2,11 @@
 
 ## Summary
 
-The Hold My Mail application is going to be a web application that receives mail and holds it for the user until they are ready to view it.
+The Hold My Mail application is a web application that receives mail and holds it for the user until they are ready to view it.
 
-The application will allow users to set up schedules the mail they receive to Hold My Mail gets delivered to their actual inbox.
+The application allows users to set up schedules so the mail they receive at Hold My Mail gets delivered to their actual inbox.
+
+**Real-time data** is delivered to the frontend directly via Convex live queries (WebSocket). The Hono backend handles authentication, mutations, email ingestion, and digest delivery — but does not serve real-time data streams.
 
 ## Features
 

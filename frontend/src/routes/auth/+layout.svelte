@@ -1,6 +1,7 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
   import { goto } from "$app/navigation";
+  import Logo from "$lib/components/Logo.svelte";
 
   let { children } = $props();
 
@@ -16,31 +17,55 @@
   });
 </script>
 
-{#if $auth.loading || $auth.token}
-  <div class="loading"></div>
-{:else}
-  <div class="auth-layout">
-    <div class="auth-container">
-      {@render children()}
+<main id="auth">
+  {#if $auth.loading || ($auth.token && window.location.pathname !== "/auth/logout")}
+    <div class="loading"></div>
+  {:else}
+    <div class="auth-layout centered">
+      <div class="auth-container">
+        <a href="/auth/login" id="logo" class="centered"
+          ><span><Logo /></span></a
+        >
+        {@render children()}
+      </div>
     </div>
-  </div>
-{/if}
+  {/if}
+</main>
 
 <style>
+  main {
+    @media screen and (width <= 480px) {
+      background-color: var(--white);
+    }
+  }
   .auth-layout {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f5f5f5;
     min-height: 100vh;
   }
 
   .auth-container {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     background: white;
     padding: 2rem;
     width: 100%;
     max-width: 400px;
+
+    @media screen and (width > 480px) {
+      border: 0.3rem solid var(--black);
+    }
+  }
+
+  #logo {
+    margin: auto;
+  }
+
+  #logo span {
+    background-color: var(--black);
+    padding: 0.5rem 1rem;
+    color: var(--white);
+  }
+
+  #logo :global(svg) {
+    width: auto;
+    height: 4rem;
   }
 </style>

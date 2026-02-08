@@ -18,7 +18,7 @@
     deleting = true;
     try {
       await senderApi.delete(uid, $auth.token);
-      goto("/subscriptions");
+      goto("/sources");
     } catch (err) {
       error =
         err instanceof Error ? err.message : "Failed to delete subscription";
@@ -39,10 +39,10 @@
 
 <div class="subscription-detail">
   <nav>
-    <a href="/subscriptions" class="back">← Subscriptions</a>
+    <a href="/sources" class="back">← Sources</a>
     {#if sender}
       <div class="actions">
-        <a href="/subscriptions/{uid}/edit" class="edit-btn">Edit</a>
+        <a href="/sources/{uid}/edit" class="edit-btn">Edit</a>
         <button onclick={handleDelete} disabled={deleting} class="delete-btn">
           {deleting ? "Removing..." : "Remove"}
         </button>
@@ -84,7 +84,7 @@
           {#each emails as email}
             <li>
               <a
-                href="/inbox/{email._id}?from=/subscriptions/{uid}"
+                href="/inbox/{email._id}?from=/sources/{uid}"
                 class="email-item"
               >
                 <div class="email-header">

@@ -1,17 +1,24 @@
 <script lang="ts">
+  import { authApi } from "$lib/api";
+
   let email = $state("");
   let submitted = $state(false);
   let loading = $state(false);
+  let error = $state("");
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
+    error = "";
     loading = true;
 
-    // TODO: Implement forgot password API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    submitted = true;
-    loading = false;
+    try {
+      await authApi.forgotPassword(email);
+      submitted = true;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Something went wrong";
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -24,12 +31,15 @@
   <a href="/auth/login" class="back">Back to login</a>
 {:else}
   <form onsubmit={handleSubmit}>
+    {#if error}
+      <p class="error">{error}</p>
+    {/if}
     <label>
       Email
       <input type="email" bind:value={email} required />
     </label>
 
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading} class="btn btn-black">
       {loading ? "Sending..." : "Send Reset Link"}
     </button>
   </form>
@@ -59,33 +69,10 @@
   }
 
   input {
-    padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  button {
     padding: 0.75rem;
-    background: #0066cc;
-    color: white;
-    border: none;
-    border-radius: 4px;
     font-size: 1rem;
-    cursor: pointer;
-  }
-
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .success {
-    background: #eeffee;
-    color: #006600;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
   }
 
   .links {
@@ -96,10 +83,5 @@
   .back {
     display: block;
     text-align: center;
-    color: #0066cc;
-  }
-
-  a {
-    color: #0066cc;
   }
 </style>

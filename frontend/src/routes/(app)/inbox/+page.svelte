@@ -1,24 +1,31 @@
 <script lang="ts">
   import { emailApi, type Email } from "$lib/api";
   import { auth } from "$lib/stores/auth";
-  import { liveData } from "$lib/stores/stream";
+  import { liveQuery, api } from "$lib/convex";
   import { invalidateAll } from "$app/navigation";
   import { onDestroy } from "svelte";
 
   let { data } = $props();
+
+  const userId = $auth.user?.id;
+  const live = userId
+    ? liveQuery(api.emails.listByUser, { userId: userId as any }, [])
+    : null;
+
   let liveEmails = $state<Email[]>([]);
 
-  // Subscribe to live SSE data
-  const unsub = liveData.emails.subscribe((v) => {
+  const unsub = live?.subscribe((v: any[]) => {
     if (v.length > 0) liveEmails = v;
   });
 
-  // Use live data if available, otherwise fall back to page load data
   let emails = $derived<Email[]>(
     liveEmails.length > 0 ? liveEmails : data.emails,
   );
 
-  onDestroy(unsub);
+  onDestroy(() => {
+    unsub?.();
+    live?.destroy();
+  });
 
   type DateGroup = { month: string; day: string; emails: Email[] };
 
@@ -155,7 +162,7 @@
                 </label>
               {/if}
               <div class="email-content">
-                <a href="/subscriptions/{email.senderId}" class="sender">
+                <a href="/sources/{email.senderId}" class="sender">
                   <span>{email.fromName || email.fromEmail}</span>
                 </a>
                 <a href="/inbox/{email._id}" class="email-item">
@@ -277,10 +284,13 @@
   }
 
   .date-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 0 3rem;
     margin-bottom: 1.5rem;
+
+    @media screen and (width > 768px) {
+      display: flex;
+      align-items: flex-start;
+      gap: 0 3rem;
+    }
 
     &:not(:last-child) {
       margin-bottom: 3rem;
@@ -289,33 +299,45 @@
 
   .date-label {
     display: flex;
-    position: sticky;
-    top: 8rem;
-    flex-shrink: 0;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
     border-radius: var(--br-lg);
     background: var(--black);
-    width: 5rem;
-    height: 5rem;
     letter-spacing: 0.02em;
     text-align: center;
+
+    @media screen and (width > 768px) {
+      position: sticky;
+      top: 8rem;
+      flex-shrink: 0;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 0;
+      width: 5rem;
+      height: 5rem;
+    }
   }
 
   .month {
     color: var(--white);
     font-weight: 600;
-    font-size: var(--fs-sm);
     text-transform: uppercase;
+
+    @media screen and (width > 768px) {
+      font-size: var(--fs-sm);
+    }
   }
 
   .day {
     color: var(--white);
     font-weight: 700;
-    font-size: var(--fs-lg);
     line-height: 1;
+
+    @media screen and (width > 768px) {
+      font-size: var(--fs-lg);
+    }
   }
 
   .emails {
@@ -345,6 +367,15 @@
     min-width: 0;
   }
 
+  .sender,
+  .email-item {
+    color: var(--black);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .email-item {
     display: block;
     transition: background 0.15s;
@@ -357,6 +388,7 @@
   .sender {
     position: relative;
     margin-bottom: 0.25rem;
+    color: var(--accent);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -372,14 +404,5 @@
     width: 0.4em;
     height: 0.4em;
     content: "";
-  }
-
-  .sender,
-  .email-item {
-    color: var(--black);
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 </style>

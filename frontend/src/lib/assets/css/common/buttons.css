@@ -1,0 +1,53 @@
+.btn {
+  display: block;
+  transition:
+    background-color 200ms ease-in-out,
+    color 200ms ease-in-out;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--br-full);
+  background: var(--black);
+  padding: 0.75rem;
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.btn-black {
+  border: 0.2rem solid var(--black);
+  background-color: var(--black);
+  color: var(--white);
+  text-align: center;
+
+  &:hover {
+    background-color: hsl(from var(--black) h s l / 0.75);
+  }
+}
+
+.btn-white {
+  border: 0.2rem solid var(--black);
+  background-color: transparent;
+  color: var(--black);
+  text-align: center;
+
+  &:hover {
+    background-color: var(--black);
+    color: var(--white);
+  }
+}
+
+.btn-accent {
+  border: 0.2rem solid var(--accent);
+  background-color: var(--accent);
+  color: var(--white);
+  text-align: center;
+
+  &:hover {
+    background-color: hsl(from var(--accent) h s l / 0.75);
+  }
+}

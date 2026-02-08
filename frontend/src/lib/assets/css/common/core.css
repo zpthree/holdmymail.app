@@ -21,7 +21,7 @@ body {
   font-family: var(--font-sans);
 }
 
-#main {
+#app {
   padding-top: 5rem;
 }
 
@@ -44,4 +44,29 @@ body.noscroll {
 .centered {
   display: grid;
   place-items: center;
+}
+
+a:not(.btn) {
+  transition: color 200ms;
+  color: var(--accent);
+
+  &:hover {
+    color: var(--black);
+  }
+}
+
+/* notices */
+.error {
+  border-radius: 4px;
+  background: #ffeeee;
+  padding: 0.75rem;
+  color: #cc0000;
+}
+
+.success {
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  background: #eeffee;
+  padding: 1rem;
+  color: #006600;
 }

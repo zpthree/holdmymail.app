@@ -16,9 +16,7 @@
   const uid = $derived($page.params.uid);
   const backHref = $derived(data.from ?? "/inbox");
   const backLabel = $derived(
-    backHref.startsWith("/subscriptions")
-      ? "Back to Subscription"
-      : "Back to Inbox",
+    backHref.startsWith("/sources") ? "Back to Subscription" : "Back to Inbox",
   );
 
   async function handleDelete() {
@@ -75,12 +73,16 @@
     {#if email}
       <div class="actions">
         <button
-          class="schedule-btn"
+          class="btn btn-white"
           onclick={() => (showSchedule = !showSchedule)}
         >
           {showSchedule ? "Cancel" : "Schedule"}
         </button>
-        <button onclick={handleDelete} disabled={deleting} class="delete">
+        <button
+          onclick={handleDelete}
+          disabled={deleting}
+          class="btn btn-accent"
+        >
           {deleting ? "Deleting..." : "Delete"}
         </button>
       </div>
@@ -119,7 +121,7 @@
           <div class="meta">
             <div class="from">
               <strong>From:</strong>
-              <a href={`/subscriptions/${email.senderId}`}
+              <a href={`/sources/${email.senderId}`}
                 >{email.fromName} &lt;{email.fromEmail}&gt;</a
               >
             </div>
@@ -182,12 +184,7 @@
   }
 
   .back {
-    color: #0066cc;
     text-decoration: none;
-  }
-
-  .back:hover {
-    text-decoration: underline;
   }
 
   .actions {
@@ -195,36 +192,8 @@
     gap: 0.5rem;
   }
 
-  .schedule-btn {
-    cursor: pointer;
-    border: 1px solid var(--black);
-    border-radius: 4px;
-    background: transparent;
-    padding: 0.5rem 1rem;
-    color: var(--black);
-  }
-
-  .schedule-btn:hover {
-    background: var(--black);
-    color: var(--white);
-  }
-
-  .delete {
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background: #cc0000;
-    padding: 0.5rem 1rem;
-    color: white;
-  }
-
-  .delete:hover {
-    background: #aa0000;
-  }
-
-  .delete:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  .btn {
+    padding-block: 0.5rem;
   }
 
   .schedule-form {

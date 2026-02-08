@@ -1,7 +1,7 @@
 /** @file popup.js – Hold My Link Chrome Extension */
 
-const API_BASE = "https://3000--main--holdmymail--zach.redtail.codes"; // dev – change for prod
-const APP_BASE = "https://5173--main--holdmymail--zach.redtail.codes"; // frontend URL
+const API_BASE = "https://api.holdmymail.app"; // dev – change for prod
+const APP_BASE = "https://holdmymail.app"; // frontend URL
 
 // ── DOM refs ──
 const loginView = document.getElementById("login-view");

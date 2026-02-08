@@ -27,12 +27,15 @@ export function setAuth(user: User | null, token: string | null) {
     if (token && user) {
       localStorage.setItem("token", token);
       localStorage.setItem("userId", user.id);
+      localStorage.setItem("email", user.email);
       localStorage.setItem("username", user.username);
       localStorage.setItem("timezone", user.timezone || "");
     } else {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
+      localStorage.removeItem("email");
       localStorage.removeItem("username");
+      localStorage.removeItem("gravatarUrl");
     }
   }
   auth.set({ user, token, loading: false });
@@ -42,8 +45,10 @@ export function clearAuth() {
   if (browser) {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("email");
     localStorage.removeItem("username");
     localStorage.removeItem("timezone");
+    localStorage.removeItem("gravatarUrl");
   }
   auth.set({ user: null, token: null, loading: false });
 }

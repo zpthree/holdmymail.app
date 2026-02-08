@@ -75,6 +75,7 @@ export const authApi = {
     data: {
       email?: string;
       password?: string;
+      currentPassword?: string;
       deliveryEmail?: string;
       digestFrequency?: string;
       digestDay?: string;
@@ -97,6 +98,30 @@ export const authApi = {
     api<{ token: string; userId: string }>("/auth/token", {
       method: "POST",
       token,
+    }),
+
+  verifyEmail: (token: string) =>
+    api<{ message: string }>("/auth/verify-email", {
+      method: "POST",
+      body: { token },
+    }),
+
+  resendVerification: (email: string) =>
+    api<{ message: string }>("/auth/resend-verification", {
+      method: "POST",
+      body: { email },
+    }),
+
+  forgotPassword: (email: string) =>
+    api<{ message: string }>("/auth/forgot-password", {
+      method: "POST",
+      body: { email },
+    }),
+
+  resetPassword: (token: string, password: string) =>
+    api<{ message: string }>("/auth/reset-password", {
+      method: "POST",
+      body: { token, password },
     }),
 };
 

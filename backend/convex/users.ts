@@ -147,3 +147,79 @@ export const deleteToken = mutation({
     }
   },
 });
+
+// Verification token management
+export const createVerificationToken = mutation({
+  args: { token: v.string(), userId: v.id("users"), expiresAt: v.number() },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("verificationTokens", args);
+  },
+});
+
+export const getVerificationToken = query({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("verificationTokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+  },
+});
+
+export const deleteVerificationToken = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    const tokenDoc = await ctx.db
+      .query("verificationTokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+    if (tokenDoc) {
+      await ctx.db.delete(tokenDoc._id);
+    }
+  },
+});
+
+export const verifyEmail = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, { emailVerified: true });
+  },
+});
+
+// Password reset token management
+export const createPasswordResetToken = mutation({
+  args: { token: v.string(), userId: v.id("users"), expiresAt: v.number() },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("passwordResetTokens", args);
+  },
+});
+
+export const getPasswordResetToken = query({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("passwordResetTokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+  },
+});
+
+export const deletePasswordResetToken = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    const tokenDoc = await ctx.db
+      .query("passwordResetTokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+    if (tokenDoc) {
+      await ctx.db.delete(tokenDoc._id);
+    }
+  },
+});
+
+export const updatePassword = mutation({
+  args: { userId: v.id("users"), passwordHash: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, { passwordHash: args.passwordHash });
+  },
+});

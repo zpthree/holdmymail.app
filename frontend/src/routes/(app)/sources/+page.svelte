@@ -1,37 +1,67 @@
 <script lang="ts">
-  import type { Sender } from "$lib/api";
-  import { liveData } from "$lib/stores/stream";
+  import type { Sender, Tag } from "$lib/api";
+  import { auth } from "$lib/stores/auth";
+  import { liveQuery, api } from "$lib/convex";
   import { onDestroy } from "svelte";
 
   let { data } = $props();
-  let liveSenders = $state<Sender[]>([]);
 
-  const unsub = liveData.senders.subscribe((v) => {
-    if (v.length > 0) liveSenders = v;
+  const userId = $auth.user?.id;
+
+  const liveSendersRaw = userId
+    ? liveQuery(api.senders.listByUser, { userId: userId as any }, [])
+    : null;
+  const liveTagsRaw = userId
+    ? liveQuery(api.tags.listByUser, { userId: userId as any }, [])
+    : null;
+
+  let rawSenders = $state<any[]>([]);
+  let rawTags = $state<any[]>([]);
+
+  const unsubSenders = liveSendersRaw?.subscribe((v: any[]) => {
+    rawSenders = v;
+  });
+  const unsubTags = liveTagsRaw?.subscribe((v: any[]) => {
+    rawTags = v;
   });
 
+  function hydrateSenders(senders: any[], tags: any[]): Sender[] {
+    const tagMap = new Map(tags.map((t: any) => [t._id, t]));
+    return senders.map((s: any) => ({
+      ...s,
+      tags: (s.tagIds ?? [])
+        .map((id: string) => tagMap.get(id))
+        .filter(Boolean),
+    }));
+  }
+
   let senders = $derived<Sender[]>(
-    liveSenders.length > 0 ? liveSenders : data.senders,
+    rawSenders.length > 0 ? hydrateSenders(rawSenders, rawTags) : data.senders,
   );
 
-  onDestroy(unsub);
+  onDestroy(() => {
+    unsubSenders?.();
+    unsubTags?.();
+    liveSendersRaw?.destroy();
+    liveTagsRaw?.destroy();
+  });
 </script>
 
-<div class="subscriptions">
+<div class="sources">
   <header>
-    <h1 style="font-size: var(--fs-xl)">Subscriptions</h1>
+    <h1 style="font-size: var(--fs-xl)">Sources</h1>
   </header>
 
   {#if senders.length === 0}
     <div class="empty">
-      <p>No subscriptions yet</p>
+      <p>No sources yet</p>
       <p class="hint">Add senders to manage when their emails get delivered</p>
     </div>
   {:else}
     <ul class="sender-list">
       {#each senders as sender}
-        <li>
-          <a href="/subscriptions/{sender._id}" class="sender-item">
+        <li class="sender-item">
+          <a href="/sources/{sender._id}">
             <div class="sender-avatar" style="background: {sender.color}">
               {sender.name.charAt(0).toUpperCase()}
             </div>
@@ -54,7 +84,7 @@
 </div>
 
 <style>
-  .subscriptions {
+  .sources {
     margin: 0 auto;
     padding: 2rem;
     max-width: 800px;
@@ -79,23 +109,38 @@
   }
 
   .sender-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .sender-item {
+    transition: border-color 0.15s;
+    border: 0.2rem solid transparent;
+    border-radius: var(--br-lg);
+    background: var(--white);
+    overflow: hidden;
+
+    &:hover {
+      border-color: var(--accent);
+    }
+  }
+
+  .sender-item > a {
     display: flex;
     align-items: center;
     gap: 1rem;
     transition: background 0.15s;
-    border-bottom: 1px solid #eee;
+    background-color: var(--white);
     padding: 1rem;
     color: inherit;
     text-decoration: none;
   }
 
-  .sender-item:hover {
+  .sender-item > a:hover {
     background: #f9f9f9;
   }
 
@@ -139,9 +184,9 @@
 
   .tag {
     border-radius: 4px;
-    background: #eef;
+    background: hsl(from var(--accent) h s l / 0.15);
     padding: 0.2rem 0.5rem;
-    color: #336;
+    color: var(--black);
     font-size: 0.75rem;
   }
 </style>

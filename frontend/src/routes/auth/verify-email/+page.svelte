@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { goto } from "$app/navigation";
+  import { authApi } from "$lib/api";
   import { onMount } from "svelte";
 
   let verifying = $state(true);
@@ -16,11 +16,14 @@
       return;
     }
 
-    // TODO: Implement email verification API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    success = true;
-    verifying = false;
+    try {
+      await authApi.verifyEmail(token);
+      success = true;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Verification failed";
+    } finally {
+      verifying = false;
+    }
   });
 </script>
 
@@ -29,8 +32,8 @@
 {#if verifying}
   <p>Verifying your email...</p>
 {:else if success}
-  <p class="success">Your email has been verified!</p>
-  <a href="/auth/login" class="back">Continue to login</a>
+  <p class="success">Your email has been verified! You can now log in.</p>
+  <a href="/auth/login" class="btn btn-black">Continue to login</a>
 {:else}
   <p class="error">{error}</p>
   <a href="/auth/login" class="back">Back to login</a>
@@ -43,24 +46,48 @@
   }
 
   .error {
-    color: #cc0000;
+    border-radius: 4px;
     background: #ffeeee;
     padding: 0.75rem;
-    border-radius: 4px;
+    color: #cc0000;
   }
 
   .success {
-    background: #eeffee;
-    color: #006600;
-    padding: 1rem;
-    border-radius: 4px;
     margin-bottom: 1rem;
+    border-radius: 4px;
+    background: #eeffee;
+    padding: 1rem;
+    color: #006600;
   }
 
   .back {
     display: block;
-    text-align: center;
     margin-top: 1rem;
     color: #0066cc;
+    text-align: center;
+  }
+
+  .btn {
+    display: block;
+    transition:
+      background-color 200ms ease-in-out,
+      color 200ms ease-in-out;
+    cursor: pointer;
+    border: none;
+    border: 0.2rem solid var(--black);
+    border-radius: var(--br-full);
+    padding: 0.75rem;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn-black {
+    background-color: var(--black);
+    color: var(--white);
+
+    &:hover {
+      background-color: hsl(from var(--black) h s l / 0.75);
+    }
   }
 </style>

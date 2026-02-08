@@ -1,9 +1,8 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { goto } from "$app/navigation";
+  import { authApi } from "$lib/api";
 
   let password = $state("");
-  let confirmPassword = $state("");
   let error = $state("");
   let success = $state(false);
   let loading = $state(false);
@@ -14,11 +13,6 @@
     e.preventDefault();
     error = "";
 
-    if (password !== confirmPassword) {
-      error = "Passwords do not match";
-      return;
-    }
-
     if (!token) {
       error = "Invalid reset link";
       return;
@@ -26,11 +20,14 @@
 
     loading = true;
 
-    // TODO: Implement reset password API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    success = true;
-    loading = false;
+    try {
+      await authApi.resetPassword(token, password);
+      success = true;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Failed to reset password";
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -53,12 +50,7 @@
       <input type="password" bind:value={password} required minlength="8" />
     </label>
 
-    <label>
-      Confirm Password
-      <input type="password" bind:value={confirmPassword} required />
-    </label>
-
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading} class="btn btn-black">
       {loading ? "Resetting..." : "Reset Password"}
     </button>
   </form>
@@ -66,8 +58,7 @@
 
 <style>
   h1 {
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin-bottom: 1rem;
   }
 
   form {
@@ -84,45 +75,13 @@
   }
 
   input {
-    padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
+    padding: 0.75rem;
     font-size: 1rem;
   }
-
-  button {
-    padding: 0.75rem;
-    background: #0066cc;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .error {
-    color: #cc0000;
-    background: #ffeeee;
-    padding: 0.75rem;
-    border-radius: 4px;
-  }
-
-  .success {
-    background: #eeffee;
-    color: #006600;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-
   .back {
     display: block;
     text-align: center;
-    color: #0066cc;
   }
 </style>

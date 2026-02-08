@@ -71,7 +71,7 @@
         $auth.token,
       );
 
-      goto(`/subscriptions/${uid}`);
+      goto(`/sources/${uid}`);
     } catch (err) {
       saveError = err instanceof Error ? err.message : "Failed to save changes";
     } finally {
@@ -82,7 +82,7 @@
 
 <div class="edit-subscription">
   <nav>
-    <a href="/subscriptions/{uid}" class="back">← Back</a>
+    <a href="/sources/{uid}" class="back">← Back</a>
   </nav>
 
   {#if loading}
@@ -191,7 +191,7 @@
       {/if}
 
       <div class="form-actions">
-        <a href="/subscriptions/{uid}" class="cancel-btn">Cancel</a>
+        <a href="/sources/{uid}" class="cancel-btn">Cancel</a>
         <button type="submit" disabled={saving} class="save-btn">
           {saving ? "Saving..." : "Save Changes"}
         </button>

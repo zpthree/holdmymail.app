@@ -78,7 +78,7 @@
       <input type="password" bind:value={password} required />
     </label>
 
-    <button type="submit" disabled={loading}>
+    <button type="submit" disabled={loading} class="btn btn-black">
       {loading ? "Connecting..." : "Connect"}
     </button>
   </form>
@@ -86,15 +86,11 @@
 
 <style>
   h1 {
-    margin-bottom: 0.5rem;
-    text-align: center;
+    margin-bottom: 0;
   }
 
   .info {
     margin-bottom: 1.5rem;
-    color: #666;
-    font-size: 0.9rem;
-    text-align: center;
   }
 
   form {
@@ -115,32 +111,5 @@
     border-radius: 4px;
     padding: 0.75rem;
     font-size: 1rem;
-  }
-
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    background: #1a1a1a;
-    padding: 0.75rem;
-    color: white;
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  button:hover {
-    opacity: 0.85;
-  }
-
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .error {
-    border-radius: 4px;
-    background: #ffeeee;
-    padding: 0.75rem;
-    color: #cc0000;
   }
 </style>

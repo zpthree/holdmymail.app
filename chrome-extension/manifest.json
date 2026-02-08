@@ -4,7 +4,7 @@
   "description": "Quickly save links to your Hold My Mail account",
   "version": "1.0.0",
   "permissions": ["activeTab", "storage", "tabs"],
-  "host_permissions": ["https://3000--main--holdmymail--zach.redtail.codes/*"],
+  "host_permissions": ["https://api.holdmymail.app/*"],
   "background": {
     "service_worker": "background.js"
   },

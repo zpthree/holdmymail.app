@@ -7,7 +7,6 @@ import { mailRoutes } from "./routes/mail";
 import { digestRoutes } from "./routes/digest";
 import { linkRoutes } from "./routes/link";
 import { tagRoutes } from "./routes/tag";
-import { streamRoutes } from "./routes/stream";
 import { buildDigestHtml } from "./emails/digest";
 
 const app = new Hono();
@@ -78,7 +77,6 @@ app.route("/mail", mailRoutes);
 app.route("/digest", digestRoutes);
 app.route("/link", linkRoutes);
 app.route("/tag", tagRoutes);
-app.route("/stream", streamRoutes);
 
 export default {
   port: 3000,

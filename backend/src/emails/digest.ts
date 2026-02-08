@@ -132,7 +132,7 @@ export function buildDigestHtml(
           <tr>
             <td style="padding: 0 24px 8px;">
               <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #000;">
-                Your ${freqLabel}Mail Digest
+                Your ${freqLabel}Hold My Mail Digest
               </h1>
             </td>
           </tr>
@@ -180,6 +180,9 @@ export function buildDigestHtml(
               <p style="margin: 0; font-size: 12px; color: #bbb;">
                 You're receiving this because you have scheduled email delivery on
                 <a href="https://holdmymail.app" style="color: #bbb;">Hold My Mail</a>.
+              </p>
+              <p style="margin: 8px 0 0; font-size: 12px;">
+                <a href="${process.env.FRONTEND_URL}/sources" style="color: #bbb;">Manage delivery preferences</a>
               </p>
             </td>
           </tr>

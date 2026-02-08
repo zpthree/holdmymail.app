@@ -1,20 +1,51 @@
 <script lang="ts">
   import { linkApi, type Link } from "$lib/api";
   import { auth } from "$lib/stores/auth";
-  import { liveData } from "$lib/stores/stream";
+  import { liveQuery, api } from "$lib/convex";
   import { invalidateAll } from "$app/navigation";
   import { onDestroy } from "svelte";
 
   let { data } = $props();
-  let liveLinks = $state<Link[]>([]);
 
-  const unsub = liveData.links.subscribe((v) => {
-    if (v.length > 0) liveLinks = v;
+  const userId = $auth.user?.id;
+
+  const liveLinksRaw = userId
+    ? liveQuery(api.links.listByUser, { userId: userId as any }, [])
+    : null;
+  const liveTagsRaw = userId
+    ? liveQuery(api.tags.listByUser, { userId: userId as any }, [])
+    : null;
+
+  let rawLinks = $state<any[]>([]);
+  let rawTags = $state<any[]>([]);
+
+  const unsubLinks = liveLinksRaw?.subscribe((v: any[]) => {
+    rawLinks = v;
+  });
+  const unsubTags = liveTagsRaw?.subscribe((v: any[]) => {
+    rawTags = v;
   });
 
-  let links = $derived<Link[]>(liveLinks.length > 0 ? liveLinks : data.links);
+  function hydrateLinks(links: any[], tags: any[]): Link[] {
+    const tagMap = new Map(tags.map((t: any) => [t._id, t]));
+    return links.map((l: any) => ({
+      ...l,
+      tags: (l.tagIds ?? [])
+        .map((id: string) => tagMap.get(id))
+        .filter(Boolean),
+    }));
+  }
 
-  onDestroy(unsub);
+  let links = $derived<Link[]>(
+    rawLinks.length > 0 ? hydrateLinks(rawLinks, rawTags) : data.links,
+  );
+
+  onDestroy(() => {
+    unsubLinks?.();
+    unsubTags?.();
+    liveLinksRaw?.destroy();
+    liveTagsRaw?.destroy();
+  });
 
   type DateGroup = { month: string; day: string; links: Link[] };
 
@@ -288,15 +319,18 @@
   }
 
   .link-item.selected {
-    border-radius: var(--br-md, 0.5rem);
+    border-radius: var(--br-lg);
     background: hsl(from var(--accent) h s l / 0.06);
   }
 
   .date-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 0 3rem;
     margin-bottom: 1.5rem;
+
+    @media screen and (width > 768px) {
+      display: flex;
+      align-items: flex-start;
+      gap: 0 3rem;
+    }
 
     &:not(:last-child) {
       margin-bottom: 3rem;
@@ -305,33 +339,45 @@
 
   .date-label {
     display: flex;
-    position: sticky;
-    top: 8rem;
-    flex-shrink: 0;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
     border-radius: var(--br-lg);
     background: var(--black);
-    width: 5rem;
-    height: 5rem;
     letter-spacing: 0.02em;
     text-align: center;
+
+    @media screen and (width > 768px) {
+      position: sticky;
+      top: 8rem;
+      flex-shrink: 0;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 0;
+      width: 5rem;
+      height: 5rem;
+    }
   }
 
   .month {
     color: var(--white);
     font-weight: 600;
-    font-size: var(--fs-sm);
     text-transform: uppercase;
+
+    @media screen and (width > 768px) {
+      font-size: var(--fs-sm);
+    }
   }
 
   .day {
     color: var(--white);
     font-weight: 700;
-    font-size: var(--fs-lg);
     line-height: 1;
+
+    @media screen and (width > 768px) {
+      font-size: var(--fs-lg);
+    }
   }
 
   .links {
@@ -344,10 +390,13 @@
   }
 
   .link-item {
-    display: flex;
-    gap: 1rem;
     color: inherit;
     text-decoration: none;
+
+    @media screen and (width > 768px) {
+      display: flex;
+      gap: 1rem;
+    }
   }
 
   .link-item a {
@@ -356,14 +405,19 @@
 
   .link-nothumb,
   .link-thumb {
+    display: block;
     flex-shrink: 0;
-    border-radius: var(--br-md, 0.5rem);
-    width: 120px;
-    height: 80px;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
+
+    @media screen and (width > 768px) {
+      width: 120px;
+      height: 80px;
+    }
   }
 
   .link-nothumb {
+    border-radius: var(--br-lg);
     background: hsl(from var(--accent) h s l / 0.1);
   }
 
@@ -373,6 +427,7 @@
 
   .link-thumb img {
     transition: scale 200ms ease;
+    border-radius: var(--br-lg);
     width: 100%;
     height: 100%;
     object-fit: cover;

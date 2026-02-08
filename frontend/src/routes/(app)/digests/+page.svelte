@@ -1,12 +1,34 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
   import type { Digest } from "$lib/api";
+  import { liveQuery, api } from "$lib/convex";
+  import { onDestroy } from "svelte";
 
   let { data } = $props();
 
+  const userId = $auth.user?.id;
+  const live = userId
+    ? liveQuery(api.digests.listByUser, { userId: userId as any }, [])
+    : null;
+
+  let liveDigests = $state<Digest[]>([]);
+
+  const unsub = live?.subscribe((v: any[]) => {
+    if (v.length > 0) liveDigests = v;
+  });
+
+  let digests = $derived<Digest[]>(
+    liveDigests.length > 0 ? liveDigests : data.digests,
+  );
+
+  onDestroy(() => {
+    unsub?.();
+    live?.destroy();
+  });
+
   type MonthGroup = { label: string; digests: Digest[] };
 
-  let grouped = $derived<MonthGroup[]>(groupByMonth(data.digests));
+  let grouped = $derived<MonthGroup[]>(groupByMonth(digests));
 
   function groupByMonth(digests: Digest[]): MonthGroup[] {
     const groups = new Map<string, Digest[]>();
@@ -44,7 +66,7 @@
     <h1 style="font-size: var(--fs-xl)">Digests</h1>
   </header>
 
-  {#if data.digests.length === 0}
+  {#if digests.length === 0}
     <div class="empty">
       <p>No digests yet</p>
       <p class="hint">

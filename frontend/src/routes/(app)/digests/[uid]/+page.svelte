@@ -25,13 +25,10 @@
 
   {#if digest}
     <header>
-      <h1 style="font-size: var(--fs-xl)">{digest.subject}</h1>
       <p class="meta">
-        Sent {formatDate(digest.sentAt)} · {digest.emailCount} email{digest.emailCount ===
-        1
-          ? ""
-          : "s"}
+        {formatDate(digest.sentAt)}
       </p>
+      <h1 style="font-size: var(--fs-xl)">{digest.subject}</h1>
     </header>
 
     <article>
@@ -61,7 +58,6 @@
   }
 
   .back {
-    color: #0066cc;
     text-decoration: none;
   }
 
@@ -74,12 +70,12 @@
   }
 
   h1 {
-    margin: 0 0 0.5rem 0;
+    margin: 1rem 0 0 0;
   }
 
   .meta {
     margin: 0;
-    color: #888;
+    color: var(--black);
     font-size: var(--fs-sm);
   }
 

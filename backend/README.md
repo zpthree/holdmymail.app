@@ -33,13 +33,13 @@ A Hono + Bun API server that receives inbound email via Postmark webhooks, holds
 
 ## Tech Stack
 
-| Layer      | Technology                          |
-|------------|-------------------------------------|
-| Runtime    | [Bun](https://bun.sh)               |
-| Framework  | [Hono](https://hono.dev) v4          |
-| Database   | [Convex](https://convex.dev) (cloud) |
-| Email      | [Postmark](https://postmarkapp.com)  |
-| Language   | TypeScript (ES2022)                  |
+| Layer     | Technology                           |
+| --------- | ------------------------------------ |
+| Runtime   | [Bun](https://bun.sh)                |
+| Framework | [Hono](https://hono.dev) v4          |
+| Database  | [Convex](https://convex.dev) (cloud) |
+| Email     | [Postmark](https://postmarkapp.com)  |
+| Language  | TypeScript (ES2022)                  |
 
 ## Project Structure
 
@@ -100,6 +100,7 @@ backend/
 ### Real-time Updates (SSE)
 
 The `/stream` endpoint provides Server-Sent Events for live data:
+
 - Authenticates via query param (`?token=...`) since `EventSource` can't set headers
 - Polls Convex every 2 seconds, compares hashes of each data type
 - Emits `emails`, `senders`, `links`, and `tags` events only when data changes
@@ -108,6 +109,7 @@ The `/stream` endpoint provides Server-Sent Events for live data:
 ### Tag System
 
 Tags are user-scoped labels that can be attached to senders and links:
+
 - **Resolution**: `resolveTagNames()` accepts string names and creates any that don't exist yet
 - **Hydration**: `hydrateItems()` replaces `tagIds` arrays with full tag objects before sending to the client
 - Tags flow through to digest emails, where emails are grouped by their sender's primary tag
@@ -116,15 +118,15 @@ Tags are user-scoped labels that can be attached to senders and links:
 
 ### Tables
 
-| Table     | Purpose                                  | Key Indexes                     |
-|-----------|------------------------------------------|---------------------------------|
-| `users`   | User accounts + digest preferences       | `by_email`, `by_username`       |
-| `tokens`  | Auth tokens (UUID, 30-day expiry)        | `by_token`                      |
-| `emails`  | Stored inbound emails                    | `by_user`, `by_sender`          |
-| `senders` | Known email senders (subscriptions)      | `by_user`, `by_user_email`      |
-| `tags`    | User-scoped labels                       | `by_user`, `by_user_name`       |
-| `links`   | Saved bookmarks with OG metadata         | `by_user`                       |
-| `digests` | Sent digest records                      | `by_user`                       |
+| Table     | Purpose                            | Key Indexes                |
+| --------- | ---------------------------------- | -------------------------- |
+| `users`   | User accounts + digest preferences | `by_email`, `by_username`  |
+| `tokens`  | Auth tokens (UUID, 30-day expiry)  | `by_token`                 |
+| `emails`  | Stored inbound emails              | `by_user`, `by_sender`     |
+| `senders` | Known email senders (sources)      | `by_user`, `by_user_email` |
+| `tags`    | User-scoped labels                 | `by_user`, `by_user_name`  |
+| `links`   | Saved bookmarks with OG metadata   | `by_user`                  |
+| `digests` | Sent digest records                | `by_user`                  |
 
 ### Key Fields
 
@@ -138,17 +140,17 @@ Tags are user-scoped labels that can be attached to senders and links:
 
 ### Public Routes
 
-| Method | Endpoint          | Description                          |
-|--------|-------------------|--------------------------------------|
-| GET    | `/`               | Welcome message                      |
-| GET    | `/health`         | Health check                         |
-| POST   | `/mail`           | Postmark inbound webhook             |
-| GET    | `/preview/digest` | Digest email template preview (dev)  |
+| Method | Endpoint          | Description                         |
+| ------ | ----------------- | ----------------------------------- |
+| GET    | `/`               | Welcome message                     |
+| GET    | `/health`         | Health check                        |
+| POST   | `/mail`           | Postmark inbound webhook            |
+| GET    | `/preview/digest` | Digest email template preview (dev) |
 
 ### Auth Routes (`/auth`)
 
 | Method | Endpoint         | Description                  |
-|--------|------------------|------------------------------|
+| ------ | ---------------- | ---------------------------- |
 | POST   | `/auth/register` | Create account               |
 | POST   | `/auth/login`    | Login, returns token         |
 | POST   | `/auth/logout`   | Invalidate token             |
@@ -159,58 +161,58 @@ Tags are user-scoped labels that can be attached to senders and links:
 
 ### Email Routes (`/email`) — Auth Required
 
-| Method | Endpoint            | Description             |
-|--------|---------------------|-------------------------|
-| GET    | `/email`            | List all emails         |
-| POST   | `/email`            | Create email manually   |
-| GET    | `/email/:id`        | Get single email        |
-| PATCH  | `/email/:id/read`   | Mark email as read      |
-| POST   | `/email/schedule`   | Schedule email delivery |
-| DELETE | `/email/:id`        | Delete email            |
-| DELETE | `/email/bulk`       | Bulk delete emails      |
+| Method | Endpoint          | Description             |
+| ------ | ----------------- | ----------------------- |
+| GET    | `/email`          | List all emails         |
+| POST   | `/email`          | Create email manually   |
+| GET    | `/email/:id`      | Get single email        |
+| PATCH  | `/email/:id/read` | Mark email as read      |
+| POST   | `/email/schedule` | Schedule email delivery |
+| DELETE | `/email/:id`      | Delete email            |
+| DELETE | `/email/bulk`     | Bulk delete emails      |
 
 ### Sender Routes (`/sender`) — Auth Required
 
-| Method | Endpoint       | Description                   |
-|--------|----------------|-------------------------------|
-| GET    | `/sender`      | List all senders              |
-| POST   | `/sender`      | Create sender                 |
-| GET    | `/sender/:id`  | Get sender details            |
-| PUT    | `/sender/:id`  | Update sender (prefs, tags)   |
-| DELETE | `/sender/:id`  | Delete sender + cascade emails|
+| Method | Endpoint      | Description                    |
+| ------ | ------------- | ------------------------------ |
+| GET    | `/sender`     | List all senders               |
+| POST   | `/sender`     | Create sender                  |
+| GET    | `/sender/:id` | Get sender details             |
+| PUT    | `/sender/:id` | Update sender (prefs, tags)    |
+| DELETE | `/sender/:id` | Delete sender + cascade emails |
 
 ### Tag Routes (`/tag`) — Auth Required
 
-| Method | Endpoint    | Description   |
-|--------|-------------|---------------|
-| GET    | `/tag`      | List all tags |
-| POST   | `/tag`      | Create tag    |
-| PUT    | `/tag/:id`  | Update tag    |
-| DELETE | `/tag/:id`  | Delete tag    |
+| Method | Endpoint   | Description   |
+| ------ | ---------- | ------------- |
+| GET    | `/tag`     | List all tags |
+| POST   | `/tag`     | Create tag    |
+| PUT    | `/tag/:id` | Update tag    |
+| DELETE | `/tag/:id` | Delete tag    |
 
 ### Link Routes (`/link`) — Auth Required
 
-| Method | Endpoint     | Description                         |
-|--------|--------------|-------------------------------------|
-| GET    | `/link`      | List all links                      |
-| POST   | `/link`      | Create link (auto-fetches OG data)  |
-| GET    | `/link/:id`  | Get link details                    |
-| PUT    | `/link/:id`  | Update link                         |
-| DELETE | `/link/:id`  | Delete link                         |
-| DELETE | `/link/bulk` | Bulk delete links                   |
+| Method | Endpoint     | Description                        |
+| ------ | ------------ | ---------------------------------- |
+| GET    | `/link`      | List all links                     |
+| POST   | `/link`      | Create link (auto-fetches OG data) |
+| GET    | `/link/:id`  | Get link details                   |
+| PUT    | `/link/:id`  | Update link                        |
+| DELETE | `/link/:id`  | Delete link                        |
+| DELETE | `/link/bulk` | Bulk delete links                  |
 
 ### Digest Routes (`/digest`) — Auth Required
 
 | Method | Endpoint      | Description        |
-|--------|---------------|--------------------|
+| ------ | ------------- | ------------------ |
 | GET    | `/digest`     | List all digests   |
 | GET    | `/digest/:id` | Get digest details |
 
 ### SSE Stream (`/stream`)
 
-| Method | Endpoint                | Description                        |
-|--------|-------------------------|------------------------------------|
-| GET    | `/stream?token=<token>` | Real-time SSE stream of all data   |
+| Method | Endpoint                | Description                      |
+| ------ | ----------------------- | -------------------------------- |
+| GET    | `/stream?token=<token>` | Real-time SSE stream of all data |
 
 Events: `emails`, `senders`, `links`, `tags`
 
@@ -225,11 +227,11 @@ Both produce the same visual layout: logo → header → date/count → tag-grou
 
 ## Environment Variables
 
-| Variable                | Description                                |
-|-------------------------|--------------------------------------------|
-| `CONVEX_URL`            | Convex deployment URL (required)           |
-| `POSTMARK_SERVER_TOKEN` | Postmark API token for sending digests     |
-| `FRONTEND_URL`          | Frontend URL for digest email links        |
+| Variable                | Description                            |
+| ----------------------- | -------------------------------------- |
+| `CONVEX_URL`            | Convex deployment URL (required)       |
+| `POSTMARK_SERVER_TOKEN` | Postmark API token for sending digests |
+| `FRONTEND_URL`          | Frontend URL for digest email links    |
 
 ## Getting Started
 
