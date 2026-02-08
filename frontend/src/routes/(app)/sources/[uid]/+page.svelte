@@ -154,7 +154,7 @@
 
   header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1.25rem;
     margin-bottom: 2rem;
   }
@@ -164,6 +164,7 @@
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
+    margin-top: 0.5rem;
     border-radius: 50%;
     width: 56px;
     height: 56px;
