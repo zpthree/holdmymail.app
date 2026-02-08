@@ -3,6 +3,7 @@
   import { senderApi, type Sender, type Email } from "$lib/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
   let sender = $derived<Sender | null>(data.sender);
@@ -35,6 +36,13 @@
     });
   }
 </script>
+
+<SEO
+  path={`/sources/${uid}`}
+  data={{
+    meta_title: sender?.name ? `${sender.name}` : "",
+  }}
+/>
 
 <div class="source-detail">
   <nav>

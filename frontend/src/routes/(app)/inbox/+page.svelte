@@ -3,6 +3,7 @@
   import { auth } from "$lib/stores/auth";
   import { invalidateAll } from "$app/navigation";
   import { PAGE_SIZE } from "$lib/constants";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
 
@@ -130,6 +131,14 @@
     });
   }
 </script>
+
+<SEO
+  path="/inbox"
+  data={{
+    meta_title: "Inbox",
+    meta_description: "Manage your emails",
+  }}
+/>
 
 <div class="mail-list">
   <header>

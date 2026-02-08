@@ -2,6 +2,7 @@
   import { authApi } from "$lib/api";
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
+  import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
   let password = $state("");
@@ -53,6 +54,15 @@
     }
   }
 </script>
+
+<SEO
+  path="/auth/extension-callback"
+  data={{
+    meta_title: "Connect Extension",
+    meta_description:
+      "Connect the Hold My Mail Chrome extension to your account.",
+  }}
+/>
 
 <h1>Connect Extension</h1>
 

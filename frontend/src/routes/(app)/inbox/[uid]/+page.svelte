@@ -3,6 +3,7 @@
   import { emailApi, type Email } from "$lib/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
   let scheduledOverride = $state<number | null>(null);
@@ -73,6 +74,14 @@
     });
   }
 </script>
+
+<SEO
+  path={`/inbox/${uid}`}
+  data={{
+    meta_title: email?.subject || "Inbox",
+    meta_description: "View your email",
+  }}
+/>
 
 <div class="email-container">
   <nav>
@@ -156,10 +165,12 @@
                 );
                 const doc = iframe.contentDocument;
                 if (doc) {
-                  // reset default margins
+                  // reset default margins & prevent inner scrollbar
                   doc.body.style.margin = "0";
                   doc.body.style.fontFamily = "Rubik, sans-serif";
-                  iframe.style.height = doc.documentElement.scrollHeight + "px";
+                  doc.documentElement.style.overflow = "hidden";
+                  iframe.style.height =
+                    doc.documentElement.scrollHeight + 1 + "px";
                 }
               }}
             ></iframe>
@@ -274,6 +285,7 @@
     border: 0.3rem solid var(--black);
     border-radius: var(--br-lg);
     background: var(--white);
+    overflow: hidden;
   }
 
   article header {

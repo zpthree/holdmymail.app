@@ -2,6 +2,7 @@
   import { authApi } from "$lib/api";
   import { setAuth } from "$lib/stores/auth";
   import { goto } from "$app/navigation";
+  import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
   let password = $state("");
@@ -52,6 +53,14 @@
     }
   }
 </script>
+
+<SEO
+  path="/auth/login"
+  data={{
+    meta_title: "Login",
+    meta_description: "Sign in to your Hold My Mail account.",
+  }}
+/>
 
 <h1>Login</h1>
 

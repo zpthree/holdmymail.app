@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { authApi } from "$lib/api";
+  import SEO from "$lib/components/SEO.svelte";
 
   let password = $state("");
   let error = $state("");
@@ -30,6 +31,14 @@
     }
   }
 </script>
+
+<SEO
+  path="/auth/reset-password"
+  data={{
+    meta_title: "Reset Password",
+    meta_description: "Set a new password for your Hold My Mail account.",
+  }}
+/>
 
 <h1>Reset Password</h1>
 

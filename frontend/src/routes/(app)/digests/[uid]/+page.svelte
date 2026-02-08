@@ -1,9 +1,12 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
+  import { page } from "$app/stores";
   import type { Digest } from "$lib/api";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
   let digest = $derived<Digest | null>(data.digest);
+  const uid = $derived($page.params.uid);
 
   function formatDate(ts: number): string {
     return new Date(ts).toLocaleDateString("en-US", {
@@ -17,6 +20,14 @@
     });
   }
 </script>
+
+<SEO
+  path={`/digests/${uid}`}
+  data={{
+    meta_title: digest?.subject || "Digest",
+    meta_description: "View your email digest",
+  }}
+/>
 
 <div class="digest-container">
   <nav>

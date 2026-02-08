@@ -3,6 +3,7 @@
   import { auth } from "$lib/stores/auth";
   import { invalidateAll } from "$app/navigation";
   import { PAGE_SIZE } from "$lib/constants";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
 
@@ -133,6 +134,14 @@
     }
   }
 </script>
+
+<SEO
+  path="/links"
+  data={{
+    meta_title: "Links",
+    meta_description: "View your saved links",
+  }}
+/>
 
 <div class="links-list">
   <header>

@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import { authApi } from "$lib/api";
   import { onMount } from "svelte";
+  import SEO from "$lib/components/SEO.svelte";
 
   let verifying = $state(true);
   let success = $state(false);
@@ -26,6 +27,14 @@
     }
   });
 </script>
+
+<SEO
+  path="/auth/verify-email"
+  data={{
+    meta_title: "Verify Email",
+    meta_description: "Verify your Hold My Mail email address.",
+  }}
+/>
 
 <h1>Verify Email</h1>
 

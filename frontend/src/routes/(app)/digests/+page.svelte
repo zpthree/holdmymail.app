@@ -2,6 +2,7 @@
   import { auth } from "$lib/stores/auth";
   import { digestApi, type Digest } from "$lib/api";
   import { PAGE_SIZE } from "$lib/constants";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
 
@@ -80,6 +81,14 @@
     });
   }
 </script>
+
+<SEO
+  path="/digests"
+  data={{
+    meta_title: "Digests",
+    meta_description: "View your email digests",
+  }}
+/>
 
 <div class="digest-list">
   <header>

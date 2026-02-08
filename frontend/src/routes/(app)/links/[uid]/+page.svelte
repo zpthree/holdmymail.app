@@ -3,6 +3,7 @@
   import { linkApi, type Link } from "$lib/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
   let link = $derived<Link | null>(data.link);
@@ -41,6 +42,14 @@
     }
   }
 </script>
+
+<SEO
+  path={`/links/${uid}`}
+  data={{
+    meta_title: link?.title || link?.ogTitle || link?.url || "Link",
+    meta_description: "View your saved link",
+  }}
+/>
 
 <div class="link-detail">
   <nav class="back-nav">

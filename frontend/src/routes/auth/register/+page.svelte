@@ -1,5 +1,6 @@
 <script lang="ts">
   import { authApi } from "$lib/api";
+  import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
   let username = $state("");
@@ -24,6 +25,14 @@
     }
   }
 </script>
+
+<SEO
+  path="/auth/register"
+  data={{
+    meta_title: "Create Account",
+    meta_description: "Create a Hold My Mail account to manage your email inbox.",
+  }}
+/>
 
 {#if registered}
   <h1>Check your email</h1>

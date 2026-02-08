@@ -1,11 +1,19 @@
 <script lang="ts">
   import type { Sender, Tag } from "$lib/api";
-  import { auth } from "$lib/stores/auth";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
 
   let senders = $derived<Sender[]>(data.senders);
 </script>
+
+<SEO
+  path="/sources"
+  data={{
+    meta_title: "Sources",
+    meta_description: "Manage your email sources",
+  }}
+/>
 
 <div class="sources">
   <header>

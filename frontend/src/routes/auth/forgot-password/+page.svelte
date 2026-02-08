@@ -1,5 +1,6 @@
 <script lang="ts">
   import { authApi } from "$lib/api";
+  import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
   let submitted = $state(false);
@@ -21,6 +22,14 @@
     }
   }
 </script>
+
+<SEO
+  path="/auth/forgot-password"
+  data={{
+    meta_title: "Forgot Password",
+    meta_description: "Reset your Hold My Mail account password.",
+  }}
+/>
 
 <h1>Forgot Password</h1>
 
