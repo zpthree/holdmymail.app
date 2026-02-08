@@ -133,11 +133,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: opacity 200ms;
     border-radius: var(--br-full);
     background-color: var(--white);
     width: 2.5rem;
     height: 2.5rem;
     overflow: hidden;
+
+    &:hover {
+      opacity: 0.8;
+    }
 
     img {
       width: 100%;

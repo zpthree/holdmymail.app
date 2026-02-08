@@ -1,6 +1,6 @@
 # Hold My Mail — Frontend
 
-A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sources, saved links, and digest history. Communicates with the Hono/Bun backend API for mutations and receives real-time updates via Convex live queries.
+A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sources, saved links, and digest history. Communicates with the Hono/Bun backend REST API for all data loading and mutations. List pages use cursor-based pagination with "Load More" buttons.
 
 ## Architecture Overview
 
@@ -11,7 +11,7 @@ A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sourc
 │  ┌─────────────┐   ┌──────────────┐   ┌──────────┐ │
 │  │  Root Layout │──▶│  (app) Layout│──▶│  Pages   │ │
 │  │  Session     │   │  Auth Guard  │   │  Inbox   │ │
-│  │  Restore     │   │  Gate render │   │  Subs    │ │
+│  │  Restore     │   │  Gate render │   │  Sources │ │
 │  │  <Header>    │   │              │   │  Links   │ │
 │  └─────────────┘   └──────────────┘   │  Digests │ │
 │                                        │  User    │ │
@@ -19,22 +19,25 @@ A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sourc
 │  │  Auth Layout │                                   │
 │  │  Redirect if │──▶  Login / Register / etc.       │
 │  │  logged in   │                                   │
+│  │  (skip for   │                                   │
+│  │   /logout &  │                                   │
+│  │   /ext-cb)   │                                   │
 │  └─────────────┘                                    │
 │                                                     │
 │  ┌────────────────────────────────────────────────┐ │
 │  │              Stores / Data                     │ │
 │  │  auth (writable) — user, token, loading        │ │
-│  │  convex (live)  — emails, senders, links, tags │ │
+│  │  constants   — PAGE_SIZE (shared)              │ │
 │  └────────────────────────────────────────────────┘ │
-│                      │              │               │
-│                    fetch       Convex WS             │
-│                      │              │               │
-└──────────────────────┼──────────────┼───────────────┘
-                       │              │
-               ┌───────▼───────┐  ┌───▼──────────────┐
-               │  Hono Backend │  │  Convex Cloud    │
-               │  localhost:3000│  │  (live queries)  │
-               └───────────────┘  └──────────────────┘
+│                      │                              │
+│                    fetch (REST + pagination)         │
+│                      │                              │
+└──────────────────────┼──────────────────────────────┘
+                       │
+               ┌───────▼───────┐
+               │  Hono Backend │
+               │  localhost:3000│
+               └───────────────┘
 ```
 
 ## Tech Stack
@@ -57,7 +60,7 @@ frontend/
 │   ├── app.d.ts                        # SvelteKit type augmentations
 │   ├── lib/
 │   │   ├── api.ts                      # API client — typed wrappers for all endpoints
-│   │   ├── convex.ts                   # Convex client — live query store helper
+│   │   ├── constants.ts                # Shared constants (PAGE_SIZE)
 │   │   ├── index.ts                    # Lib barrel export
 │   │   ├── stores/
 │   │   │   └── auth.ts                 # Auth store (user, token, loading)
@@ -75,19 +78,21 @@ frontend/
 │       ├── +layout.svelte              # Root layout — session restore, <Header>, CSS
 │       ├── auth/
 │       │   ├── +layout.svelte          # Auth layout — redirects to / if logged in
+│       │   │                           #   (skips redirect for /auth/logout & /auth/extension-callback)
 │       │   ├── login/+page.svelte
 │       │   ├── register/+page.svelte
 │       │   ├── logout/+page.svelte
 │       │   ├── forgot-password/+page.svelte
 │       │   ├── reset-password/+page.svelte
-│       │   └── verify-email/+page.svelte
+│       │   ├── verify-email/+page.svelte
+│       │   └── extension-callback/+page.svelte  # Chrome extension auth callback
 │       └── (app)/
 │           ├── +layout.svelte          # App layout — auth guard
 │           ├── +page.svelte            # Root redirect → /inbox
 │           ├── +page.ts                # Redirect logic
 │           ├── inbox/
-│           │   ├── +page.svelte        # Email list (grouped by date)
-│           │   ├── +page.ts            # Load emails
+│           │   ├── +page.svelte        # Email list (grouped by date, paginated)
+│           │   ├── +page.ts            # Load first page of emails
 │           │   └── [uid]/
 │           │       ├── +page.svelte    # Email detail (iframe for HTML body)
 │           │       └── +page.ts        # Load email + mark read
@@ -100,20 +105,20 @@ frontend/
 │           │       └── edit/
 │           │           └── +page.svelte # Edit sender (name, color, tags, digest prefs)
 │           ├── links/
-│           │   ├── +page.svelte        # Saved links list with OG previews
-│           │   ├── +page.ts            # Load links
+│           │   ├── +page.svelte        # Saved links list with OG previews (paginated)
+│           │   ├── +page.ts            # Load first page of links
 │           │   └── [uid]/
 │           │       ├── +page.svelte    # Link detail
 │           │       └── +page.ts        # Load link
 │           └── digests/
-│               ├── +page.svelte        # Digest history list
-│               ├── +page.ts            # Load digests
+│               ├── +page.svelte        # Digest history list (paginated)
+│               ├── +page.ts            # Load first page of digests
 │               └── [uid]/
 │                   ├── +page.svelte    # Digest detail (rendered HTML)
 │                   └── +page.ts        # Load digest
 ├── static/
 │   └── robots.txt
-├── svelte.config.js                    # SvelteKit config (adapter-auto, @convex alias)
+├── svelte.config.js                    # SvelteKit config (adapter-auto)
 ├── vite.config.ts                      # Vite config (allowed hosts)
 ├── tsconfig.json
 └── package.json
@@ -151,7 +156,7 @@ frontend/
 
 **Reverse Guard** (`auth/+layout.svelte`):
 
-- If `!loading && token` → redirect to `/` (skip for `/auth/logout`)
+- If `!loading && token` → redirect to `/` (skips for paths in `SKIP_REDIRECT`: `/auth/logout` and `/auth/extension-callback`)
 - Shows empty div while loading or if token exists (prevents flash of auth page)
 
 ### State Management
@@ -166,33 +171,89 @@ frontend/
 - `clearAuth()` — wipes store + `localStorage`
 - `loading: true` initially, set to `false` after session restore completes
 
-#### Convex Live Queries (`$lib/convex.ts`)
-
-Provides a `liveQuery()` helper that creates a Svelte readable store backed by a Convex live query subscription:
+#### Shared Constants (`$lib/constants.ts`)
 
 ```typescript
-import { liveQuery, api } from "$lib/convex";
-
-// Subscribe to a Convex query — auto-updates when data changes
-const live = liveQuery(api.emails.listByUser, { userId }, []);
-
-// Use as a Svelte store
-const unsub = live.subscribe((emails) => { ... });
-
-// Clean up
-live.destroy();
+export const PAGE_SIZE = 25;
 ```
 
-- Uses `ConvexClient` which maintains a WebSocket connection to Convex Cloud
-- Each page subscribes to its own queries directly (no centralized store)
-- Pages merge live data with initial page-load data for instant renders:
+Centralized constant imported by all paginated `+page.ts` loaders and `+page.svelte` components to ensure consistent page sizes. SvelteKit restricts exports from `+page.ts` to specific names (`load`, `prerender`, etc.), so shared values live here instead.
+
+### Pagination
+
+List pages (Inbox, Links, Digests) use cursor-based pagination via the backend REST API. The Sources page does not paginate (smaller dataset).
+
+#### Pattern
+
+Each paginated page follows this pattern:
+
+**`+page.ts` (loader)**:
+```typescript
+import { PAGE_SIZE } from "$lib/constants";
+
+export const load: PageLoad = async () => {
+  if (!browser) return { items: [], cursor: null, hasMore: false };
+  const token = localStorage.getItem("token");
+  if (!token) return { items: [], cursor: null, hasMore: false };
+
+  const result = await emailApi.listPaginated(token, PAGE_SIZE);
+  return {
+    emails: result.items,
+    cursor: result.hasMore ? result.cursor : null,
+    hasMore: result.hasMore,
+  };
+};
+```
+
+**`+page.svelte` (component)**:
+```typescript
+import { PAGE_SIZE } from "$lib/constants";
+
+let { data } = $props();
+
+// Extra items accumulated from "Load More" clicks
+let extraItems = $state<Email[]>([]);
+let cursor = $state<string | null>(null);
+let hasMore = $state(false);
+let pageInit = $state(false);
+
+// Seed pagination state from the initial load (avoids state_referenced_locally warning)
+$effect(() => {
+  if (!pageInit) {
+    cursor = data.cursor;
+    hasMore = data.hasMore;
+    pageInit = true;
+  }
+});
+
+// Merge initial data + extra loaded pages, deduplicating by _id
+let items = $derived.by<Email[]>(() => {
+  if (extraItems.length === 0) return data.emails;
+  const seen = new Set(data.emails.map((e) => e._id));
+  const unique = extraItems.filter((e) => !seen.has(e._id));
+  return [...data.emails, ...unique];
+});
+
+// Load next page
+async function loadMore() {
+  const result = await emailApi.listPaginated($auth.token, PAGE_SIZE, cursor);
+  extraItems = [...extraItems, ...result.items];
+  cursor = result.hasMore ? result.cursor : null;
+  hasMore = result.hasMore;
+}
+```
+
+A "Load More" button is shown when `hasMore` is true, with a loading spinner during fetch.
+
+#### API Client Pagination
+
+The `listPaginated()` methods on `emailApi`, `linkApi`, and `digestApi` build URLs with `?limit=` and optional `&cursor=` query params:
 
 ```typescript
-let emails = $derived(liveEmails.length > 0 ? liveEmails : data.emails);
+emailApi.listPaginated(token, limit?, cursor?) →
+  GET /email?limit=25&cursor=abc123
+  → PaginatedResponse<Email> { items, cursor, hasMore }
 ```
-
-- For senders and links, tags are hydrated client-side by subscribing to both the entity query and `tags.listByUser`, then joining `tagIds` to tag objects
-- The `@convex` import alias points to `../backend/convex/_generated` (configured in `svelte.config.js`)
 
 ### API Client (`$lib/api.ts`)
 
@@ -212,7 +273,8 @@ All `+page.ts` loaders follow the same pattern:
 1. Check `browser` — return empty data during SSR
 2. Read `token` from `localStorage`
 3. Call the API and return typed data
-4. Pages use the data as initial state, then merge with Convex live query data
+4. Paginated pages (inbox, links, digests) use `listPaginated()` and return `{ items, cursor, hasMore }`
+5. Non-paginated pages (sources, detail views) use simple `list()` or `get()` calls
 
 This is a **client-side only** approach — no server-side rendering of authenticated content. The `localStorage` auth model prevents SSR data loading.
 
@@ -290,10 +352,9 @@ The `<Header>` component is a fixed top bar with a pill-shaped nav:
 
 ## Environment Variables
 
-| Variable          | Description                                        |
-| ----------------- | -------------------------------------------------- |
-| `VITE_API_URL`    | Backend API URL (default: `http://localhost:3000`) |
-| `VITE_CONVEX_URL` | Convex deployment URL for live queries             |
+| Variable       | Description                                        |
+| -------------- | -------------------------------------------------- |
+| `VITE_API_URL` | Backend API URL (default: `http://localhost:3000`) |
 
 ## Getting Started
 
@@ -312,8 +373,9 @@ Ensure the backend is running at the URL specified by `VITE_API_URL`.
 ## Key Design Decisions
 
 - **Client-side auth only**: Tokens in `localStorage`, no cookies. This means no SSR for authenticated routes — all data loading happens in the browser. Trade-off: simpler implementation, no CSRF concerns, but no server-side rendering benefits.
-- **Convex live queries for real-time data**: The frontend connects directly to Convex Cloud via WebSocket using `ConvexClient`. Each list page subscribes to the relevant Convex query (e.g., `emails.listByUser`), getting instant push updates when data changes — no polling, no intermediate server. Senders and links hydrate tags client-side.
-- **Svelte 5 runes**: Uses `$state`, `$derived`, `$effect`, `$props` throughout. Auth store still uses Svelte 4 `writable` for cross-component reactivity.
+- **REST API with cursor-based pagination**: All data flows through the Hono backend REST API. List pages (inbox, links, digests) use cursor-based pagination (`?limit=&cursor=`) for efficient loading. The frontend loads one page initially and appends more via "Load More" buttons. (Previously used Convex live queries via WebSocket, but these were removed because they loaded all data at once, defeating pagination.)
+- **Shared constants**: `PAGE_SIZE` lives in `$lib/constants.ts` and is imported by both `+page.ts` (loader) and `+page.svelte` (component) files. SvelteKit restricts `+page.ts` exports to specific names, so shared values must live in a separate module.
+- **Svelte 5 runes**: Uses `$state`, `$derived`, `$derived.by`, `$effect`, `$props` throughout. Auth store still uses Svelte 4 `writable` for cross-component reactivity. Pagination state uses `$effect` with a `pageInit` guard to seed `$state` from `data` props without triggering `state_referenced_locally` warnings.
 - **Sandboxed iframes for email**: HTML email bodies are isolated in sandboxed iframes to prevent style bleed and XSS while still allowing link clicks.
-- **Dual auth guards**: `(app)/+layout.svelte` protects app routes (requires auth), `auth/+layout.svelte` protects auth routes (redirects if already authed). Both use the same `$auth` store to avoid timing mismatches.
+- **Dual auth guards**: `(app)/+layout.svelte` protects app routes (requires auth), `auth/+layout.svelte` protects auth routes (redirects if already authed, with exceptions for `/auth/logout` and `/auth/extension-callback`). Both use the same `$auth` store to avoid timing mismatches.
 - **No SSR data**: All `+page.ts` loaders gate on `browser` and return empty arrays during SSR. This avoids hydration mismatches and keeps auth client-side.

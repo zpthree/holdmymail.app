@@ -191,8 +191,8 @@
       {/if}
 
       <div class="form-actions">
-        <a href="/sources/{uid}" class="cancel-btn">Cancel</a>
-        <button type="submit" disabled={saving} class="save-btn">
+        <a href="/sources/{uid}" class="btn btn-white">Cancel</a>
+        <button type="submit" disabled={saving} class="btn btn-black">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
@@ -216,7 +216,9 @@
   }
 
   .back {
-    color: #0066cc;
+    color: var(--black);
+    font-weight: 500;
+    font-size: var(--fs-sm);
     text-decoration: none;
   }
 

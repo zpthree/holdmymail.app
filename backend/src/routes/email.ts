@@ -52,8 +52,23 @@ emailRoutes.post("/", async (c) => {
 // GET /email
 emailRoutes.get("/", async (c) => {
   const userId = c.get("userId") as Id<"users">;
-  const emails = await convex.query(api.emails.listByUser, { userId });
+  const limitParam = c.req.query("limit");
 
+  if (limitParam) {
+    const numItems = Math.min(parseInt(limitParam) || 25, 100);
+    const cursor = c.req.query("cursor") || null;
+    const result = await convex.query(api.emails.paginatedListByUser, {
+      userId,
+      paginationOpts: { numItems, cursor },
+    });
+    return c.json({
+      items: result.page,
+      cursor: result.continueCursor,
+      hasMore: !result.isDone,
+    });
+  }
+
+  const emails = await convex.query(api.emails.listByUser, { userId });
   return c.json(emails);
 });
 

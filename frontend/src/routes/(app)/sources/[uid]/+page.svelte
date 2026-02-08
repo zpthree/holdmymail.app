@@ -42,8 +42,12 @@
     <a href="/sources" class="back">← Sources</a>
     {#if sender}
       <div class="actions">
-        <a href="/sources/{uid}/edit" class="edit-btn">Edit</a>
-        <button onclick={handleDelete} disabled={deleting} class="delete-btn">
+        <a href="/sources/{uid}/edit" class="btn btn-white">Edit</a>
+        <button
+          onclick={handleDelete}
+          disabled={deleting}
+          class="btn btn-accent"
+        >
           {deleting ? "Removing..." : "Remove"}
         </button>
       </div>
@@ -119,7 +123,9 @@
   }
 
   .back {
-    color: #0066cc;
+    color: var(--black);
+    font-weight: 500;
+    font-size: var(--fs-sm);
     text-decoration: none;
   }
 
@@ -132,39 +138,10 @@
     gap: 0.5rem;
   }
 
-  .edit-btn {
-    border-radius: 6px;
-    background: #f0f0f0;
-    padding: 0.5rem 1rem;
-    color: #333;
-    font-size: 0.9rem;
-    text-decoration: none;
+  .btn {
+    padding-block: 0.35rem;
   }
 
-  .edit-btn:hover {
-    background: #e0e0e0;
-  }
-
-  .delete-btn {
-    cursor: pointer;
-    border: none;
-    border-radius: 6px;
-    background: #cc0000;
-    padding: 0.5rem 1rem;
-    color: white;
-    font-size: 0.9rem;
-  }
-
-  .delete-btn:hover {
-    background: #aa0000;
-  }
-
-  .delete-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .loading,
   .error,
   .empty {
     padding: 3rem;
@@ -233,13 +210,10 @@
     font-size: 1.1rem;
   }
 
-  .mail-count {
-    color: #666;
-    font-weight: 400;
-    font-size: 0.9rem;
-  }
-
   .emails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -247,11 +221,18 @@
 
   .email-item {
     display: block;
-    transition: background 0.15s;
-    border-bottom: 1px solid #eee;
-    padding: 0.75rem 1rem;
+    transition: border-color 0.15s;
+    border: 0.2rem solid transparent;
+    border-radius: var(--br-lg);
+    background: var(--white);
+    padding: 1rem 1.25rem;
+    overflow: hidden;
     color: inherit;
     text-decoration: none;
+
+    &:hover {
+      border-color: var(--accent);
+    }
   }
 
   .email-item:hover {

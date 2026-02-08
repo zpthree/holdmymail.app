@@ -37,6 +37,13 @@ export async function api<T>(
   return data;
 }
 
+/** Paginated response shape returned by list endpoints when ?limit= is used */
+export interface PaginatedResponse<T> {
+  items: T[];
+  cursor: string;
+  hasMore: boolean;
+}
+
 // Auth API
 export const authApi = {
   register: (email: string, password: string, username: string) =>
@@ -171,6 +178,12 @@ export interface Sender {
 export const emailApi = {
   list: (token: string) => api<Email[]>("/email", { token }),
 
+  listPaginated: (token: string, limit = 25, cursor?: string) =>
+    api<PaginatedResponse<Email>>(
+      `/email?limit=${limit}${cursor ? `&cursor=${cursor}` : ""}`,
+      { token },
+    ),
+
   get: (id: string, token: string) => api<Email>(`/email/${id}`, { token }),
 
   delete: (id: string, token: string) =>
@@ -243,6 +256,12 @@ export interface Link {
 export const linkApi = {
   list: (token: string) => api<Link[]>("/link", { token }),
 
+  listPaginated: (token: string, limit = 25, cursor?: string) =>
+    api<PaginatedResponse<Link>>(
+      `/link?limit=${limit}${cursor ? `&cursor=${cursor}` : ""}`,
+      { token },
+    ),
+
   get: (id: string, token: string) => api<Link>(`/link/${id}`, { token }),
 
   create: (
@@ -309,6 +328,12 @@ export interface Digest {
 // Digest API
 export const digestApi = {
   list: (token: string) => api<Digest[]>("/digest", { token }),
+
+  listPaginated: (token: string, limit = 25, cursor?: string) =>
+    api<PaginatedResponse<Digest>>(
+      `/digest?limit=${limit}${cursor ? `&cursor=${cursor}` : ""}`,
+      { token },
+    ),
 
   get: (id: string, token: string) => api<Digest>(`/digest/${id}`, { token }),
 };

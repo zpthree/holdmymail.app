@@ -1,50 +1,10 @@
 <script lang="ts">
   import type { Sender, Tag } from "$lib/api";
   import { auth } from "$lib/stores/auth";
-  import { liveQuery, api } from "$lib/convex";
-  import { onDestroy } from "svelte";
 
   let { data } = $props();
 
-  const userId = $auth.user?.id;
-
-  const liveSendersRaw = userId
-    ? liveQuery(api.senders.listByUser, { userId: userId as any }, [])
-    : null;
-  const liveTagsRaw = userId
-    ? liveQuery(api.tags.listByUser, { userId: userId as any }, [])
-    : null;
-
-  let rawSenders = $state<any[]>([]);
-  let rawTags = $state<any[]>([]);
-
-  const unsubSenders = liveSendersRaw?.subscribe((v: any[]) => {
-    rawSenders = v;
-  });
-  const unsubTags = liveTagsRaw?.subscribe((v: any[]) => {
-    rawTags = v;
-  });
-
-  function hydrateSenders(senders: any[], tags: any[]): Sender[] {
-    const tagMap = new Map(tags.map((t: any) => [t._id, t]));
-    return senders.map((s: any) => ({
-      ...s,
-      tags: (s.tagIds ?? [])
-        .map((id: string) => tagMap.get(id))
-        .filter(Boolean),
-    }));
-  }
-
-  let senders = $derived<Sender[]>(
-    rawSenders.length > 0 ? hydrateSenders(rawSenders, rawTags) : data.senders,
-  );
-
-  onDestroy(() => {
-    unsubSenders?.();
-    unsubTags?.();
-    liveSendersRaw?.destroy();
-    liveTagsRaw?.destroy();
-  });
+  let senders = $derived<Sender[]>(data.senders);
 </script>
 
 <div class="sources">

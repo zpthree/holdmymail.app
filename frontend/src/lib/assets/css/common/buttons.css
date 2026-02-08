@@ -31,7 +31,7 @@
 
 .btn-white {
   border: 0.2rem solid var(--black);
-  background-color: transparent;
+  background-color: var(--white);
   color: var(--black);
   text-align: center;
 

@@ -44,7 +44,7 @@
 <style>
   .digest-container {
     margin: 0 auto;
-    padding: 2rem 0.5rem;
+    padding: 2rem;
     max-width: var(--container-width);
   }
 
@@ -58,6 +58,9 @@
   }
 
   .back {
+    color: var(--black);
+    font-weight: 500;
+    font-size: var(--fs-sm);
     text-decoration: none;
   }
 

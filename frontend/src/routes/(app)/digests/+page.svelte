@@ -1,30 +1,50 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
-  import type { Digest } from "$lib/api";
-  import { liveQuery, api } from "$lib/convex";
-  import { onDestroy } from "svelte";
+  import { digestApi, type Digest } from "$lib/api";
+  import { PAGE_SIZE } from "$lib/constants";
 
   let { data } = $props();
 
-  const userId = $auth.user?.id;
-  const live = userId
-    ? liveQuery(api.digests.listByUser, { userId: userId as any }, [])
-    : null;
+  // Paginated state (seeded from initial load, then mutated by loadMore)
+  let extraDigests = $state<Digest[]>([]);
+  let cursor = $state<string | null>(null);
+  let hasMore = $state(false);
+  let loadingMore = $state(false);
+  let pageInit = $state(false);
 
-  let liveDigests = $state<Digest[]>([]);
-
-  const unsub = live?.subscribe((v: any[]) => {
-    if (v.length > 0) liveDigests = v;
+  $effect(() => {
+    if (!pageInit) {
+      cursor = data.cursor;
+      hasMore = data.hasMore;
+      pageInit = true;
+    }
   });
 
-  let digests = $derived<Digest[]>(
-    liveDigests.length > 0 ? liveDigests : data.digests,
-  );
-
-  onDestroy(() => {
-    unsub?.();
-    live?.destroy();
+  let digests = $derived.by<Digest[]>(() => {
+    if (extraDigests.length === 0) return data.digests;
+    const seen = new Set(data.digests.map((d) => d._id));
+    const unique = extraDigests.filter((d) => !seen.has(d._id));
+    return [...data.digests, ...unique];
   });
+
+  async function loadMore() {
+    if (!$auth.token || !cursor || loadingMore) return;
+    loadingMore = true;
+    try {
+      const result = await digestApi.listPaginated(
+        $auth.token,
+        PAGE_SIZE,
+        cursor,
+      );
+      extraDigests = [...extraDigests, ...result.items];
+      cursor = result.hasMore ? result.cursor : null;
+      hasMore = result.hasMore;
+    } catch (err) {
+      console.error("Failed to load more:", err);
+    } finally {
+      loadingMore = false;
+    }
+  }
 
   type MonthGroup = { label: string; digests: Digest[] };
 
@@ -92,13 +112,21 @@
         </ul>
       </section>
     {/each}
+
+    {#if hasMore}
+      <div class="load-more">
+        <button class="btn btn-black" onclick={loadMore} disabled={loadingMore}>
+          {loadingMore ? "Loading…" : "Load More"}
+        </button>
+      </div>
+    {/if}
   {/if}
 </div>
 
 <style>
   .digest-list {
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem;
     max-width: var(--container-width);
   }
 
@@ -173,5 +201,15 @@
   .meta {
     color: #888;
     font-size: var(--fs-sm);
+  }
+
+  .load-more {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .btn.btn-black {
+    padding-block: 0.35rem;
   }
 </style>

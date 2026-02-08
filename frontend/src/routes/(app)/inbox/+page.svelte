@@ -1,31 +1,51 @@
 <script lang="ts">
   import { emailApi, type Email } from "$lib/api";
   import { auth } from "$lib/stores/auth";
-  import { liveQuery, api } from "$lib/convex";
   import { invalidateAll } from "$app/navigation";
-  import { onDestroy } from "svelte";
+  import { PAGE_SIZE } from "$lib/constants";
 
   let { data } = $props();
 
-  const userId = $auth.user?.id;
-  const live = userId
-    ? liveQuery(api.emails.listByUser, { userId: userId as any }, [])
-    : null;
+  // Paginated state (seeded from initial load, then mutated by loadMore)
+  let extraEmails = $state<Email[]>([]);
+  let cursor = $state<string | null>(null);
+  let hasMore = $state(false);
+  let loadingMore = $state(false);
+  let pageInit = $state(false);
 
-  let liveEmails = $state<Email[]>([]);
-
-  const unsub = live?.subscribe((v: any[]) => {
-    if (v.length > 0) liveEmails = v;
+  $effect(() => {
+    if (!pageInit) {
+      cursor = data.cursor;
+      hasMore = data.hasMore;
+      pageInit = true;
+    }
   });
 
-  let emails = $derived<Email[]>(
-    liveEmails.length > 0 ? liveEmails : data.emails,
-  );
-
-  onDestroy(() => {
-    unsub?.();
-    live?.destroy();
+  let emails = $derived.by<Email[]>(() => {
+    if (extraEmails.length === 0) return data.emails;
+    const seen = new Set(data.emails.map((e) => e._id));
+    const unique = extraEmails.filter((e) => !seen.has(e._id));
+    return [...data.emails, ...unique];
   });
+
+  async function loadMore() {
+    if (!$auth.token || !cursor || loadingMore) return;
+    loadingMore = true;
+    try {
+      const result = await emailApi.listPaginated(
+        $auth.token,
+        PAGE_SIZE,
+        cursor,
+      );
+      extraEmails = [...extraEmails, ...result.items];
+      cursor = result.hasMore ? result.cursor : null;
+      hasMore = result.hasMore;
+    } catch (err) {
+      console.error("Failed to load more:", err);
+    } finally {
+      loadingMore = false;
+    }
+  }
 
   type DateGroup = { month: string; day: string; emails: Email[] };
 
@@ -109,8 +129,6 @@
       return { month, day, emails };
     });
   }
-
-  console.log($auth.user);
 </script>
 
 <div class="mail-list">
@@ -197,13 +215,21 @@
         </ul>
       </section>
     {/each}
+
+    {#if hasMore}
+      <div class="load-more">
+        <button class="btn btn-black" onclick={loadMore} disabled={loadingMore}>
+          {loadingMore ? "Loading…" : "Load More"}
+        </button>
+      </div>
+    {/if}
   {/if}
 </div>
 
 <style>
   .mail-list {
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem;
     max-width: var(--container-width);
   }
 
@@ -404,5 +430,15 @@
     width: 0.4em;
     height: 0.4em;
     content: "";
+  }
+
+  .load-more {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .btn.btn-black {
+    padding-block: 0.35rem;
   }
 </style>

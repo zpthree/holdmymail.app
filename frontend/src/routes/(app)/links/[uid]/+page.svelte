@@ -72,7 +72,7 @@
           rel="noopener noreferrer"
           class="url"
         >
-          {link.ogSiteName || hostname(link.url)} ↗
+          {link.ogSiteName || hostname(link.url)}
         </a>
         <span class="date">{formatDate(link._creationTime)}</span>
       </div>
@@ -110,11 +110,11 @@
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        class="btn primary"
+        class="btn btn-white"
       >
-        Open Link ↗
+        Open Link
       </a>
-      <button class="btn danger" onclick={handleDelete} disabled={deleting}>
+      <button class="btn btn-accent" onclick={handleDelete} disabled={deleting}>
         {deleting ? "Deleting…" : "Delete"}
       </button>
     </div>
@@ -128,7 +128,7 @@
 <style>
   .link-detail {
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem;
     max-width: var(--container-width);
   }
 
@@ -169,12 +169,21 @@
   }
 
   .url {
-    color: var(--accent, var(--black));
+    color: var(--black);
     font-weight: 500;
     text-decoration: none;
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+
+  .url,
+  .btn.btn-white {
+    &::after {
+      content: "↗";
+      font-weight: 700;
+      font-size: 0.65em;
     }
   }
 
@@ -228,41 +237,7 @@
   }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-    border-radius: var(--br-lg);
-    padding: 0.55rem 1.25rem;
-    font: inherit;
-    font-weight: 600;
-    font-size: var(--fs-sm);
-    text-decoration: none;
-  }
-
-  .btn.primary {
-    background: var(--black);
-    color: var(--white);
-
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
-  .btn.danger {
-    border: 1px solid var(--accent);
-    background: transparent;
-    color: var(--accent);
-
-    &:hover {
-      background: var(--accent);
-      color: var(--white);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    padding-block: 0.25rem;
   }
 
   .error {

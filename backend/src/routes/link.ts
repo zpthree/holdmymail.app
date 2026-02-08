@@ -149,6 +149,22 @@ linkRoutes.post("/", async (c) => {
 // GET /link - List all links for the user
 linkRoutes.get("/", async (c) => {
   const userId = c.get("userId") as Id<"users">;
+  const limitParam = c.req.query("limit");
+
+  if (limitParam) {
+    const numItems = Math.min(parseInt(limitParam) || 25, 100);
+    const cursor = c.req.query("cursor") || null;
+    const result = await convex.query(api.links.paginatedListByUser, {
+      userId,
+      paginationOpts: { numItems, cursor },
+    });
+    return c.json({
+      items: await hydrateItems(result.page),
+      cursor: result.continueCursor,
+      hasMore: !result.isDone,
+    });
+  }
+
   const links = await convex.query(api.links.listByUser, { userId });
   return c.json(await hydrateItems(links));
 });

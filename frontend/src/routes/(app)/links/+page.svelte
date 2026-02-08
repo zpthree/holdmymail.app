@@ -1,51 +1,51 @@
 <script lang="ts">
   import { linkApi, type Link } from "$lib/api";
   import { auth } from "$lib/stores/auth";
-  import { liveQuery, api } from "$lib/convex";
   import { invalidateAll } from "$app/navigation";
-  import { onDestroy } from "svelte";
+  import { PAGE_SIZE } from "$lib/constants";
 
   let { data } = $props();
 
-  const userId = $auth.user?.id;
+  // Paginated state (seeded from initial load, then mutated by loadMore)
+  let extraLinks = $state<Link[]>([]);
+  let cursor = $state<string | null>(null);
+  let hasMore = $state(false);
+  let loadingMore = $state(false);
+  let pageInit = $state(false);
 
-  const liveLinksRaw = userId
-    ? liveQuery(api.links.listByUser, { userId: userId as any }, [])
-    : null;
-  const liveTagsRaw = userId
-    ? liveQuery(api.tags.listByUser, { userId: userId as any }, [])
-    : null;
-
-  let rawLinks = $state<any[]>([]);
-  let rawTags = $state<any[]>([]);
-
-  const unsubLinks = liveLinksRaw?.subscribe((v: any[]) => {
-    rawLinks = v;
-  });
-  const unsubTags = liveTagsRaw?.subscribe((v: any[]) => {
-    rawTags = v;
+  $effect(() => {
+    if (!pageInit) {
+      cursor = data.cursor;
+      hasMore = data.hasMore;
+      pageInit = true;
+    }
   });
 
-  function hydrateLinks(links: any[], tags: any[]): Link[] {
-    const tagMap = new Map(tags.map((t: any) => [t._id, t]));
-    return links.map((l: any) => ({
-      ...l,
-      tags: (l.tagIds ?? [])
-        .map((id: string) => tagMap.get(id))
-        .filter(Boolean),
-    }));
+  let links = $derived.by<Link[]>(() => {
+    if (extraLinks.length === 0) return data.links;
+    const seen = new Set(data.links.map((l) => l._id));
+    const unique = extraLinks.filter((l) => !seen.has(l._id));
+    return [...data.links, ...unique];
+  });
+
+  async function loadMore() {
+    if (!$auth.token || !cursor || loadingMore) return;
+    loadingMore = true;
+    try {
+      const result = await linkApi.listPaginated(
+        $auth.token,
+        PAGE_SIZE,
+        cursor,
+      );
+      extraLinks = [...extraLinks, ...result.items];
+      cursor = result.hasMore ? result.cursor : null;
+      hasMore = result.hasMore;
+    } catch (err) {
+      console.error("Failed to load more:", err);
+    } finally {
+      loadingMore = false;
+    }
   }
-
-  let links = $derived<Link[]>(
-    rawLinks.length > 0 ? hydrateLinks(rawLinks, rawTags) : data.links,
-  );
-
-  onDestroy(() => {
-    unsubLinks?.();
-    unsubTags?.();
-    liveLinksRaw?.destroy();
-    liveTagsRaw?.destroy();
-  });
 
   type DateGroup = { month: string; day: string; links: Link[] };
 
@@ -233,13 +233,21 @@
         </ul>
       </section>
     {/each}
+
+    {#if hasMore}
+      <div class="load-more">
+        <button class="btn btn-black" onclick={loadMore} disabled={loadingMore}>
+          {loadingMore ? "Loading…" : "Load More"}
+        </button>
+      </div>
+    {/if}
   {/if}
 </div>
 
 <style>
   .links-list {
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem;
     max-width: var(--container-width);
   }
 
@@ -488,5 +496,15 @@
     color: var(--white);
     font-weight: 500;
     font-size: var(--fs-xs);
+  }
+
+  .load-more {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  .btn.btn-black {
+    padding-block: 0.35rem;
   }
 </style>
