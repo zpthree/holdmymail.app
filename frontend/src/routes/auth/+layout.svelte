@@ -5,12 +5,14 @@
 
   let { children } = $props();
 
-  // Redirect to home if already logged in (skip for logout page)
+  const SKIP_REDIRECT = ["/auth/logout", "/auth/extension-callback"];
+
+  // Redirect to home if already logged in (skip for logout & extension callback)
   $effect(() => {
     if (
       !$auth.loading &&
       $auth.token &&
-      window.location.pathname !== "/auth/logout"
+      !SKIP_REDIRECT.includes(window.location.pathname)
     ) {
       goto("/");
     }
@@ -18,7 +20,7 @@
 </script>
 
 <main id="auth">
-  {#if $auth.loading || ($auth.token && window.location.pathname !== "/auth/logout")}
+  {#if $auth.loading || ($auth.token && !SKIP_REDIRECT.includes(window.location.pathname))}
     <div class="loading"></div>
   {:else}
     <div class="auth-layout centered">
