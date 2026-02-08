@@ -247,7 +247,7 @@ The server starts at `http://localhost:3000`.
 ## Key Design Decisions
 
 - **Convex as primary database**: All data lives in Convex. The Hono server acts as an API gateway, using `ConvexHttpClient` to read/write. Convex also runs cron jobs and internal actions (digest delivery) server-side.
-- **SSE over WebSockets**: Server-Sent Events chosen for simplicity — polling Convex every 2s with change detection via hashes. One-way data flow (server → client).
+- **Cursor-based pagination**: List endpoints for emails, links, and digests support optional cursor-based pagination via `?limit=&cursor=` query params, backed by Convex's `paginationOptsValidator`. When `?limit` is omitted, the full array is returned for backwards compatibility.
 - **Sender-level digest overrides**: Each sender can have its own frequency/day/time, overriding the user's global settings. This lets users batch newsletters weekly but get transactional emails in real-time.
 - **Cascade deletes**: Deleting a sender also deletes all emails from that sender.
 - **Auto-create senders**: First email from an unknown address automatically creates a sender record.

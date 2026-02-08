@@ -308,11 +308,6 @@
     }
   }
 
-  .body {
-    padding: 1.5rem;
-    overflow-x: auto;
-  }
-
   .html-body {
     display: block;
     border: none;
