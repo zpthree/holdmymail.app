@@ -5,8 +5,8 @@
   import { goto } from "$app/navigation";
 
   let { data } = $props();
-  let sender = $state<Sender | null>(data.sender);
-  let emails = $state<Email[]>(data.emails);
+  let sender = $derived<Sender | null>(data.sender);
+  let emails = $derived<Email[]>(data.emails);
   let error = $state("");
   let deleting = $state(false);
 

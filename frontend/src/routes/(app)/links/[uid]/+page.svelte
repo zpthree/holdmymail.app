@@ -5,7 +5,7 @@
   import { goto } from "$app/navigation";
 
   let { data } = $props();
-  let link = $state<Link | null>(data.link);
+  let link = $derived<Link | null>(data.link);
   let error = $state("");
   let deleting = $state(false);
 

@@ -5,7 +5,17 @@
   import { goto } from "$app/navigation";
 
   let { data } = $props();
-  let email = $state<Email | null>(data.email);
+  let scheduledOverride = $state<number | null>(null);
+  let email = $derived<(Email & { scheduledFor?: number }) | null>(
+    data.email
+      ? {
+          ...data.email,
+          ...(scheduledOverride !== null
+            ? { scheduledFor: scheduledOverride }
+            : {}),
+        }
+      : null,
+  );
   let error = $state("");
   let deleting = $state(false);
   let showSchedule = $state(false);
@@ -41,10 +51,7 @@
         `${scheduleDate}T${scheduleTime}`,
       ).toISOString();
       await emailApi.schedule([uid], scheduledFor, $auth.token);
-      if (email)
-        email.scheduledFor = new Date(
-          `${scheduleDate}T${scheduleTime}`,
-        ).getTime();
+      scheduledOverride = new Date(`${scheduleDate}T${scheduleTime}`).getTime();
       showSchedule = false;
     } catch (err) {
       error = err instanceof Error ? err.message : "Failed to schedule email";

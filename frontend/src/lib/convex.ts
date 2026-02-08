@@ -6,7 +6,11 @@ import type {
   FunctionArgs,
   FunctionReturnType,
 } from "convex/server";
-import { api } from "@convex/api";
+import { anyApi } from "convex/server";
+
+// anyApi is a Proxy that builds typed function references from property paths
+// e.g. api.emails.listByUser → FunctionReference for that Convex query
+const api = anyApi as any;
 
 const CONVEX_URL = import.meta.env.VITE_CONVEX_URL;
 
