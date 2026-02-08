@@ -3,6 +3,7 @@
   import { authApi } from "$lib/api";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
 
@@ -162,6 +163,14 @@
     }
   }
 </script>
+
+<SEO
+  path={`/user/${$auth.user.id}`}
+  data={{
+    meta_title: $auth.user.username,
+    meta_description: "Manage your Hold My Mail account settings.",
+  }}
+/>
 
 <div class="user-page">
   <h1>Account Settings</h1>
