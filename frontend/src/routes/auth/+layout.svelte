@@ -35,11 +35,6 @@
 </main>
 
 <style>
-  main {
-    @media screen and (width <= 480px) {
-      background-color: var(--white);
-    }
-  }
   .auth-layout {
     min-height: 100vh;
   }

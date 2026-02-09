@@ -188,6 +188,7 @@ List pages (Inbox, Links, Digests) use cursor-based pagination via the backend R
 Each paginated page follows this pattern:
 
 **`+page.ts` (loader)**:
+
 ```typescript
 import { PAGE_SIZE } from "$lib/constants";
 
@@ -206,6 +207,7 @@ export const load: PageLoad = async () => {
 ```
 
 **`+page.svelte` (component)**:
+
 ```typescript
 import { PAGE_SIZE } from "$lib/constants";
 

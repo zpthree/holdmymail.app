@@ -11,6 +11,16 @@ export interface DigestEmail {
   tags: string[];
 }
 
+export interface DigestLink {
+  _id: string;
+  url: string;
+  title?: string;
+  ogTitle?: string;
+  ogSiteName?: string;
+  favicon?: string;
+  createdAt: number;
+}
+
 function renderEmailRow(email: DigestEmail): string {
   const dateStr = formatEmailDate(email.date);
   return `
@@ -79,6 +89,65 @@ function buildEmailRows(emails: DigestEmail[]): string {
   return rows;
 }
 
+function renderLinkRow(link: DigestLink): string {
+  const displayTitle = link.title || link.ogTitle || link.url;
+  const source = link.ogSiteName || "";
+  const dateStr = formatTimestamp(link.createdAt);
+  return `
+      <tr>
+        <td style="padding: 0 0 20px 0;">
+          <a href="${escapeHtml(link.url)}" style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">
+            ${link.favicon ? `<img src="${escapeHtml(link.favicon)}" width="16" height="16" style="vertical-align: middle; margin-right: 6px; border-radius: 2px;" alt="" />` : ""}${escapeHtml(displayTitle)}
+          </a>
+          ${source ? `<p style="margin: 0 0 2px 0; font-size: 12px; color: #666;">${escapeHtml(source)}</p>` : ""}
+          <p style="margin: 0; font-size: 12px; color: #888; word-break: break-all;">
+            ${escapeHtml(link.url.length > 60 ? link.url.slice(0, 60) + "…" : link.url)}
+          </p>
+          ${dateStr ? `<p style="margin: 2px 0 0; font-size: 12px; color: #888;">${escapeHtml(dateStr)}</p>` : ""}
+        </td>
+      </tr>`;
+}
+
+function buildLinksSection(links: DigestLink[]): string {
+  if (links.length === 0) return "";
+
+  const linkRows = links.map((l) => renderLinkRow(l)).join("");
+
+  return `
+          <!-- Divider before links -->
+          <tr>
+            <td style="padding: 0 24px;">
+              <div style="border-top: 2px solid #000; margin-bottom: 18px;"></div>
+            </td>
+          </tr>
+
+          <!-- Links header -->
+          <tr>
+            <td style="padding: 0 24px 8px;">
+              <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #000;">
+                Saved Links
+              </h2>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 24px 18px;">
+              <p style="margin: 0; font-size: 14px; color: #888;">
+                ${links.length} link${links.length === 1 ? "" : "s"} since your last digest
+              </p>
+            </td>
+          </tr>
+
+          <!-- Link list -->
+          <tr>
+            <td style="padding: 0 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                ${linkRows}
+              </table>
+            </td>
+          </tr>`;
+}
+
 function capitalizeFirst(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -87,6 +156,7 @@ export function buildDigestHtml(
   emails: DigestEmail[],
   date: Date,
   frequency?: string,
+  links?: DigestLink[],
 ): string {
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -98,6 +168,7 @@ export function buildDigestHtml(
   const freqLabel =
     frequency && frequency !== "none" ? `${capitalizeFirst(frequency)} ` : "";
   const emailRows = buildEmailRows(emails);
+  const linksSection = buildLinksSection(links ?? []);
 
   return `
 <!DOCTYPE html>
@@ -141,7 +212,7 @@ export function buildDigestHtml(
           <tr>
             <td style="padding: 0 24px 18px;">
               <p style="margin: 0; font-size: 14px; color: #888;">
-                ${escapeHtml(formattedDate)} &middot; ${emails.length} email${emails.length === 1 ? "" : "s"}
+                ${escapeHtml(formattedDate)} &middot; ${emails.length} email${emails.length === 1 ? "" : "s"}${links && links.length > 0 ? ` &middot; ${links.length} link${links.length === 1 ? "" : "s"}` : ""}
               </p>
             </td>
           </tr>
@@ -162,14 +233,27 @@ export function buildDigestHtml(
             </td>
           </tr>
 
-          <!-- CTA -->
+           <!-- CTA -->
           <tr>
-            <td style="padding: 8px 24px 0; text-align: center;">
+            <td style="padding: 8px 24px 24px; text-align: center;">
               <a
                 href="https://holdmymail.app/inbox"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
-                View in Inbox →
+                View Digest →
+              </a>
+            </td>
+          </tr>
+
+          ${linksSection}
+
+          <tr>
+            <td style="padding: 8px 24px 24px; text-align: center;">
+              <a
+                href="https://holdmymail.app/links"
+                style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
+              >
+                View Links →
               </a>
             </td>
           </tr>
@@ -232,5 +316,20 @@ function formatEmailDate(dateStr: string): string {
     });
   } catch {
     return dateStr;
+  }
+}
+
+function formatTimestamp(ts: number): string {
+  try {
+    const date = new Date(ts);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
   }
 }

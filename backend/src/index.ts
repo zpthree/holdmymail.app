@@ -7,7 +7,7 @@ import { mailRoutes } from "./routes/mail";
 import { digestRoutes } from "./routes/digest";
 import { linkRoutes } from "./routes/link";
 import { tagRoutes } from "./routes/tag";
-import { buildDigestHtml } from "./emails/digest";
+import { buildDigestHtml, type DigestLink } from "./emails/digest";
 
 const app = new Hono();
 
@@ -65,7 +65,30 @@ app.get("/preview/digest", (c) => {
     },
   ];
 
-  const html = buildDigestHtml(sampleEmails, new Date(), "weekly");
+  const sampleLinks: DigestLink[] = [
+    {
+      _id: "link1",
+      url: "https://every-layout.dev/layouts/stack/",
+      title: "The Stack Layout",
+      ogSiteName: "Every Layout",
+      favicon: "https://every-layout.dev/favicon.ico",
+      createdAt: Date.now() - 3600000,
+    },
+    {
+      _id: "link2",
+      url: "https://github.com/shadcn-ui/ui",
+      ogTitle: "shadcn/ui – Beautifully designed components",
+      ogSiteName: "GitHub",
+      createdAt: Date.now() - 7200000,
+    },
+    {
+      _id: "link3",
+      url: "https://www.example.com/really-long-url-that-should-get-truncated-in-the-digest-template-display",
+      createdAt: Date.now() - 86400000,
+    },
+  ];
+
+  const html = buildDigestHtml(sampleEmails, new Date(), "weekly", sampleLinks);
   return c.html(html);
 });
 

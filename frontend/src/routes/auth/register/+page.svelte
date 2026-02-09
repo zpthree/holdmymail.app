@@ -30,7 +30,8 @@
   path="/auth/register"
   data={{
     meta_title: "Create Account",
-    meta_description: "Create a Hold My Mail account to manage your email inbox.",
+    meta_description:
+      "Create a Hold My Mail account to manage your email inbox.",
   }}
 />
 

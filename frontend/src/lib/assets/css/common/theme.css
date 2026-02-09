@@ -1,9 +1,17 @@
 :root {
   /* colors */
-  --black: #000;
-  --white: #fff;
+  --black: oklch(0 0 0);
+  --white: oklch(1 0 0);
   --offwhite: oklch(99.06% 0.01 78.28);
   --accent: oklch(47.72% 0.19 23.59);
+
+  --bg-color: var(--offwhite);
+  --text-color: var(--black);
+
+  /* @media (prefers-color-scheme: dark) {
+    --bg-color: oklch(from var(--black) 20% c h);
+    --text-color: var(--offwhite);
+  } */
 
   --font-serif: "Playfair Display", serif;
   --font-sans: "Rubik", sans-serif;

@@ -1,6 +1,18 @@
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { mutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
+
+export const listByUserSince = internalQuery({
+  args: { userId: v.id("users"), since: v.number() },
+  handler: async (ctx, args) => {
+    const all = await ctx.db
+      .query("links")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+    return all.filter((l) => l._creationTime > args.since);
+  },
+});
 
 export const create = mutation({
   args: {

@@ -26,9 +26,6 @@
     <a id="header-logo" href="/"><Logo /></a>
     <ul>
       <li>
-        <a href="/inbox" class:selected={activeTab === "/inbox"}>Inbox</a>
-      </li>
-      <li>
         <a href="/digests" class:selected={activeTab === "/digests"}>Digests</a>
       </li>
       <li>
@@ -66,7 +63,7 @@
     z-index: 10;
     margin: auto 1rem;
     border-radius: 0 0 35px 35px;
-    background-color: var(--offwhite);
+    background-color: var(--bg-color);
     padding-top: 1.5rem;
     max-width: calc(var(--container-width) + 4rem);
 

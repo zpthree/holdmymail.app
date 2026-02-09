@@ -72,6 +72,7 @@ List endpoints for emails, links, and digests support cursor-based pagination wh
 - `?cursor=C` — Continue from a previous page's cursor
 
 Response shape when paginated:
+
 ```json
 {
   "items": [...],

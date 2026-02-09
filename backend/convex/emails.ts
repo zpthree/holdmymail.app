@@ -9,7 +9,7 @@ import {
 } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import { buildDigestHtml } from "./digestTemplate";
+import { buildDigestHtml, type DigestLink } from "./digestTemplate";
 
 export const create = mutation({
   args: {
@@ -186,12 +186,31 @@ export const deliverDueEmails = internalAction({
         tags: e.senderId ? (senderTagMap.get(e.senderId) ?? []) : [],
       }));
 
+      // Fetch links created since the last digest
+      const lastDigest = await ctx.runQuery(internal.digests.getLatestByUser, {
+        userId: userId as Id<"users">,
+      });
+      const sinceTime = lastDigest?.sentAt ?? 0;
+      const recentLinks = await ctx.runQuery(internal.links.listByUserSince, {
+        userId: userId as Id<"users">,
+        since: sinceTime,
+      });
+      const digestLinks: DigestLink[] = recentLinks.map((l) => ({
+        _id: l._id,
+        url: l.url,
+        title: l.title,
+        ogTitle: l.ogTitle,
+        ogSiteName: l.ogSiteName,
+        favicon: l.favicon,
+        createdAt: l._creationTime,
+      }));
+
       const freq = user.digestFrequency || "";
       const freqCap =
         freq && freq !== "none"
           ? freq.charAt(0).toUpperCase() + freq.slice(1) + " "
           : "";
-      const html = buildDigestHtml(digestEmails, new Date(), freq);
+      const html = buildDigestHtml(digestEmails, new Date(), freq, digestLinks);
 
       const subject = `Your ${freqCap}Hold My Mail Digest – ${emails.length} email${emails.length === 1 ? "" : "s"} waiting`;
 
