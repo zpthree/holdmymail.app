@@ -113,9 +113,7 @@
     text-transform: uppercase;
 
     @media screen and (width > 768px) {
-      top: 0.5rem;
-      left: -0.5rem;
-      rotate: -20deg;
+      left: 6rem;
     }
   }
 

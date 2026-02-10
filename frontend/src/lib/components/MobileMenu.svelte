@@ -16,12 +16,12 @@
   >
     <nav aria-label="Mobile navigation">
       <ul>
-        <li class="mb-6">
+        <!-- <li class="mb-6">
           <a
             class:border-primary={$page.url.pathname === "/inbox"}
             href="/inbox">Inbox</a
           >
-        </li>
+        </li> -->
         <li class="mb-6">
           <a
             class:border-primary={$page.url.pathname === "/digests"}
