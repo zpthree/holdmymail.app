@@ -10,7 +10,7 @@
   --text-color: var(--black);
 
   @media (prefers-color-scheme: dark) {
-    --bg-color: oklch(from var(--black) 20% c h);
+    --bg-color: oklch(from var(--black) 25% c h);
     --bg-color-2: oklch(from var(--black) 30% c h);
     --text-color: var(--offwhite);
   }

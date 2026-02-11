@@ -65,7 +65,7 @@
   #mobile-nav-wrapper {
     position: relative;
     z-index: 10;
-    background-color: var(--offwhite);
+    background-color: var(--bg-color);
     padding-top: 2.5rem;
     width: 100vw;
     height: 100dvh;

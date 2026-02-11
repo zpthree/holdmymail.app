@@ -41,13 +41,21 @@
 
   .auth-container {
     border-radius: 8px;
-    background: white;
+    background-color: var(--bg-color-2);
     padding: 2rem;
     width: 100%;
     max-width: 400px;
 
+    @media (prefers-color-scheme: dark) {
+      /* background-color: var(--bg-color); */
+    }
+
     @media screen and (width > 480px) {
       border: 0.3rem solid var(--text-color);
+
+      @media (prefers-color-scheme: dark) {
+        /* border-color: var(--bg-color-2); */
+      }
     }
   }
 
@@ -56,9 +64,12 @@
   }
 
   #logo span {
-    background-color: var(--text-color);
     padding: 0.5rem 1rem;
     color: var(--white);
+
+    @media (prefers-color-scheme: light) {
+      background-color: var(--black);
+    }
   }
 
   #logo :global(svg) {
