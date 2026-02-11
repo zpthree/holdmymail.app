@@ -69,7 +69,7 @@
   }
 
   .back {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -89,14 +89,14 @@
 
   .meta {
     margin: 0;
-    color: var(--black);
+    color: var(--text-color);
     font-size: var(--fs-sm);
   }
 
   article {
-    border: 0.3rem solid var(--black);
+    border: 0.3rem solid var(--text-color);
     border-radius: var(--br-lg);
-    background: var(--white);
+    background: var(--bg-color-2);
     overflow: hidden;
   }
 

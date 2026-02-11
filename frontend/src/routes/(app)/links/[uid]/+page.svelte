@@ -146,7 +146,7 @@
   }
 
   .back-nav a {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -178,7 +178,7 @@
   }
 
   .url {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     text-decoration: none;
 
@@ -219,15 +219,6 @@
     flex-wrap: wrap;
     gap: 0.35rem;
     margin-bottom: 1.25rem;
-  }
-
-  .tag {
-    border-radius: var(--br-full);
-    background: var(--black);
-    padding: 0.2rem 0.6rem;
-    color: var(--white);
-    font-weight: 500;
-    font-size: var(--fs-xs);
   }
 
   .description {

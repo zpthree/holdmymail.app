@@ -206,7 +206,7 @@
   }
 
   .back {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -246,14 +246,14 @@
 
   .schedule-fields input:focus {
     outline: none;
-    border-color: var(--black);
+    border-color: var(--text-color);
   }
 
   .schedule-fields button {
     cursor: pointer;
     border: none;
     border-radius: 6px;
-    background: var(--black);
+    background: var(--text-color);
     padding: 0.5rem 1rem;
     color: var(--white);
     font-size: 0.9rem;
@@ -282,14 +282,14 @@
   }
 
   article {
-    border: 0.3rem solid var(--black);
+    border: 0.3rem solid var(--text-color);
     border-radius: var(--br-lg);
-    background: var(--white);
+    background: var(--bg-color-2);
     overflow: hidden;
   }
 
   article header {
-    background-color: var(--black);
+    background-color: var(--text-color);
     padding: 1.5rem;
   }
 

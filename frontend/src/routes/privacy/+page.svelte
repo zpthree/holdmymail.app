@@ -185,7 +185,7 @@
   .back {
     display: inline-block;
     margin-bottom: 1.5rem;
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -237,7 +237,7 @@
   }
 
   a {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
   }
 </style>

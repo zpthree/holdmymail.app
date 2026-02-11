@@ -149,17 +149,22 @@
     {#if links.length > 0}
       <div class="bulk-actions">
         {#if selectMode}
-          <button class="btn-select" onclick={toggleAll}>
+          <button class="btn btn-white" onclick={toggleAll}>
             {selected.size === links.length ? "Deselect All" : "Select All"}
           </button>
           {#if selecting}
-            <button class="btn-delete" onclick={bulkDelete} disabled={deleting}>
+            <button
+              class="btn btn-accent"
+              onclick={bulkDelete}
+              disabled={deleting}
+            >
               {deleting ? "Deleting…" : `Delete (${selected.size})`}
             </button>
           {/if}
-          <button class="btn-select" onclick={exitSelectMode}>Cancel</button>
+          <button class="btn btn-white" onclick={exitSelectMode}>Cancel</button>
         {:else}
-          <button class="btn-select" onclick={enterSelectMode}>Select</button>
+          <button class="btn btn-white" onclick={enterSelectMode}>Select</button
+          >
         {/if}
       </div>
     {/if}
@@ -284,41 +289,8 @@
     gap: 0.5rem;
   }
 
-  .btn-select {
-    cursor: pointer;
-    border: 1px solid var(--black);
-    border-radius: var(--br-lg);
-    background: transparent;
-    padding: 0.35rem 0.85rem;
-    font: inherit;
-    font-weight: 600;
-    font-size: var(--fs-sm);
-
-    &:hover {
-      background: var(--black);
-      color: var(--white);
-    }
-  }
-
-  .btn-delete {
-    cursor: pointer;
-    border: 1px solid var(--accent);
-    border-radius: var(--br-lg);
-    background: var(--accent);
-    padding: 0.35rem 0.85rem;
-    color: var(--white);
-    font: inherit;
-    font-weight: 600;
-    font-size: var(--fs-sm);
-
-    &:hover {
-      opacity: 0.85;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+  .btn {
+    padding-block: 0.35rem;
   }
 
   .checkbox {
@@ -361,7 +333,7 @@
     gap: 0.5rem;
     margin: 0 0 1rem;
     border-radius: var(--br-lg);
-    background: var(--black);
+    background: var(--text-color);
     letter-spacing: 0.02em;
     text-align: center;
 
@@ -378,7 +350,7 @@
   }
 
   .month {
-    color: var(--white);
+    color: var(--bg-color-2);
     font-weight: 600;
     text-transform: uppercase;
 
@@ -388,7 +360,7 @@
   }
 
   .day {
-    color: var(--white);
+    color: var(--bg-color-2);
     font-weight: 700;
     line-height: 1;
 
@@ -417,7 +389,7 @@
   }
 
   .link-item a {
-    color: var(--black);
+    color: var(--text-color);
   }
 
   .link-nothumb,
@@ -474,7 +446,7 @@
     align-items: center;
     gap: 0.35rem;
     margin-top: 0.25rem;
-    color: var(--black);
+    color: var(--text-color);
     font-size: var(--fs-sm);
   }
 
@@ -487,7 +459,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    color: var(--black);
+    color: var(--text-color);
     line-height: 1.5;
   }
 
@@ -496,15 +468,6 @@
     flex-wrap: wrap;
     gap: 0.35rem;
     margin-top: 0.15rem;
-  }
-
-  .tag {
-    border-radius: var(--br-full);
-    background: var(--black);
-    padding: 0.15rem 0.55rem;
-    color: var(--white);
-    font-weight: 500;
-    font-size: var(--fs-xs);
   }
 
   .load-more {

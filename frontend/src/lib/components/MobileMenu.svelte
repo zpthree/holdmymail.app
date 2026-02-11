@@ -88,7 +88,7 @@
 
   a {
     display: block;
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 600;
     font-size: var(--fs-xl);
     text-align: center;

@@ -48,11 +48,18 @@ body.noscroll {
 }
 
 a:not(.btn) {
+  --link-color: var(--accent);
   transition: color 200ms;
-  color: var(--accent);
+  color: var(--link-color);
 
   &:hover {
-    color: var(--black);
+    --link-color: var(--black);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      --link-color: var(--white);
+    }
   }
 }
 
@@ -70,4 +77,13 @@ a:not(.btn) {
   background: #eeffee;
   padding: 1rem;
   color: #006600;
+}
+
+.tag {
+  border-radius: var(--br-full);
+  background: var(--text-color);
+  padding: 0.2rem 0.6rem;
+  color: var(--bg-color-2);
+  font-weight: 500;
+  font-size: var(--fs-xs);
 }

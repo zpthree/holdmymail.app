@@ -201,7 +201,7 @@
         <span>Email</span>
         <input type="email" bind:value={email} required />
       </label>
-      <button type="submit" class="btn primary" disabled={saving}>
+      <button type="submit" class="btn btn-white" disabled={saving}>
         {saving ? "Saving…" : "Update Email"}
       </button>
     </form>
@@ -229,7 +229,7 @@
           required
         />
       </label>
-      <button type="submit" class="btn primary" disabled={changingPassword}>
+      <button type="submit" class="btn btn-white" disabled={changingPassword}>
         {changingPassword ? "Updating…" : "Change Password"}
       </button>
     </form>
@@ -292,7 +292,7 @@
         </select>
         <span class="field-hint">Used for scheduling delivery times</span>
       </label>
-      <button type="submit" class="btn primary" disabled={savingDelivery}>
+      <button type="submit" class="btn btn-white" disabled={savingDelivery}>
         {savingDelivery ? "Saving…" : "Save Delivery Settings"}
       </button>
     </form>
@@ -324,7 +324,7 @@
     <h2>Danger Zone</h2>
     <p>Permanently delete your account and all associated data.</p>
     <button
-      class="btn danger"
+      class="btn btn-accent"
       onclick={deleteAccount}
       disabled={deletingAccount}
     >
@@ -367,7 +367,7 @@
 
   .card {
     margin-bottom: 2rem;
-    border: 1px solid hsl(from var(--black) h s l / 0.25);
+    border: 1px solid hsl(from var(--text-color) h s l / 0.25);
     border-radius: var(--br-lg);
     padding: 1.5rem;
   }
@@ -418,7 +418,7 @@
 
   input,
   select {
-    border: 1px solid hsl(from var(--black) h s l / 0.15);
+    border: 1px solid hsl(from var(--text-color) h s l / 0.15);
     border-radius: var(--br-md, 0.5rem);
     padding: 0.55rem 0.75rem;
     font: inherit;
@@ -426,51 +426,13 @@
 
     &:focus {
       outline: none;
-      border-color: var(--black);
+      border-color: var(--text-color);
     }
   }
 
   select {
     cursor: pointer;
     background: var(--white, #fff);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    cursor: pointer;
-    border: none;
-    border-radius: var(--br-lg);
-    padding: 0.55rem 1.25rem;
-    font: inherit;
-    font-weight: 600;
-    font-size: var(--fs-sm);
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  .btn.primary {
-    background: var(--black);
-    color: var(--white);
-
-    &:hover:not(:disabled) {
-      opacity: 0.85;
-    }
-  }
-
-  .btn.danger {
-    border: 1px solid var(--accent);
-    background: transparent;
-    color: var(--accent);
-
-    &:hover:not(:disabled) {
-      background: var(--accent);
-      color: var(--white);
-    }
   }
 
   .info-grid {
@@ -488,6 +450,11 @@
 
   .info-grid dd {
     margin: 0;
+  }
+
+  .btn {
+    align-self: start;
+    padding-inline: 1.5rem;
   }
 
   .danger-zone {

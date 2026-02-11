@@ -47,7 +47,7 @@
     max-width: 400px;
 
     @media screen and (width > 480px) {
-      border: 0.3rem solid var(--black);
+      border: 0.3rem solid var(--text-color);
     }
   }
 
@@ -56,7 +56,7 @@
   }
 
   #logo span {
-    background-color: var(--black);
+    background-color: var(--text-color);
     padding: 0.5rem 1rem;
     color: var(--white);
   }

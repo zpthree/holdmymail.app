@@ -184,7 +184,7 @@
     transition: border-color 0.15s;
     border: 0.2rem solid transparent;
     border-radius: var(--br-lg);
-    background: var(--white);
+    background: var(--bg-color-2);
     overflow: hidden;
 
     &:hover {
@@ -202,7 +202,7 @@
   }
 
   .subject {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 600;
     font-size: var(--fs-base);
   }

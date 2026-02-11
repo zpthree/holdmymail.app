@@ -130,7 +130,7 @@
   }
 
   .back {
-    color: var(--black);
+    color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
     text-decoration: none;
@@ -203,14 +203,6 @@
     margin-top: 0.25rem;
   }
 
-  .tag {
-    border-radius: 4px;
-    background: #eef;
-    padding: 0.2rem 0.5rem;
-    color: #336;
-    font-size: 0.75rem;
-  }
-
   .mail-section h2 {
     margin: 0 0 1rem 0;
     border-bottom: 1px solid #eee;
@@ -232,7 +224,7 @@
     transition: border-color 0.15s;
     border: 0.2rem solid transparent;
     border-radius: var(--br-lg);
-    background: var(--white);
+    background: var(--bg-color-2);
     padding: 1rem 1.25rem;
     overflow: hidden;
     color: inherit;

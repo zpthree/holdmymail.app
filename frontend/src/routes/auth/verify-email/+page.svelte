@@ -83,7 +83,7 @@
       color 200ms ease-in-out;
     cursor: pointer;
     border: none;
-    border: 0.2rem solid var(--black);
+    border: 0.2rem solid var(--text-color);
     border-radius: var(--br-full);
     padding: 0.75rem;
     font-size: 1rem;
@@ -92,11 +92,11 @@
   }
 
   .btn-black {
-    background-color: var(--black);
+    background-color: var(--text-color);
     color: var(--white);
 
     &:hover {
-      background-color: hsl(from var(--black) h s l / 0.75);
+      background-color: hsl(from var(--text-color) h s l / 0.75);
     }
   }
 </style>

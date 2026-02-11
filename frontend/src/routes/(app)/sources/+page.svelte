@@ -89,7 +89,7 @@
     transition: border-color 0.15s;
     border: 0.2rem solid transparent;
     border-radius: var(--br-lg);
-    background: var(--white);
+    background: var(--bg-color-2);
     overflow: hidden;
 
     &:hover {
@@ -102,14 +102,10 @@
     align-items: center;
     gap: 1rem;
     transition: background 0.15s;
-    background-color: var(--white);
+    background-color: var(--bg-color-2);
     padding: 1rem;
     color: inherit;
     text-decoration: none;
-  }
-
-  .sender-item > a:hover {
-    background: #f9f9f9;
   }
 
   .sender-avatar {
@@ -148,13 +144,5 @@
     display: flex;
     flex-shrink: 0;
     gap: 0.375rem;
-  }
-
-  .tag {
-    border-radius: 4px;
-    background: hsl(from var(--accent) h s l / 0.15);
-    padding: 0.2rem 0.5rem;
-    color: var(--black);
-    font-size: 0.75rem;
   }
 </style>

@@ -135,7 +135,7 @@
     text-decoration: underline;
 
     &:hover {
-      color: var(--black);
+      color: var(--text-color);
     }
   }
 
