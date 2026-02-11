@@ -234,11 +234,6 @@
       border-color: var(--accent);
     }
   }
-
-  .email-item:hover {
-    background: #f9f9f9;
-  }
-
   .email-header {
     display: flex;
     justify-content: space-between;

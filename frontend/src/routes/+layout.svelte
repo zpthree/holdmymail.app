@@ -33,4 +33,24 @@
   });
 </script>
 
-{@render children()}
+<div>
+  {@render children()}
+</div>
+
+<footer class="centered">
+  <p>
+    <a href="/privacy">Privacy Policy</a>
+  </p>
+</footer>
+
+<style>
+  div {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 4rem);
+  }
+
+  footer {
+    font-size: var(--fs-sm);
+  }
+</style>

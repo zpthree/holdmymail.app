@@ -282,14 +282,14 @@
   }
 
   article {
-    border: 0.3rem solid var(--text-color);
+    border: 0.3rem solid var(--black);
     border-radius: var(--br-lg);
     background: var(--bg-color-2);
     overflow: hidden;
   }
 
   article header {
-    background-color: var(--text-color);
+    background-color: var(--black);
     padding: 1.5rem;
   }
 

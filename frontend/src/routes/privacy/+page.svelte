@@ -203,7 +203,7 @@
 
   .updated {
     margin: 0 0 2rem;
-    color: #666;
+    color: var(--text-color);
     font-size: var(--fs-sm);
   }
 
@@ -223,13 +223,13 @@
 
   p {
     margin: 0 0 0.75rem;
-    color: #333;
+    color: var(--text-color);
   }
 
   ul {
     margin: 0 0 0.75rem;
     padding-left: 1.25rem;
-    color: #333;
+    color: var(--text-color);
   }
 
   li {

@@ -47,7 +47,7 @@
     max-width: 400px;
 
     @media (prefers-color-scheme: dark) {
-      /* background-color: var(--bg-color); */
+      background-color: var(--bg-color);
     }
 
     @media screen and (width > 480px) {
