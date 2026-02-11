@@ -6,7 +6,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 interface PostmarkInbound {
   From: string;
   FromName: string;
-  To: string;
+  OriginalRecipient: string;
   Subject: string;
   TextBody: string;
   HtmlBody: string;
@@ -156,13 +156,13 @@ mailRoutes.post("/", async (c) => {
     return c.json({ status: "ok" }, 200);
   }
 
-  if (!payload || !payload.To) {
+  if (!payload || !payload.OriginalRecipient) {
     return c.json({ status: "ok" }, 200);
   }
 
   // Extract the username from the To field
   // e.g., "user1@inbox.holdmymail.app"
-  const toMatch = payload.To.match(/^([^@]+)@/);
+  const toMatch = payload.OriginalRecipient.match(/^([^@]+)@/);
   if (!toMatch) {
     return c.json({ error: "Invalid recipient address" }, 400);
   }
@@ -223,7 +223,7 @@ mailRoutes.post("/", async (c) => {
     senderId,
     fromEmail: payload.From,
     fromName: payload.FromName || "",
-    to: payload.To,
+    to: payload.OriginalRecipient,
     subject: payload.Subject,
     textBody: payload.TextBody || "",
     htmlBody: payload.HtmlBody || "",
