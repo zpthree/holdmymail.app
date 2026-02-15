@@ -84,14 +84,6 @@
       timeZone: $auth.user?.timezone || undefined,
     });
   }
-
-  export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
-    const target = e.target as HTMLAnchorElement;
-    if (target.tagName === "A" && target.href) {
-      e.preventDefault();
-      window.open(target.href, "_blank");
-    }
-  }
 </script>
 
 <SEO
@@ -174,9 +166,103 @@
           </div>
         </header>
 
-        <div class="body" onclick={handleDigestLinkClick}>
+        <div class="body">
           {#if email.htmlBody}
-            {@html email.htmlBody}
+            <iframe
+              class="html-body"
+              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+              title="Email content"
+              srcdoc={email.htmlBody}
+              onload={(e) => {
+                const iframe = /** @type {HTMLIFrameElement} */ (
+                  e.currentTarget
+                );
+                const doc = iframe.contentDocument;
+                if (doc) {
+                  // reset default margins & prevent inner scrollbar
+                  doc.body.style.margin = "0";
+                  doc.body.style.fontFamily = "Rubik, sans-serif";
+                  doc.documentElement.style.overflow = "hidden";
+                  iframe.style.height =
+                    doc.documentElement.scrollHeight + 1 + "px";
+
+                  // Inject dark mode styles
+                  const style = doc.createElement("style");
+                  style.textContent = `
+                    @media (prefers-color-scheme: dark) {
+                      html, body {
+                        background-color: oklch(0.1868 0.0148 80.71) !important;
+                        background: oklch(0.1868 0.0148 80.71) !important;
+                        color: #e0e0e0 !important;
+                      }
+                      * {
+                        background-color: transparent !important;
+                        background: transparent !important;
+                        color: #e0e0e0 !important;
+                      }
+                      body * {
+                        background-color: transparent !important;
+                      }
+                      table {
+                        background-color: transparent !important;
+                        background: transparent !important;
+                      }
+                      table[style] {
+                        background-color: transparent !important;
+                        background: transparent !important;
+                      }
+                      tr, tr[style] {
+                        background-color: transparent !important;
+                        background: transparent !important;
+                      }
+                      td, td[style], th, th[style] {
+                        background-color: transparent !important;
+                        background: transparent !important;
+                        border-color: #444 !important;
+                      }
+                      a {
+                        color: oklch(47.72% 0.19 23.59) !important;
+                        text-decoration: underline;
+                      }
+                      h1, h2, h3, h4, h5, h6 {
+                        color: #e0e0e0 !important;
+                      }
+                      p, div, span, li {
+                        color: #e0e0e0 !important;
+                      }
+                      img {
+                        opacity: 0.85 !important;
+                      }
+                    }
+                  `;
+                  doc.head.appendChild(style);
+
+                  // Force remove background colors from table elements
+                  if (
+                    doc.preferColorScheme === "dark" ||
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ) {
+                    const tables = doc.querySelectorAll("table, tr, td, th");
+                    tables.forEach((el) => {
+                      el.style.backgroundColor = "transparent";
+                      el.style.backgroundImage = "none";
+                    });
+                  }
+
+                  // Add click handler to iframe content
+                  doc.addEventListener("click", (clickEvent) => {
+                    const target = clickEvent.target as HTMLElement;
+                    if (
+                      target.tagName === "A" &&
+                      (target as HTMLAnchorElement).href
+                    ) {
+                      clickEvent.preventDefault();
+                      window.open((target as HTMLAnchorElement).href, "_blank");
+                    }
+                  });
+                }
+              }}
+            ></iframe>
           {:else}
             <pre>{email.textBody}</pre>
           {/if}
@@ -286,14 +372,13 @@
   }
 
   article {
-    border: 0.3rem solid var(--black);
     border-radius: var(--br-lg);
     background: var(--bg-color-2);
     overflow: hidden;
   }
 
   article header {
-    background-color: var(--black);
+    background-color: var(--text-color);
     padding: 1.5rem;
   }
 
@@ -303,7 +388,7 @@
   }
 
   .meta {
-    color: var(--white);
+    color: var(--bg-color);
     font-size: var(--fs-sm);
     line-height: 1.6;
   }
@@ -311,12 +396,12 @@
   .meta strong {
     display: inline-block;
     width: 3rem;
-    color: var(--offwhite);
+    color: var(--bg-color);
     font-weight: 500;
   }
 
   .meta .from a {
-    color: var(--white);
+    color: var(--bg-color) !important;
     text-decoration: none;
 
     &:hover {
@@ -327,6 +412,13 @@
   .body {
     margin: auto;
     max-width: 600px;
+  }
+
+  .html-body {
+    display: block;
+    border: none;
+    width: 100%;
+    overflow: hidden;
   }
 
   .body pre {

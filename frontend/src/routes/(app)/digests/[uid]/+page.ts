@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params }) => {
     // In development, replace production URLs with local dev URLs
     if (dev && digest.htmlBody) {
       digest.htmlBody = digest.htmlBody.replace(
-        /https:\/\/holdmymail\.app/g,
+        /https:\/\/www.holdmymail\.app/g,
         "",
       );
     }

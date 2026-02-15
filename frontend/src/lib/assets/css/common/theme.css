@@ -1,6 +1,6 @@
 :root {
   /* colors */
-  --black: oklch(0 0 0);
+  --black: oklch(0.1868 0.0148 80.71);
   --white: oklch(1 0 0);
   --offwhite: oklch(0.9571 0.0148 80.71);
   --accent: oklch(47.72% 0.19 23.59);
@@ -9,11 +9,11 @@
   --bg-color-2: var(--white);
   --text-color: var(--black);
 
-  /* @media (prefers-color-scheme: dark) {
-    --bg-color: oklch(from var(--black) 25% c h);
-    --bg-color-2: oklch(from var(--black) 30% c h);
+  @media (prefers-color-scheme: dark) {
+    --bg-color: oklch(0.1868 0.0148 80.71);
+    --bg-color-2: oklch(from var(--black) 25% c h);
     --text-color: var(--offwhite);
-  } */
+  }
 
   --font-serif: "Playfair Display", serif;
   --font-sans: "Rubik", sans-serif;

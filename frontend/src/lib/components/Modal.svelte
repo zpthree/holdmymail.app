@@ -77,8 +77,9 @@
   #modal-overlay {
     position: fixed;
     z-index: 20;
+    backdrop-filter: blur(2px);
     inset: 0;
-    background-color: hsla(from var(--black) h s l / 0.5);
+    background-color: oklch(from var(--bg-color) l c h / 85%);
   }
 
   #modal-children {
@@ -87,6 +88,7 @@
     right: 0;
     bottom: 0;
     z-index: 30;
+    box-shadow: 0 0 0.5rem oklch(from var(--text-color) l c h / 10%);
     background: var(--bg-color);
   }
 

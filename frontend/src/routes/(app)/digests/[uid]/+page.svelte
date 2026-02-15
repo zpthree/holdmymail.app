@@ -77,10 +77,6 @@
 />
 
 <div class="digest-container">
-  <nav>
-    <a href="/digests" class="back">← Back to Digests</a>
-  </nav>
-
   {#if digest}
     <header>
       <p class="meta">
@@ -141,7 +137,7 @@
   }
 
   article {
-    border: 0.15rem solid var(--text-color);
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: var(--br-lg);
     background: var(--bg-color-2);
     overflow: hidden;

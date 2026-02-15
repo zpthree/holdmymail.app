@@ -1,4 +1,8 @@
-interface DigestEmail {
+import type { Doc } from "../_generated/dataModel";
+
+type EmailDoc = Doc<"emails">;
+
+export interface DigestEmail {
   _id: string;
   subject: string;
   fromName: string;
@@ -22,13 +26,13 @@ function renderEmailRow(email: DigestEmail): string {
   return `
       <tr>
         <td style="padding: 0 0 24px 0;">
-          <p style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">
+          <p class="label" style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">
             ${escapeHtml(email.fromName || email.fromEmail)}
           </p>
           <a href="${process.env.FRONTEND_URL}/inbox/${email._id}" style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">
             ${escapeHtml(email.subject)}
           </a>
-          ${dateStr ? `<p style="margin: 0; font-size: 12px; color: #888;">${escapeHtml(dateStr)}</p>` : ""}
+          ${dateStr ? `<p class="label" style="margin: 0; font-size: 12px; color: #888;">${escapeHtml(dateStr)}</p>` : ""}
         </td>
       </tr>`;
 }
@@ -39,7 +43,7 @@ function renderTagBadge(tag: string): string {
         <td style="padding: 0 0 16px 0;">
           <table cellpadding="0" cellspacing="0" role="presentation">
             <tr>
-              <td style="background-color:#000;border-radius:4px;padding:3px 8px;text-align:center;">
+              <td class="tag" style="background-color:#000;border-radius:4px;padding:3px 8px;text-align:center;">
                 <span style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">
                   ${escapeHtml(tag)}
                 </span>
@@ -95,11 +99,11 @@ function renderLinkRow(link: DigestLink): string {
           <a href="${escapeHtml(link.url)}" style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">
             ${link.favicon ? `<img src="${escapeHtml(link.favicon)}" width="16" height="16" style="vertical-align: middle; margin-right: 6px; border-radius: 2px;" alt="" />` : ""}${escapeHtml(displayTitle)}
           </a>
-          ${source ? `<p style="margin: 0 0 2px 0; font-size: 12px; color: #666;">${escapeHtml(source)}</p>` : ""}
-          <p style="margin: 0; font-size: 12px; color: #888; word-break: break-all;">
+          ${source ? `<p class="label" style="margin: 0 0 2px 0; font-size: 12px; color: #666;">${escapeHtml(source)}</p>` : ""}
+          <p class="label" style="margin: 0; font-size: 12px; color: #888; word-break: break-all;">
             ${escapeHtml(link.url.length > 60 ? link.url.slice(0, 60) + "…" : link.url)}
           </p>
-          ${dateStr ? `<p style="margin: 2px 0 0; font-size: 12px; color: #888;">${escapeHtml(dateStr)}</p>` : ""}
+          ${dateStr ? `<p class="label" style="margin: 2px 0 0; font-size: 12px; color: #888;">${escapeHtml(dateStr)}</p>` : ""}
         </td>
       </tr>`;
 }
@@ -128,7 +132,7 @@ function buildLinksSection(links: DigestLink[]): string {
 
           <tr>
             <td style="padding: 0 24px 18px;">
-              <p style="margin: 0; font-size: 14px; color: #888;">
+              <p class="label" style="margin: 0; font-size: 14px; color: #888;">
                 ${links.length} link${links.length === 1 ? "" : "s"} since your last digest
               </p>
             </td>
@@ -174,9 +178,36 @@ export function buildDigestHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <title>Hold My Mail – Digest for ${escapeHtml(formattedDate)}</title>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      body,
+      #digest-table {
+        background-color: #17120c !important;
+        color: #f6f0e6 !important;
+      }
+
+      a {
+        color: #f6f0e6 !important;
+      }
+
+      h1,
+      h2 {
+        color: #f6f0e6 !important;
+      }
+
+      .tag,
+      .button {
+        background-color: #af0621 !important;
+      }
+
+      .label {
+        color: #bbb !important;}
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #fff; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #fff; padding: 32px 0;">
+<body style="margin: 0; padding: 0; background-color: #f6f0e6; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table id="digest-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f6f0e6; padding: 32px 0;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%;">
@@ -207,7 +238,7 @@ export function buildDigestHtml(
           <!-- Date + count -->
           <tr>
             <td style="padding: 0 24px 18px;">
-              <p style="margin: 0; font-size: 14px; color: #888;">
+              <p class="label" style="margin: 0; font-size: 14px; color: #888;">
                 ${escapeHtml(formattedDate)} &middot; ${emails.length} email${emails.length === 1 ? "" : "s"}${links && links.length > 0 ? ` &middot; ${links.length} link${links.length === 1 ? "" : "s"}` : ""}
               </p>
             </td>
@@ -233,26 +264,32 @@ export function buildDigestHtml(
           <tr>
             <td style="padding: 8px 24px 24px; text-align: center;">
               <a
+                class="button"
                 href="https://www.holdmymail.app/inbox"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
-                View Digest →
+                View Digest
               </a>
             </td>
           </tr>
 
           ${linksSection}
 
-          <tr>
+          ${
+            linksSection
+              ? ""
+              : `<tr>
             <td style="padding: 8px 24px 24px; text-align: center;">
               <a
+                class="button"
                 href="https://www.holdmymail.app/links"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
-                View Links →
+                View Links
               </a>
             </td>
-          </tr>
+          </tr>`
+          }
 
           <!-- Footer -->
           <tr>
@@ -311,4 +348,21 @@ function formatTimestamp(ts: number): string {
   } catch {
     return "";
   }
+}
+
+/**
+ * Convert email docs to digest items.
+ * @param senderTagMap - Map of senderId to tag name array
+ */
+export function emailsToDigestItems(
+  emails: EmailDoc[],
+  senderTagMap: Map<string, string[]> = new Map(),
+): DigestEmail[] {
+  return emails.map((e) => ({
+    subject: e.subject,
+    fromName: e.fromName,
+    fromEmail: e.fromEmail,
+    date: e.date,
+    tags: e.senderId ? (senderTagMap.get(e.senderId) ?? []) : [],
+  }));
 }

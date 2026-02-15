@@ -65,7 +65,7 @@
     margin: auto 1rem;
     border-radius: 0 0 35px 35px;
     padding-top: 1.5rem;
-    max-width: calc(var(--container-width) + 4rem);
+    max-width: var(--container-width);
 
     @media screen and (width > 768px) {
       margin: auto;
@@ -76,7 +76,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 0.15rem solid var(--black);
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: var(--br-full);
     background-color: var(--bg-color);
     padding-inline: 1.5rem 1rem;
@@ -193,7 +193,7 @@
       color 150ms;
     border-radius: var(--br-full);
     padding: 0.5rem 1rem;
-    color: var(--black);
+    color: var(--text-color);
     font-weight: bold;
     font-size: var(--fs-base);
     text-align: center;
