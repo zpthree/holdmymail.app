@@ -35,6 +35,7 @@
     if (target?.tagName !== "A") return;
 
     const anchor = target as HTMLAnchorElement;
+    console.log(anchor.origin, window.location.origin);
     if (anchor.origin !== window.location.origin) {
       e.preventDefault();
       window.open(anchor.href, "_blank");

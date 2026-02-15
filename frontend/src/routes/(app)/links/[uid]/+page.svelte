@@ -205,8 +205,8 @@
 
   .og-image img {
     display: block;
+    aspect-ratio: 120 / 63;
     width: 100%;
-    max-height: 400px;
     object-fit: cover;
   }
 
