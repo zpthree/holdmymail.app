@@ -5,7 +5,11 @@
   import { goto } from "$app/navigation";
   import SEO from "$lib/components/SEO.svelte";
 
-  let { data } = $props();
+  let {
+    data,
+    shallow,
+  }: { data: { email: Email | null; from?: string }; shallow: boolean } =
+    $props();
   let scheduledOverride = $state<number | null>(null);
   let email = $derived<(Email & { scheduledFor?: number }) | null>(
     data.email
@@ -29,6 +33,13 @@
   const backLabel = $derived(
     backHref.startsWith("/sources") ? "Back to Source" : "Back to Inbox",
   );
+
+  // mark email as read when page actually loads (not during preload)
+  $effect(() => {
+    if (email && !email.read && $auth.token) {
+      emailApi.markRead(uid, $auth.token).catch(() => {});
+    }
+  });
 
   async function handleDelete() {
     if (!$auth.token || !uid || !confirm("Delete this email?")) return;
@@ -73,6 +84,14 @@
       timeZone: $auth.user?.timezone || undefined,
     });
   }
+
+  export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
+    const target = e.target as HTMLAnchorElement;
+    if (target.tagName === "A" && target.href) {
+      e.preventDefault();
+      window.open(target.href, "_blank");
+    }
+  }
 </script>
 
 <SEO
@@ -85,7 +104,10 @@
 
 <div class="email-container">
   <nav>
-    <a href={backHref} class="back">← {backLabel}</a>
+    {#if !shallow}
+      <a href={backHref} class="back">← {backLabel}</a>
+    {/if}
+
     {#if email}
       <div class="actions">
         <button
@@ -152,28 +174,9 @@
           </div>
         </header>
 
-        <div class="body">
+        <div class="body" onclick={handleDigestLinkClick}>
           {#if email.htmlBody}
-            <iframe
-              class="html-body"
-              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-              title="Email content"
-              srcdoc={email.htmlBody}
-              onload={(e) => {
-                const iframe = /** @type {HTMLIFrameElement} */ (
-                  e.currentTarget
-                );
-                const doc = iframe.contentDocument;
-                if (doc) {
-                  // reset default margins & prevent inner scrollbar
-                  doc.body.style.margin = "0";
-                  doc.body.style.fontFamily = "Rubik, sans-serif";
-                  doc.documentElement.style.overflow = "hidden";
-                  iframe.style.height =
-                    doc.documentElement.scrollHeight + 1 + "px";
-                }
-              }}
-            ></iframe>
+            {@html email.htmlBody}
           {:else}
             <pre>{email.textBody}</pre>
           {/if}
@@ -198,7 +201,7 @@
 
   nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
@@ -206,6 +209,7 @@
   }
 
   .back {
+    margin-right: auto;
     color: var(--text-color);
     font-weight: 500;
     font-size: var(--fs-sm);
@@ -320,11 +324,9 @@
     }
   }
 
-  .html-body {
-    display: block;
-    border: none;
-    width: 100%;
-    overflow: hidden;
+  .body {
+    margin: auto;
+    max-width: 600px;
   }
 
   .body pre {

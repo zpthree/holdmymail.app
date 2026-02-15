@@ -198,7 +198,6 @@
   h1 {
     margin: 0 0 0.25rem;
     font-size: var(--fs-xl);
-    font-family: var(--font-serif);
   }
 
   .updated {

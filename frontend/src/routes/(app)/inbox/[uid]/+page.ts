@@ -14,9 +14,13 @@ export const load: PageLoad = async ({ params, url }) => {
   // get email
   const email = await emailApi.get(params.uid, token);
 
-  // mark email as read, if it hasn't been read yet
-  if (email && !email.read) {
-    emailApi.markRead(params.uid, token).catch(() => {});
+  // remove <style> tags from email body to prevent them from affecting site styles
+  if (email && email.htmlBody) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(email.htmlBody, "text/html");
+    const styleTags = doc.querySelectorAll("style");
+    styleTags.forEach((tag) => tag.remove());
+    email.htmlBody = doc.documentElement.outerHTML;
   }
 
   // get "from" query parameter - used to make back link dynamic

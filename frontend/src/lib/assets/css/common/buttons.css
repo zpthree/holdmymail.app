@@ -19,7 +19,7 @@
 }
 
 .btn-black {
-  border: 0.2rem solid var(--black);
+  border: 0.1rem solid var(--black);
   background-color: var(--black);
   color: var(--white);
   text-align: center;
@@ -30,7 +30,7 @@
 }
 
 .btn-white {
-  border: 0.2rem solid var(--black);
+  border: 0.1rem solid var(--black);
   background-color: var(--white);
   color: var(--black);
   text-align: center;
@@ -42,7 +42,7 @@
 }
 
 .btn-accent {
-  border: 0.2rem solid var(--accent);
+  border: 0.1rem solid var(--accent);
   background-color: var(--accent);
   color: var(--white);
   text-align: center;

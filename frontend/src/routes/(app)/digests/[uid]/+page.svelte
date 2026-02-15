@@ -1,12 +1,22 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
-  import { page } from "$app/stores";
+  import { preloadData, pushState, goto } from "$app/navigation";
+  import { page } from "$app/state";
   import type { Digest } from "$lib/api";
   import SEO from "$lib/components/SEO.svelte";
+  import Modal from "$lib/components/Modal.svelte";
+  import InboxUID from "../../inbox/[uid]/+page.svelte";
 
-  let { data } = $props();
+  let {
+    data,
+  }: {
+    data: { digest: Digest | null };
+    shallow: boolean;
+  } = $props();
+
   let digest = $derived<Digest | null>(data.digest);
-  const uid = $derived($page.params.uid);
+  const uid = $derived(page.params.uid);
+  let uid_open = $state(false);
 
   function formatDate(ts: number): string {
     return new Date(ts).toLocaleDateString("en-US", {
@@ -19,7 +29,43 @@
       timeZone: $auth.user?.timezone || undefined,
     });
   }
+
+  export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
+    const target = e.target as HTMLElement;
+    if (target?.tagName !== "A") return;
+
+    const anchor = target as HTMLAnchorElement;
+    if (anchor.origin !== window.location.origin) {
+      e.preventDefault();
+      window.open(anchor.href, "_blank");
+      return;
+    }
+
+    const { href } = anchor;
+
+    // prevent navigation
+    e.preventDefault();
+
+    const result = await preloadData(href);
+    console.log(result);
+    if (result.type === "loaded" && result.status === 200) {
+      pushState(href, { selected: result.data });
+      uid_open = true;
+    } else {
+      goto(href);
+    }
+  }
 </script>
+
+<Modal bind:isOpen={uid_open} close={() => history.back()}>
+  {#if page.state.selected}
+    <!-- pass page data to the +page.svelte component,
+		     just like SvelteKit would on navigation -->
+    <div class="shallow">
+      <InboxUID data={page.state.selected} shallow={true} />
+    </div>
+  {/if}
+</Modal>
 
 <SEO
   path={`/digests/${uid}`}
@@ -42,7 +88,7 @@
       <h1 style="font-size: var(--fs-xl)">{digest.subject}</h1>
     </header>
 
-    <article>
+    <article on:click={handleDigestLinkClick}>
       <div class="body">
         {@html digest.htmlBody}
       </div>
@@ -94,7 +140,7 @@
   }
 
   article {
-    border: 0.3rem solid var(--text-color);
+    border: 0.15rem solid var(--text-color);
     border-radius: var(--br-lg);
     background: var(--bg-color-2);
     overflow: hidden;
@@ -106,6 +152,10 @@
 
   .body :global(table) {
     max-width: 100%;
+
+    :global(a:hover) {
+      text-decoration: underline !important;
+    }
   }
 
   .body :global(img) {
@@ -117,5 +167,15 @@
     padding: 3rem;
     color: #cc0000;
     text-align: center;
+  }
+
+  :global(#modal-children > div) {
+    position: relative;
+    margin: auto;
+    width: 100vw;
+    max-width: 48rem;
+    height: 100%;
+    overflow: auto;
+    overscroll-behavior-y: contain;
   }
 </style>

@@ -45,7 +45,7 @@
       </a>
       <button
         type="button"
-        class="btn btn-white"
+        class="btn btn-black"
         onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
       >
         <span>Menu</span>
@@ -61,9 +61,9 @@
     right: 0;
     left: 0;
     z-index: 10;
+    backdrop-filter: blur(5px);
     margin: auto 1rem;
     border-radius: 0 0 35px 35px;
-    background-color: var(--bg-color);
     padding-top: 1.5rem;
     max-width: calc(var(--container-width) + 4rem);
 
@@ -76,9 +76,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 0.15rem solid var(--black);
     border-radius: var(--br-full);
-    border-block: 0.1rem solid var(--black);
-    background-color: var(--black);
+    background-color: var(--bg-color);
     padding-inline: 1.5rem 1rem;
     height: 4rem;
 
@@ -97,6 +97,10 @@
 
     @media screen and (width > 768px) {
       height: 2rem;
+    }
+
+    :global(svg) {
+      color: var(--text-color);
     }
   }
 
@@ -169,7 +173,7 @@
   ul {
     display: none;
     margin: auto;
-    padding: 0;
+    padding: 0.2rem;
     width: fit-content;
     max-width: var(--container-width);
     overflow: clip;
@@ -184,9 +188,12 @@
 
   ul a {
     display: block;
+    transition:
+      background-color 150ms,
+      color 150ms;
     border-radius: var(--br-full);
     padding: 0.5rem 1rem;
-    color: var(--white);
+    color: var(--black);
     font-weight: bold;
     font-size: var(--fs-base);
     text-align: center;
@@ -194,8 +201,12 @@
 
     &.selected,
     &:hover {
-      background-color: var(--white);
-      color: var(--black);
+      background-color: var(--accent);
+      color: var(--white);
     }
+  }
+
+  .btn {
+    padding-inline: 1rem;
   }
 </style>

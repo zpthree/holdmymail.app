@@ -5,7 +5,9 @@ declare global {
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}
-		// interface PageState {}
+		interface PageState {
+			selected?: { email: import('$lib/api').Email | null };
+		}
 		// interface Platform {}
 	}
 }

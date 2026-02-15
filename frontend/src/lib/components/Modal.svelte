@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade, fly } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { trapFocus } from "$lib/trapFocus";
   import { portal } from "$lib/actions.js";
 
@@ -9,23 +9,32 @@
 
   function closeWithEscape(e: KeyboardEvent): void {
     if (e.key === "Escape") {
-      isOpen = false;
+      closeModal();
+    }
+  }
+
+  /* close modal */
+  function closeModal() {
+    isOpen = false;
+
+    if (close) {
+      close();
     }
   }
 
   let {
     isOpen = $bindable(false),
-    transition = { y: -20, duration: 15 },
+    transition = { x: 200, duration: 150 },
     classes = "",
     children,
+    close,
   }: {
     isOpen?: boolean;
     transition?: { y?: number; x?: number; duration?: number };
     classes?: string;
     children?: import("svelte").Snippet;
+    close?: () => void;
   } = $props();
-
-  console.log({ isOpen });
 </script>
 
 <svelte:window onkeydown={initTrapFocus} onkeyup={closeWithEscape} />
@@ -37,16 +46,18 @@
     class:window-noscroll={isOpen}
     use:portal={"modals"}
   >
-    <div
-      id="modal-overlay"
-      aria-hidden="true"
-      onclick={() => (isOpen = false)}
-    ></div>
+    <div id="modal-overlay" aria-hidden="true" onclick={closeModal}></div>
 
     <div id="modal-children" transition:fly={transition}>
-      {#if children}
-        {@render children()}
-      {/if}
+      <div>
+        <button type="button" class="btn btn-accent" onclick={closeModal}
+          >Close</button
+        >
+
+        {#if children}
+          {@render children()}
+        {/if}
+      </div>
     </div>
   </div>
 {/if}
@@ -76,9 +87,17 @@
     right: 0;
     bottom: 0;
     z-index: 30;
+    background: var(--bg-color);
   }
 
   :global(html:has(.window-noscroll), html:has(.window-noscroll) body) {
     overflow: hidden;
+  }
+
+  #modal button {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    padding-block: 0.35rem;
   }
 </style>

@@ -33,24 +33,51 @@
   });
 </script>
 
-<div>
+<div class="app-wrapper">
   {@render children()}
 </div>
 
-<footer class="centered">
-  <p>
-    <a href="/privacy">Privacy Policy</a>
-  </p>
+<!-- Portal slot for Modals -->
+<div id="modals"></div>
+
+<footer>
+  <ul>
+    <li>
+      <a href="/privacy">Privacy Policy</a>
+    </li>
+    <li>
+      <a href="/terms-and-conditions">Terms and Conditions</a>
+    </li>
+  </ul>
 </footer>
 
 <style>
-  div {
+  .app-wrapper {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 4rem);
   }
 
   footer {
-    font-size: var(--fs-sm);
+    padding: 0 0 1rem;
+    font-size: var(--fs-xs);
+
+    ul {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    a {
+      color: var(--text-color);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 </style>

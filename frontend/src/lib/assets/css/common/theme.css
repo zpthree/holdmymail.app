@@ -2,23 +2,24 @@
   /* colors */
   --black: oklch(0 0 0);
   --white: oklch(1 0 0);
-  --offwhite: oklch(99.06% 0.01 78.28);
+  --offwhite: oklch(0.9571 0.0148 80.71);
   --accent: oklch(47.72% 0.19 23.59);
 
   --bg-color: var(--offwhite);
   --bg-color-2: var(--white);
   --text-color: var(--black);
 
-  @media (prefers-color-scheme: dark) {
+  /* @media (prefers-color-scheme: dark) {
     --bg-color: oklch(from var(--black) 25% c h);
     --bg-color-2: oklch(from var(--black) 30% c h);
     --text-color: var(--offwhite);
-  }
+  } */
 
   --font-serif: "Playfair Display", serif;
   --font-sans: "Rubik", sans-serif;
 
   /* font size */
+  --fs-xs: clamp(0.75rem, 0.1vi + 0.7rem, 0.85rem);
   --fs-sm: clamp(0.85rem, 0.2vi + 0.8rem, 0.95rem);
   --fs-base: clamp(1rem, 0.34vi + 0.91rem, 1.19rem);
   --fs-md: clamp(1.25rem, 0.61vi + 1.1rem, 1.58rem);

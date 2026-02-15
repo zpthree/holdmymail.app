@@ -19,7 +19,7 @@ body {
     sans-serif;
   font-size: 14px;
   color: #000;
-  background: oklch(99.06% 0.01 78.28);
+  background: oklch(0.9571 0.0148 80.71);
 }
 
 .hidden {
@@ -237,4 +237,26 @@ label {
 .banner.error {
   background: #fce4ec;
   color: #c62828;
+}
+
+/* ── Footer ── */
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+
+.privacy-link {
+  color: #0066cc;
+  font-size: 0.75rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.privacy-link:hover {
+  text-decoration: underline;
 }
