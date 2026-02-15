@@ -1,7 +1,7 @@
 :root {
   /* colors */
   --black: oklch(0.1868 0.0148 80.71);
-  --white: oklch(1 0 0);
+  --white: oklch(0.9912 0.0049 80.71);
   --offwhite: oklch(0.9571 0.0148 80.71);
   --accent: oklch(47.72% 0.19 23.59);
 

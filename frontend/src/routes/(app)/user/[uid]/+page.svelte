@@ -201,7 +201,7 @@
         <span>Email</span>
         <input type="email" bind:value={email} required />
       </label>
-      <button type="submit" class="btn btn-white" disabled={saving}>
+      <button type="submit" class="btn btn-black" disabled={saving}>
         {saving ? "Saving…" : "Update Email"}
       </button>
     </form>
@@ -229,7 +229,7 @@
           required
         />
       </label>
-      <button type="submit" class="btn btn-white" disabled={changingPassword}>
+      <button type="submit" class="btn btn-black" disabled={changingPassword}>
         {changingPassword ? "Updating…" : "Change Password"}
       </button>
     </form>
@@ -292,7 +292,7 @@
         </select>
         <span class="field-hint">Used for scheduling delivery times</span>
       </label>
-      <button type="submit" class="btn btn-white" disabled={savingDelivery}>
+      <button type="submit" class="btn btn-black" disabled={savingDelivery}>
         {savingDelivery ? "Saving…" : "Save Delivery Settings"}
       </button>
     </form>

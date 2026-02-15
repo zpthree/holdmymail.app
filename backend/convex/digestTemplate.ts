@@ -184,16 +184,16 @@ export function buildDigestHtml(
       body,
       #digest-table {
         background-color: #17120c !important;
-        color: #f6f0e6 !important;
+        color: #fefcf9 !important;
       }
 
       a {
-        color: #f6f0e6 !important;
+        color: #fefcf9 !important;
       }
 
       h1,
       h2 {
-        color: #f6f0e6 !important;
+        color: #fefcf9 !important;
       }
 
       .tag,
@@ -206,8 +206,8 @@ export function buildDigestHtml(
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f6f0e6; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table id="digest-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f6f0e6; padding: 32px 0;">
+<body style="margin: 0; padding: 0; background-color: #fefcf9; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table id="digest-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #fefcf9; padding: 32px 0;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%;">
