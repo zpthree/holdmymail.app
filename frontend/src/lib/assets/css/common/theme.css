@@ -1,6 +1,6 @@
 :root {
   /* colors */
-  --black: oklch(0.1868 0.0148 80.71);
+  --black: oklch(0.1179 0 80.71);
   --white: oklch(0.9912 0.0049 80.71);
   --offwhite: oklch(0.9571 0.0148 80.71);
   --accent: oklch(47.72% 0.19 23.59);
@@ -10,8 +10,8 @@
   --text-color: var(--black);
 
   @media (prefers-color-scheme: dark) {
-    --bg-color: oklch(0.1868 0.0148 80.71);
-    --bg-color-2: oklch(from var(--black) 25% c h);
+    --bg-color: var(--black);
+    --bg-color-2: oklch(0.1868 0.0148 80.71);
     --text-color: var(--offwhite);
   }
 

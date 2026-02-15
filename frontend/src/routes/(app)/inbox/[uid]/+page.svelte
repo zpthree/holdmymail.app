@@ -170,7 +170,7 @@
           {#if email.htmlBody}
             <iframe
               class="html-body"
-              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-scripts"
               title="Email content"
               srcdoc={email.htmlBody}
               onload={(e) => {
@@ -258,6 +258,19 @@
                     ) {
                       clickEvent.preventDefault();
                       window.open((target as HTMLAnchorElement).href, "_blank");
+                    }
+                  });
+
+                  // Bubble Escape key from iframe to close modal
+                  doc.addEventListener("keydown", (keyEvent) => {
+                    if (keyEvent.key === "Escape") {
+                      window.dispatchEvent(
+                        new KeyboardEvent("keyup", {
+                          key: "Escape",
+                          code: "Escape",
+                          bubbles: true,
+                        }),
+                      );
                     }
                   });
                 }

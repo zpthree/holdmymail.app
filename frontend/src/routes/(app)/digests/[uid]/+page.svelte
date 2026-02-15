@@ -30,32 +30,9 @@
     });
   }
 
-  export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
-    const target = e.target as HTMLElement;
-    if (target?.tagName !== "A") return;
+  // export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
 
-    const anchor = target as HTMLAnchorElement;
-
-    if (anchor.origin !== window.location.origin) {
-      e.preventDefault();
-      window.open(anchor.href, "_blank");
-      return;
-    }
-
-    const { href } = anchor;
-
-    // prevent navigation
-    e.preventDefault();
-
-    const result = await preloadData(href);
-    console.log(result);
-    if (result.type === "loaded" && result.status === 200) {
-      pushState(href, { selected: result.data });
-      uid_open = true;
-    } else {
-      goto(href);
-    }
-  }
+  // }
 </script>
 
 <Modal bind:isOpen={uid_open} close={() => history.back()}>
@@ -85,9 +62,73 @@
       <h1 style="font-size: var(--fs-xl)">{digest.subject}</h1>
     </header>
 
-    <article on:click={handleDigestLinkClick}>
+    <article>
       <div class="body">
-        {@html digest.htmlBody}
+        <iframe
+          srcdoc={digest.htmlBody}
+          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+          title="Digest content"
+          onload={(e) => {
+            const iframe = /** @type {HTMLIFrameElement} */ (e.currentTarget);
+            const doc = iframe.contentDocument;
+            if (doc) {
+              // reset default margins & prevent inner scrollbar
+              doc.body.style.margin = "0";
+              doc.body.style.fontFamily = "Rubik, sans-serif";
+              doc.documentElement.style.overflow = "hidden";
+              iframe.style.height = doc.documentElement.scrollHeight + 1 + "px";
+            }
+
+            // Add click handler to iframe content
+            doc.addEventListener("click", async (clickEvent) => {
+              const target = clickEvent.target as HTMLElement;
+              // if (
+              //   target.tagName === "A" &&
+              //   (target as HTMLAnchorElement).href
+              // ) {
+              //   clickEvent.preventDefault();
+              //   window.open((target as HTMLAnchorElement).href, "_blank");
+              // }
+
+              if (target?.tagName !== "A") return;
+
+              const anchor = target as HTMLAnchorElement;
+
+              if (anchor.origin !== window.location.origin) {
+                clickEvent.preventDefault();
+                window.open(anchor.href, "_blank");
+                return;
+              }
+
+              const { href } = anchor;
+
+              // prevent navigation
+              clickEvent.preventDefault();
+
+              const result = await preloadData(href);
+              console.log(result);
+              if (result.type === "loaded" && result.status === 200) {
+                pushState(href, { selected: result.data });
+                uid_open = true;
+              } else {
+                goto(href);
+              }
+            });
+
+            // Bubble Escape key from iframe to close modal
+            doc.addEventListener("keydown", (keyEvent) => {
+              if (keyEvent.key === "Escape") {
+                window.dispatchEvent(
+                  new KeyboardEvent("keyup", {
+                    key: "Escape",
+                    code: "Escape",
+                    bubbles: true,
+                  }),
+                );
+              }
+            });
+          }}
+        ></iframe>
       </div>
     </article>
   {:else}
@@ -100,26 +141,6 @@
     margin: 0 auto;
     padding: 2rem;
     max-width: var(--container-width);
-  }
-
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
-  }
-
-  .back {
-    color: var(--text-color);
-    font-weight: 500;
-    font-size: var(--fs-sm);
-    text-decoration: none;
-  }
-
-  .back:hover {
-    text-decoration: underline;
   }
 
   header {
@@ -145,6 +166,13 @@
 
   .body {
     padding: 0;
+
+    iframe {
+      display: block;
+      border: none;
+      width: 100%;
+      overflow: hidden;
+    }
   }
 
   .body :global(table) {
