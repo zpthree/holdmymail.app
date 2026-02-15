@@ -36,10 +36,7 @@
 
     const anchor = target as HTMLAnchorElement;
 
-    const anchorDomain = new URL(anchor.href).hostname.replace(/^www\./, "");
-    const currentDomain = window.location.hostname.replace(/^www\./, "");
-
-    if (anchorDomain !== currentDomain) {
+    if (anchor.origin !== window.location.origin) {
       e.preventDefault();
       window.open(anchor.href, "_blank");
       return;

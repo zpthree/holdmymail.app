@@ -233,7 +233,7 @@ export function buildDigestHtml(
           <tr>
             <td style="padding: 8px 24px 24px; text-align: center;">
               <a
-                href="https://holdmymail.app/inbox"
+                href="https://www.holdmymail.app/inbox"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
                 View Digest →
@@ -246,7 +246,7 @@ export function buildDigestHtml(
           <tr>
             <td style="padding: 8px 24px 24px; text-align: center;">
               <a
-                href="https://holdmymail.app/links"
+                href="https://www.holdmymail.app/links"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
                 View Links →
@@ -259,7 +259,7 @@ export function buildDigestHtml(
             <td style="padding: 32px 24px 0; text-align: center;">
               <p style="margin: 0; font-size: 12px; color: #bbb;">
                 You're receiving this because you have scheduled email delivery on
-                <a href="https://holdmymail.app" style="color: #bbb;">Hold My Mail</a>.
+                <a href="https://www.holdmymail.app" style="color: #bbb;">Hold My Mail</a>.
               </p>
               <p style="margin: 8px 0 0; font-size: 12px;">
                 <a href="${process.env.FRONTEND_URL}/sources" style="color: #bbb;">Manage delivery preferences</a>
