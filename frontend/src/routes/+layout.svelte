@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { PUBLIC_FATHOM_ID } from "$env/static/public";
+  import * as Fathom from "fathom-client";
   import "$lib/assets/css/main.css";
   import { setAuth } from "$lib/stores/auth";
   import { authApi } from "$lib/api";
   import { browser } from "$app/environment";
+  import { onNavigate } from "$app/navigation";
   import { onMount } from "svelte";
 
   let { children } = $props();
@@ -30,6 +33,14 @@
     } else {
       setAuth(null, null);
     }
+
+    Fathom.load(PUBLIC_FATHOM_ID, {
+      includedDomains: ["holdmymail.app"],
+    });
+  });
+
+  onNavigate(() => {
+    Fathom.trackPageview();
   });
 </script>
 
