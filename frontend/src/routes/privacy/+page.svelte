@@ -15,7 +15,7 @@
   <a href="/" class="back">← Back</a>
 
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: February 8, 2026</p>
+  <p class="updated">Last updated: February 16, 2026</p>
 
   <section>
     <h2>Introduction</h2>
@@ -53,9 +53,18 @@
 
     <h3>Usage Data</h3>
     <p>
-      We collect basic usage data such as when you log in and what features you
-      use. We do not use third-party analytics or tracking scripts.
-    </p>
+      We collect analytics data about your interactions with our website using
+      <a href="https://usefathom.com" target="_blank" rel="noopener noreferrer"
+        >Fathom Analytics</a
+      >. Fathom collects information such as pages visited, time spent, and
+      referral source — but does not track personal information, use cookies, or
+      share data with third parties. See
+      <a
+        href="https://usefathom.com/privacy"
+        target="_blank"
+        rel="noopener noreferrer">Fathom's privacy policy</a
+      >
+      for details.
   </section>
 
   <section>
@@ -131,6 +140,9 @@
     <h2>Third-Party Services</h2>
     <p>We use the following third-party services to operate Hold My Mail:</p>
     <ul>
+      <li>
+        <strong>Fathom Analytics</strong> — privacy-friendly website analytics
+      </li>
       <li>
         <strong>Convex</strong> — database and backend infrastructure
       </li>
