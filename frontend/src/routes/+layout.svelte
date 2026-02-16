@@ -35,7 +35,7 @@
     }
 
     Fathom.load(PUBLIC_FATHOM_ID, {
-      includedDomains: ["holdmymail.app"],
+      includedDomains: ["holdmymail.app", "www.holdmymail.app"],
     });
   });
 
