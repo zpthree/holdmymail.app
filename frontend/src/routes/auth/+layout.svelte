@@ -41,21 +41,20 @@
 
   .auth-container {
     border-radius: 8px;
-    background-color: var(--bg-color-2);
     padding: 2rem;
     width: 100%;
     max-width: 400px;
+
+    @media screen and (width > 480px) {
+      background-color: var(--bg-color-2);
+    }
 
     @media (prefers-color-scheme: dark) {
       background-color: var(--bg-color);
     }
 
     @media screen and (width > 480px) {
-      border: 0.3rem solid var(--text-color);
-
-      @media (prefers-color-scheme: dark) {
-        /* border-color: var(--bg-color-2); */
-      }
+      border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     }
   }
 
