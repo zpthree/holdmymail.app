@@ -48,9 +48,18 @@
     }
   }
 
+  type Filter = "confirmations" | "all";
+  let filter = $state<Filter>("confirmations");
+
+  let filteredEmails = $derived(
+    filter === "confirmations"
+      ? emails.filter((e) => /confirm/i.test(e.subject || ""))
+      : emails,
+  );
+
   type DateGroup = { month: string; day: string; emails: Email[] };
 
-  let grouped = $derived<DateGroup[]>(groupByDate(emails));
+  let grouped = $derived<DateGroup[]>(groupByDate(filteredEmails));
 
   let selectMode = $state(false);
   let selected = $state<Set<string>>(new Set());
@@ -142,8 +151,26 @@
 
 <div class="mail-list">
   <header>
-    <h1 style="font-size: var(--fs-xl)">Inbox</h1>
-    {#if emails.length > 0}
+    <div class="header-top">
+      <h1 style="font-size: var(--fs-xl)">Inbox</h1>
+      <div class="filter-tabs">
+        <button
+          class="filter-tab"
+          class:active={filter === "confirmations"}
+          onclick={() => (filter = "confirmations")}
+        >
+          Confirmations
+        </button>
+        <button
+          class="filter-tab"
+          class:active={filter === "all"}
+          onclick={() => (filter = "all")}
+        >
+          All
+        </button>
+      </div>
+    </div>
+    {#if filteredEmails.length > 0}
       <div class="bulk-actions">
         {#if selectMode}
           <button class="btn btn-white" onclick={toggleAll}>
@@ -167,11 +194,17 @@
     {/if}
   </header>
 
-  {#if emails.length === 0}
+  {#if filteredEmails.length === 0}
     <div class="empty">
-      <p>No emails yet</p>
+      <p>
+        {filter === "confirmations"
+          ? "No confirmation emails"
+          : "No emails yet"}
+      </p>
       <p class="hint">
-        Emails sent to your @inbox.holdmymail.app address will appear here
+        {filter === "confirmations"
+          ? 'Emails with "confirm" in the subject will appear here'
+          : "Emails sent to your @inbox.holdmymail.app address will appear here"}
       </p>
     </div>
   {:else}
@@ -249,10 +282,49 @@
 
   header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-radius: var(--br-full);
+    background: oklch(from var(--text-color) 0.2 c h);
+    padding: 0.2rem;
+  }
+
+  .filter-tab {
+    transition:
+      background 150ms,
+      color 150ms;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--br-full);
+    background: transparent;
+    padding: 0.3rem 0.75rem;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: var(--fs-sm);
+
+    &.active {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    &:not(.active):hover {
+      background: oklch(from var(--text-color) 0.3 c h);
+    }
   }
 
   h1 {

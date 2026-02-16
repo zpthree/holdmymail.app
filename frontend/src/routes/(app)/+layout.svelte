@@ -3,6 +3,8 @@
   import { goto } from "$app/navigation";
   import Header from "$lib/components/Header.svelte";
   import MobileMenu from "$lib/components/MobileMenu.svelte";
+  import { subscribeToUnread, unsubscribeFromUnread } from "$lib/stores/inbox";
+  import { onDestroy } from "svelte";
 
   let { children, data } = $props();
 
@@ -13,6 +15,18 @@
     if (!$auth.loading && !$auth.token) {
       goto("/auth/login");
     }
+  });
+
+  // Subscribe to unread inbox count via Convex live query
+  $effect(() => {
+    const userId = $auth.user?.id;
+    if (userId) {
+      subscribeToUnread(userId);
+    }
+  });
+
+  onDestroy(() => {
+    unsubscribeFromUnread();
   });
 </script>
 

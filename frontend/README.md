@@ -27,17 +27,20 @@ A SvelteKit 2 + Svelte 5 single-page application for managing held emails, sourc
 │  ┌────────────────────────────────────────────────┐ │
 │  │              Stores / Data                     │ │
 │  │  auth (writable) — user, token, loading        │ │
+│  │  inbox (writable) — unreadCount (live)         │ │
 │  │  constants   — PAGE_SIZE (shared)              │ │
 │  └────────────────────────────────────────────────┘ │
-│                      │                              │
-│                    fetch (REST + pagination)         │
-│                      │                              │
-└──────────────────────┼──────────────────────────────┘
-                       │
-               ┌───────▼───────┐
-               │  Hono Backend │
-               │  localhost:3000│
-               └───────────────┘
+│                      │                  │           │
+│                    fetch            WebSocket       │
+│                  (REST + pagination)  (Convex       │
+│                      │             live query)      │
+│                      │                  │           │
+└──────────────────────┼──────────────────┼───────────┘
+                       │                  │
+               ┌───────▼───────┐  ┌───────▼────────┐
+               │  Hono Backend │  │  Convex Cloud  │
+               │  localhost:3000│  │  (live queries)│
+               └───────────────┘  └────────────────┘
 ```
 
 ## Tech Stack
@@ -62,10 +65,12 @@ frontend/
 │   │   ├── api.ts                      # API client — typed wrappers for all endpoints
 │   │   ├── constants.ts                # Shared constants (PAGE_SIZE)
 │   │   ├── index.ts                    # Lib barrel export
+│   │   ├── convex.ts                       # ConvexClient singleton for live queries
 │   │   ├── stores/
-│   │   │   └── auth.ts                 # Auth store (user, token, loading)
+│   │   │   ├── auth.ts                 # Auth store (user, token, loading)
+│   │   │   └── inbox.ts                # Unread confirmation count (Convex live query)
 │   │   ├── components/
-│   │   │   ├── Header.svelte           # Global nav bar with tab navigation
+│   │   │   ├── Header.svelte           # Global nav bar with tab navigation + unread badge
 │   │   │   └── Logo.svelte             # SVG logo component
 │   │   └── assets/
 │   │       └── css/
@@ -170,6 +175,20 @@ frontend/
 - `setAuth(user, token)` — saves to store + `localStorage`
 - `clearAuth()` — wipes store + `localStorage`
 - `loading: true` initially, set to `false` after session restore completes
+
+#### Inbox Store (`$lib/stores/inbox.ts`)
+
+```typescript
+unreadCount: Writable<number>; // live-updated count of unread confirmation emails
+```
+
+- `subscribeToUnread(userId)` — opens a Convex WebSocket subscription to `emails.countUnread`, which returns the number of unread emails whose subject matches `/confirm/i`. The store updates in real time whenever new confirmation emails arrive or are marked read.
+- `unsubscribeFromUnread()` — tears down the WebSocket subscription.
+- Subscription is started in `(app)/+layout.svelte` when the user is authenticated and cleaned up via `onDestroy`.
+
+#### Convex Client (`$lib/convex.ts`)
+
+A singleton `ConvexClient` (WebSocket-based) connected to the Convex deployment URL (`VITE_CONVEX_URL`). Used exclusively for live queries — all data mutations and list loading still go through the REST API. Created lazily on first access, only in the browser.
 
 #### Shared Constants (`$lib/constants.ts`)
 
@@ -319,10 +338,11 @@ Font sizes use fluid `clamp()` scaling from `--fs-sm` through `--fs-headline`.
 
 The `<Header>` component is a fixed top bar with a pill-shaped nav:
 
-- Logo (left), tabs (center), user avatar (right)
-- Tabs: **Inbox**, **Digests**, **Sources**, **Links**
+- Logo (left), tabs (center), user avatar + inbox icon (right)
+- Tabs: **Digests**, **Sources**, **Links**
+- Inbox icon with a live unread badge showing the count of unread confirmation emails (via `$unreadCount` store). Badge caps at "99+".
 - Active tab detection via `$page.url.pathname`
-- "Alpha" badge in the top-left corner
+- "Beta" badge in the top-left corner
 
 ### Layout Pattern
 
@@ -354,9 +374,10 @@ The `<Header>` component is a fixed top bar with a pill-shaped nav:
 
 ## Environment Variables
 
-| Variable       | Description                                        |
-| -------------- | -------------------------------------------------- |
-| `VITE_API_URL` | Backend API URL (default: `http://localhost:3000`) |
+| Variable          | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `VITE_API_URL`    | Backend API URL (default: `http://localhost:3000`)            |
+| `VITE_CONVEX_URL` | Convex deployment URL for live queries (WebSocket connection) |
 
 ## Getting Started
 
@@ -375,7 +396,9 @@ Ensure the backend is running at the URL specified by `VITE_API_URL`.
 ## Key Design Decisions
 
 - **Client-side auth only**: Tokens in `localStorage`, no cookies. This means no SSR for authenticated routes — all data loading happens in the browser. Trade-off: simpler implementation, no CSRF concerns, but no server-side rendering benefits.
-- **REST API with cursor-based pagination**: All data flows through the Hono backend REST API. List pages (inbox, links, digests) use cursor-based pagination (`?limit=&cursor=`) for efficient loading. The frontend loads one page initially and appends more via "Load More" buttons. (Previously used Convex live queries via WebSocket, but these were removed because they loaded all data at once, defeating pagination.)
+- **REST API with cursor-based pagination**: Most data flows through the Hono backend REST API. List pages (inbox, links, digests) use cursor-based pagination (`?limit=&cursor=`) for efficient loading. The frontend loads one page initially and appends more via "Load More" buttons.
+- **Convex live query for unread count**: A single Convex WebSocket subscription (`emails.countUnread`) is used to show a real-time unread confirmation email badge in the header. This is lightweight (returns only a number) and avoids loading full email data over the socket. All other data operations still use REST.
+- **Inbox confirmation filter**: The inbox page defaults to a "Confirmations" filter showing only emails with "confirm" in the subject. Users can toggle to "All" to see everything. This matches the live query, which also counts only unread confirmation emails.
 - **Shared constants**: `PAGE_SIZE` lives in `$lib/constants.ts` and is imported by both `+page.ts` (loader) and `+page.svelte` (component) files. SvelteKit restricts `+page.ts` exports to specific names, so shared values must live in a separate module.
 - **Svelte 5 runes**: Uses `$state`, `$derived`, `$derived.by`, `$effect`, `$props` throughout. Auth store still uses Svelte 4 `writable` for cross-component reactivity. Pagination state uses `$effect` with a `pageInit` guard to seed `$state` from `data` props without triggering `state_referenced_locally` warnings.
 - **Sandboxed iframes for email**: HTML email bodies are isolated in sandboxed iframes to prevent style bleed and XSS while still allowing link clicks.

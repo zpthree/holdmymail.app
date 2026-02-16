@@ -35,6 +35,18 @@ export const create = mutation({
   },
 });
 
+export const countUnread = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const emails = await ctx.db
+      .query("emails")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+    return emails.filter((e) => !e.read && /confirm/i.test(e.subject || ""))
+      .length;
+  },
+});
+
 export const listByUser = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {

@@ -65,7 +65,7 @@ backend/
 ├── convex/
 │   ├── schema.ts             # Convex database schema (tables, indexes)
 │   ├── users.ts              # User queries/mutations + token management
-│   ├── emails.ts             # Email queries/mutations + digest delivery action
+│   ├── emails.ts             # Email queries/mutations + countUnread live query + digest delivery action
 │   ├── senders.ts            # Sender queries/mutations (cascade-deletes emails)
 │   ├── tags.ts               # Tag queries/mutations + resolveNames
 │   ├── links.ts              # Link queries/mutations
@@ -88,6 +88,8 @@ backend/
 3. **Digest Delivery**: A Convex cron job periodically runs `deliverDueEmails`, which queries for emails where `scheduledFor <= now` and `delivered === false`. Emails are grouped by user, rendered into an HTML digest, sent via Postmark, and marked as delivered.
 
 4. **Confirmation Emails**: Emails with "confirm" in the subject are scheduled normally. When a user reads one in the app, `markRead` clears its `scheduledFor` so it drops out of the next digest (they already saw it).
+
+5. **Live Unread Count**: The `countUnread` query returns the number of unread confirmation emails (subject matches `/confirm/i` and `read !== true`) for a given user. The frontend subscribes to this via Convex WebSocket (`ConvexClient.onUpdate`) to show a real-time badge in the header. This is a lightweight live query — it returns only a number, not full email data.
 
 ### Authentication
 
