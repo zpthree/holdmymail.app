@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { convex, api } from "../convex";
 import type { Id } from "../../convex/_generated/dataModel";
+import { sanitizeEmailHtml } from "../emails/sanitizeEmailHtml";
 
 // Postmark inbound webhook payload
 interface PostmarkInbound {
@@ -217,6 +218,10 @@ mailRoutes.post("/", async (c) => {
     timezone: user.timezone, // always use user's timezone
   });
 
+  const sanitizedHtmlBody = payload.HtmlBody
+    ? sanitizeEmailHtml(payload.HtmlBody)
+    : "";
+
   // Store the email
   const email = await convex.mutation(api.emails.create, {
     userId: user._id,
@@ -226,7 +231,7 @@ mailRoutes.post("/", async (c) => {
     to: payload.OriginalRecipient,
     subject: payload.Subject,
     textBody: payload.TextBody || "",
-    htmlBody: payload.HtmlBody || "",
+    htmlBody: sanitizedHtmlBody,
     date: payload.Date,
     messageId: payload.MessageID,
     ...(scheduledFor !== undefined ? { scheduledFor } : {}),

@@ -36,7 +36,7 @@
 
   // mark email as read when page actually loads (not during preload)
   $effect(() => {
-    if (email && !email.read && $auth.token) {
+    if (email && !email.read && $auth.token && uid) {
       emailApi.markRead(uid, $auth.token).catch(() => {});
     }
   });
@@ -170,13 +170,12 @@
           {#if email.htmlBody}
             <iframe
               class="html-body"
-              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-scripts"
+              sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
               title="Email content"
               srcdoc={email.htmlBody}
-              onload={(e) => {
-                const iframe = /** @type {HTMLIFrameElement} */ (
-                  e.currentTarget
-                );
+              onload={(e: Event) => {
+                const iframe = e.currentTarget as HTMLIFrameElement | null;
+                if (!iframe) return;
                 const doc = iframe.contentDocument;
                 if (doc) {
                   // reset default margins & prevent inner scrollbar
@@ -200,7 +199,10 @@
                         background: transparent !important;
                         color: #e0e0e0 !important;
                       }
-                      body * {
+                      [bgcolor],
+                      body *,
+                      div {
+                        background: transparent !important;
                         background-color: transparent !important;
                       }
                       table {
@@ -239,30 +241,36 @@
 
                   // Force remove background colors from table elements
                   if (
-                    doc.preferColorScheme === "dark" ||
                     window.matchMedia("(prefers-color-scheme: dark)").matches
                   ) {
                     const tables = doc.querySelectorAll("table, tr, td, th");
                     tables.forEach((el) => {
-                      el.style.backgroundColor = "transparent";
-                      el.style.backgroundImage = "none";
+                      const htmlEl = el as HTMLElement;
+                      htmlEl.style.backgroundColor = "transparent";
+                      htmlEl.style.backgroundImage = "none";
                     });
                   }
 
                   // Add click handler to iframe content
-                  doc.addEventListener("click", (clickEvent) => {
-                    const target = clickEvent.target as HTMLElement;
+                  doc.addEventListener("click", (clickEvent: MouseEvent) => {
+                    const targetNode = clickEvent.target as Node | null;
+                    const element =
+                      targetNode?.nodeType === 1
+                        ? (targetNode as Element)
+                        : (targetNode?.parentElement ?? null);
+                    const anchor = element?.closest("a[href]");
                     if (
-                      target.tagName === "A" &&
-                      (target as HTMLAnchorElement).href
+                      anchor &&
+                      "href" in anchor &&
+                      typeof anchor.href === "string"
                     ) {
                       clickEvent.preventDefault();
-                      window.open((target as HTMLAnchorElement).href, "_blank");
+                      window.open(anchor.href, "_blank");
                     }
                   });
 
                   // Bubble Escape key from iframe to close modal
-                  doc.addEventListener("keydown", (keyEvent) => {
+                  doc.addEventListener("keydown", (keyEvent: KeyboardEvent) => {
                     if (keyEvent.key === "Escape") {
                       window.dispatchEvent(
                         new KeyboardEvent("keyup", {
@@ -341,7 +349,7 @@
   }
 
   .schedule-fields input {
-    border: 1px solid #ddd;
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: 6px;
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
@@ -431,6 +439,7 @@
     display: block;
     border: none;
     width: 100%;
+    min-height: 20rem;
     overflow: hidden;
   }
 

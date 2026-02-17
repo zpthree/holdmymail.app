@@ -48,7 +48,7 @@
       <input type="email" bind:value={email} required />
     </label>
 
-    <button type="submit" disabled={loading} class="btn btn-black">
+    <button type="submit" disabled={loading} class="btn btn-accent">
       {loading ? "Sending..." : "Send Reset Link"}
     </button>
   </form>
@@ -60,8 +60,7 @@
 
 <style>
   h1 {
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin-bottom: 1rem;
   }
 
   form {
@@ -78,7 +77,7 @@
   }
 
   input {
-    border: 1px solid #ddd;
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: 4px;
     padding: 0.75rem;
     font-size: 1rem;

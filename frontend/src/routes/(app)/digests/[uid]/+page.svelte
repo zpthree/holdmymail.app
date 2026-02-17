@@ -29,10 +29,6 @@
       timeZone: $auth.user?.timezone || undefined,
     });
   }
-
-  // export async function handleDigestLinkClick(e: MouseEvent): Promise<void> {
-
-  // }
 </script>
 
 <Modal bind:isOpen={uid_open} close={() => history.back()}>
@@ -82,14 +78,6 @@
             // Add click handler to iframe content
             doc.addEventListener("click", async (clickEvent) => {
               const target = clickEvent.target as HTMLElement;
-              // if (
-              //   target.tagName === "A" &&
-              //   (target as HTMLAnchorElement).href
-              // ) {
-              //   clickEvent.preventDefault();
-              //   window.open((target as HTMLAnchorElement).href, "_blank");
-              // }
-
               if (target?.tagName !== "A") return;
 
               const anchor = target as HTMLAnchorElement;
@@ -102,11 +90,18 @@
 
               const { href } = anchor;
 
+              if (
+                window.innerWidth < 640 ||
+                target?.classList?.contains("button")
+              ) {
+                goto(href);
+                return;
+              }
+
               // prevent navigation
               clickEvent.preventDefault();
 
               const result = await preloadData(href);
-              console.log(result);
               if (result.type === "loaded" && result.status === 200) {
                 pushState(href, { selected: result.data });
                 uid_open = true;

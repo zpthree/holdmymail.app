@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { convex, api } from "../convex";
 import { authMiddleware } from "../middleware/auth";
 import type { Id } from "../../convex/_generated/dataModel";
+import { sanitizeEmailHtml } from "../emails/sanitizeEmailHtml";
 
 type Env = {
   Variables: {
@@ -33,6 +34,8 @@ emailRoutes.post("/", async (c) => {
     return c.json({ error: "subject and fromEmail required" }, 400);
   }
 
+  const sanitizedHtmlBody = htmlBody ? sanitizeEmailHtml(htmlBody) : "";
+
   const email = await convex.mutation(api.emails.create, {
     userId,
     senderId: senderId as Id<"senders"> | undefined,
@@ -41,7 +44,7 @@ emailRoutes.post("/", async (c) => {
     to: to || "",
     subject,
     textBody: textBody || "",
-    htmlBody: htmlBody || "",
+    htmlBody: sanitizedHtmlBody,
     date: date || new Date().toISOString(),
     messageId: messageId || crypto.randomUUID(),
   });

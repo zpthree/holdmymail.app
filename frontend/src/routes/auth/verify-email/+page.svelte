@@ -76,7 +76,7 @@
     text-align: center;
   }
 
-  .btn {
+  /* .btn {
     display: block;
     transition:
       background-color 200ms ease-in-out,
@@ -98,5 +98,5 @@
     &:hover {
       background-color: hsl(from var(--text-color) h s l / 0.75);
     }
-  }
+  } */
 </style>

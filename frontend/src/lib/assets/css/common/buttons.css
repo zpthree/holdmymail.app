@@ -24,6 +24,10 @@
   color: var(--white);
   text-align: center;
 
+  @media (prefers-color-scheme: dark) {
+    border: 0.1rem solid var(--white);
+  }
+
   &:hover {
     background-color: oklch(from var(--black) 20% c h);
   }
@@ -34,6 +38,10 @@
   background-color: var(--white);
   color: var(--black);
   text-align: center;
+
+  @media (prefers-color-scheme: dark) {
+    border: 0.1rem solid var(--white);
+  }
 
   &:hover {
     background-color: var(--black);

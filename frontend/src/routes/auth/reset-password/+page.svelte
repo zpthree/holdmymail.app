@@ -59,7 +59,7 @@
       <input type="password" bind:value={password} required minlength="8" />
     </label>
 
-    <button type="submit" disabled={loading} class="btn btn-black">
+    <button type="submit" disabled={loading} class="btn btn-accent">
       {loading ? "Resetting..." : "Reset Password"}
     </button>
   </form>
@@ -84,7 +84,7 @@
   }
 
   input {
-    border: 1px solid #ddd;
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: 4px;
     padding: 0.75rem;
     font-size: 1rem;

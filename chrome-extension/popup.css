@@ -101,7 +101,7 @@ input,
 textarea {
   width: 100%;
   padding: 0.55rem 0.65rem;
-  border: 1px solid #ddd;
+  border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
   border-radius: 8px;
   font: inherit;
   font-size: 0.9rem;

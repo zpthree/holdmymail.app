@@ -250,7 +250,7 @@
   input,
   select {
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: 6px;
     padding: 0.5rem 0.75rem;
     width: 100%;
@@ -321,7 +321,7 @@
 
   .color-input {
     cursor: pointer;
-    border: 1px solid #ddd;
+    border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: 50%;
     padding: 0;
     width: 28px;
