@@ -76,6 +76,10 @@ function isLikelyTrackingUrl(url: URL): boolean {
 }
 
 export function sanitizeEmailHtml(html: string): string {
+  if (typeof DOMParser === "undefined") {
+    return html;
+  }
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
 
@@ -84,14 +88,15 @@ export function sanitizeEmailHtml(html: string): string {
     .forEach((node) => node.remove());
 
   doc.querySelectorAll("a[href]").forEach((node) => {
-    if (!(node instanceof HTMLAnchorElement)) return;
+    const href = node.getAttribute("href");
+    if (!href) return;
 
     try {
-      let parsed = new URL(node.href, "https://email.local");
+      let parsed = new URL(href, "https://email.local");
       parsed = unwrapRedirect(parsed);
       parsed = stripTrackingParams(parsed);
-      node.href = parsed.toString();
-      node.rel = "noopener noreferrer nofollow";
+      node.setAttribute("href", parsed.toString());
+      node.setAttribute("rel", "noopener noreferrer nofollow");
     } catch {
       // leave invalid/relative links as-is
     }

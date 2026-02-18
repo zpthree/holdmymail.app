@@ -218,9 +218,14 @@ mailRoutes.post("/", async (c) => {
     timezone: user.timezone, // always use user's timezone
   });
 
-  const sanitizedHtmlBody = payload.HtmlBody
-    ? sanitizeEmailHtml(payload.HtmlBody)
-    : "";
+  let sanitizedHtmlBody = payload.HtmlBody || "";
+  if (sanitizedHtmlBody) {
+    try {
+      sanitizedHtmlBody = sanitizeEmailHtml(sanitizedHtmlBody);
+    } catch {
+      sanitizedHtmlBody = payload.HtmlBody || "";
+    }
+  }
 
   // Store the email
   const email = await convex.mutation(api.emails.create, {
