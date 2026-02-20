@@ -35,6 +35,19 @@ export const create = internalMutation({
   },
 });
 
+export const updateHtmlBody = internalMutation({
+  args: {
+    id: v.id("digests"),
+    htmlBody: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      htmlBody: args.htmlBody,
+    });
+    return await ctx.db.get(args.id);
+  },
+});
+
 export const listByUser = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {

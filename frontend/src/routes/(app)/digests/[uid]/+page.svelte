@@ -51,13 +51,6 @@
 
 <div class="digest-container">
   {#if digest}
-    <header>
-      <p class="meta">
-        {formatDate(digest.sentAt)}
-      </p>
-      <h1 style="font-size: var(--fs-xl)">{digest.subject}</h1>
-    </header>
-
     <article>
       <div class="body">
         <iframe
@@ -136,20 +129,6 @@
     margin: 0 auto;
     padding: 2rem;
     max-width: var(--container-width);
-  }
-
-  header {
-    margin-bottom: 1.5rem;
-  }
-
-  h1 {
-    margin: 1rem 0 0 0;
-  }
-
-  .meta {
-    margin: 0;
-    color: var(--text-color);
-    font-size: var(--fs-sm);
   }
 
   article {

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Hold My Link",
   "description": "Quickly save links to your Hold My Mail account",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": ["https://api.holdmymail.app/*"],
   "homepage_url": "https://holdmymail.app",

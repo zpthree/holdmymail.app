@@ -222,9 +222,28 @@ export const deliverDueEmails = internalAction({
         freq && freq !== "none"
           ? freq.charAt(0).toUpperCase() + freq.slice(1) + " "
           : "";
-      const html = buildDigestHtml(digestEmails, new Date(), freq, digestLinks);
 
       const subject = `Your ${freqCap}Hold My Mail Digest – ${emails.length} email${emails.length === 1 ? "" : "s"} waiting`;
+
+      const digest = await ctx.runMutation(internal.digests.create, {
+        userId: userId as Id<"users">,
+        emailIds: emails.map((e) => e._id),
+        subject,
+        htmlBody: "",
+        emailCount: emails.length,
+      });
+
+      if (!digest?._id) {
+        throw new Error("Failed to create digest record");
+      }
+
+      const html = buildDigestHtml(
+        digestEmails,
+        new Date(),
+        digest._id,
+        freq,
+        digestLinks,
+      );
 
       // Send via Postmark
       await fetch("https://api.postmarkapp.com/email", {
@@ -243,13 +262,10 @@ export const deliverDueEmails = internalAction({
         }),
       });
 
-      // Save digest to database
-      await ctx.runMutation(internal.digests.create, {
-        userId: userId as Id<"users">,
-        emailIds: emails.map((e) => e._id),
-        subject,
+      // Save final digest HTML to database
+      await ctx.runMutation(internal.digests.updateHtmlBody, {
+        id: digest._id,
         htmlBody: html,
-        emailCount: emails.length,
       });
 
       // Mark all as delivered

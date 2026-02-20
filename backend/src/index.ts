@@ -88,7 +88,13 @@ app.get("/preview/digest", (c) => {
     },
   ];
 
-  const html = buildDigestHtml(sampleEmails, new Date(), "weekly", sampleLinks);
+  const html = buildDigestHtml(
+    sampleEmails,
+    new Date(),
+    "sample-digest-id",
+    "weekly",
+    sampleLinks,
+  );
   return c.html(html);
 });
 

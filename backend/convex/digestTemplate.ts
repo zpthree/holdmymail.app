@@ -43,7 +43,7 @@ function renderTagBadge(tag: string): string {
         <td style="padding: 0 0 16px 0;">
           <table cellpadding="0" cellspacing="0" role="presentation">
             <tr>
-              <td class="tag" style="background-color:#000;border-radius:4px;padding:3px 8px;text-align:center;">
+              <td class="tag" style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;">
                 <span style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">
                   ${escapeHtml(tag)}
                 </span>
@@ -155,6 +155,7 @@ function capitalizeFirst(s: string): string {
 export function buildDigestHtml(
   emails: DigestEmail[],
   date: Date,
+  digestId: string,
   frequency?: string,
   links?: DigestLink[],
 ): string {
@@ -260,36 +261,20 @@ export function buildDigestHtml(
             </td>
           </tr>
 
-           <!-- CTA -->
+          ${linksSection}
+
+          <!-- CTA -->
           <tr>
-            <td style="padding: 8px 24px 24px; text-align: center;">
+            <td style="padding: 8px 24px; text-align: center;">
               <a
                 class="button"
-                href="https://www.holdmymail.app/inbox"
+                href="${process.env.FRONTEND_URL}/digests/${digestId}"
                 style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
               >
                 View Digest
               </a>
             </td>
           </tr>
-
-          ${linksSection}
-
-          ${
-            linksSection
-              ? ""
-              : `<tr>
-            <td style="padding: 8px 24px 24px; text-align: center;">
-              <a
-                class="button"
-                href="https://www.holdmymail.app/links"
-                style="display: inline-block; background-color: #000; color: #fff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;"
-              >
-                View Links
-              </a>
-            </td>
-          </tr>`
-          }
 
           <!-- Footer -->
           <tr>

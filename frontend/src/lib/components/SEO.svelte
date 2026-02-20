@@ -1,4 +1,6 @@
 <script>
+  import { unreadCount } from "$lib/stores/inbox";
+
   export let path = "/",
     data;
   const fallbackImage = "";
@@ -7,7 +9,8 @@
 
 <svelte:head>
   <title
-    >{data.meta_title
+    >{$unreadCount > 0 ? `(${$unreadCount})` : ""}
+    {data.meta_title
       ? `${data.meta_title} - Hold My Mail`
       : fallbackMetaTitle}</title
   >

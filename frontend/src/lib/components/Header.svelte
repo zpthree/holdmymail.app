@@ -83,9 +83,7 @@
     right: 0;
     left: 0;
     z-index: 10;
-    backdrop-filter: blur(5px);
     margin: auto 1rem;
-    border-radius: 0 0 35px 35px;
     padding-top: 1.5rem;
     max-width: var(--container-width);
 
@@ -98,9 +96,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* background-color: var(--bg-color); */
+    backdrop-filter: blur(10px);
     border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     border-radius: var(--br-full);
-    background-color: var(--bg-color);
     padding-inline: 1.5rem 1rem;
     height: 4rem;
 
