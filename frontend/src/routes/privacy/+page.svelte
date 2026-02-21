@@ -17,7 +17,7 @@
 
   <div class="privacy">
     <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: February 16, 2026</p>
+    <p class="updated">Last updated: February 21, 2026</p>
 
     <section>
       <h2>Introduction</h2>
@@ -105,9 +105,9 @@
     <section>
       <h2>Authentication &amp; Security</h2>
       <p>
-        We use token-based authentication. Your session token is stored in your
-        browser's local storage and expires after 30 days. All API communication
-        occurs over HTTPS.
+        We use token-based authentication. Session credentials are stored in
+        first-party cookies with a 30-day expiration and are scoped to this
+        site. All API communication occurs over HTTPS.
       </p>
     </section>
 
@@ -136,8 +136,8 @@
     <section>
       <h2>Cookies</h2>
       <p>
-        Hold My Mail does not use cookies. Authentication tokens are stored in
-        your browser's local storage.
+        Hold My Mail uses first-party cookies for authentication and session
+        management. We do not use third-party advertising or tracking cookies.
       </p>
     </section>
 
