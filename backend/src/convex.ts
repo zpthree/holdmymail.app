@@ -1,4 +1,4 @@
-import { ConvexHttpClient } from "convex/dist/esm/browser/index-node.js";
+import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
 
 const convexUrl = process.env.CONVEX_URL;
