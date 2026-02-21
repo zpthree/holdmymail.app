@@ -24,12 +24,6 @@
   }
 
   async function openPreviewEmail(event: MouseEvent, href: string) {
-    if (window.innerWidth < 640) {
-      event.preventDefault();
-      goto(href);
-      return;
-    }
-
     event.preventDefault();
     previewPath = href;
     if (

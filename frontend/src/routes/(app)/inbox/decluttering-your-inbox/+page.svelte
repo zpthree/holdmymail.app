@@ -16,7 +16,7 @@
 <div class="email-container">
   <nav>
     {#if !shallow}
-      <a href="/inbox" class="back">← Back to Inbox</a>
+      <a href="/" class="back">← Back to Inbox</a>
     {/if}
   </nav>
 

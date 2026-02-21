@@ -168,6 +168,7 @@
     justify-content: center;
     align-items: center;
     transition: opacity 200ms;
+    transition: transform 100ms ease-in-out;
     margin-right: 0.5rem;
     border-radius: var(--br-full);
     padding: 0.65rem;
@@ -176,6 +177,10 @@
 
     &:hover {
       background-color: var(--bg-color-2);
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
 
     svg {
@@ -207,6 +212,7 @@
     justify-content: center;
     align-items: center;
     transition: opacity 200ms;
+    transition: transform 100ms ease-in-out;
     border-radius: var(--br-full);
     background-color: var(--white);
     width: 2.5rem;
@@ -215,6 +221,10 @@
 
     &:hover {
       opacity: 0.8;
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
 
     img {
@@ -254,7 +264,8 @@
     display: block;
     transition:
       background-color 150ms,
-      color 150ms;
+      color 150ms,
+      transform 100ms ease-in-out;
     border-radius: var(--br-full);
     padding: 0.5rem 1rem;
     color: var(--text-color);
@@ -267,6 +278,10 @@
     &:hover {
       background-color: var(--accent);
       color: var(--white);
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 
