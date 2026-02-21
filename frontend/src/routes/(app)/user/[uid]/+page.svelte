@@ -29,6 +29,8 @@
     username = "",
     createdAt = 0,
   } = loadedUser ?? {};
+  const seoUserId = loadedUser?.id || uid;
+  const seoTitle = loadedUser?.username || "Account Settings";
 
   // Account fields
   let email = $state(initialEmail);
@@ -165,9 +167,9 @@
 </script>
 
 <SEO
-  path={`/user/${$auth.user.id}`}
+  path={`/user/${seoUserId}`}
   data={{
-    meta_title: $auth.user.username,
+    meta_title: seoTitle,
     meta_description: "Manage your Hold My Mail account settings.",
   }}
 />

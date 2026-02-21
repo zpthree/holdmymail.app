@@ -11,17 +11,24 @@
 
   let isMobileMenuOpen = $state(false);
   const isHomepage = $derived(page.url.pathname === "/");
+  const isInboxPreviewPage = $derived(
+    page.url.pathname === "/inbox/decluttering-your-inbox" ||
+      page.url.pathname === "/inbox/hold-my-link" ||
+      page.url.pathname === "/inbox/screenshots-from-the-app",
+  );
+  const hasAuthToken = $derived(Boolean($auth.token || data.token));
+  const activeUserId = $derived($auth.user?.id || data.user?.id || null);
 
   // Redirect to login if not authenticated
   $effect(() => {
-    if (!$auth.loading && !$auth.token && !isHomepage) {
+    if (!$auth.loading && !hasAuthToken && !isHomepage && !isInboxPreviewPage) {
       goto("/auth/login");
     }
   });
 
   // Subscribe to unread inbox count via Convex live query
   $effect(() => {
-    const userId = $auth.user?.id;
+    const userId = activeUserId;
     if (userId) {
       subscribeToUnread(userId);
     }
@@ -32,13 +39,14 @@
   });
 </script>
 
-{#if $auth.loading && !isHomepage}
+<Header bind:isMobileMenuOpen gravatarUrl={data.gravatarUrl} />
+<MobileMenu bind:isMobileMenuOpen />
+
+{#if $auth.loading && !hasAuthToken && !isHomepage && !isInboxPreviewPage}
   <div class="loading">Loading...</div>
-{:else if $auth.token}
-  <Header bind:isMobileMenuOpen gravatarUrl={data.gravatarUrl} />
-  <MobileMenu bind:isMobileMenuOpen />
+{:else if hasAuthToken}
   <main id="app">{@render children()}</main>
-{:else if isHomepage}
+{:else if isHomepage || isInboxPreviewPage}
   <main id="app">{@render children()}</main>
 {/if}
 

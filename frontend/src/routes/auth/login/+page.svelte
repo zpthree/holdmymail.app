@@ -31,7 +31,9 @@
         },
         token,
       );
-      goto("/");
+      // Cookies are set client-side in setAuth(); force load invalidation so
+      // parent layout data reflects the authenticated session immediately.
+      goto("/", { invalidateAll: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Login failed";
       if (msg.toLowerCase().includes("verify your email")) {

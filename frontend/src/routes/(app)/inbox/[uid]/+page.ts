@@ -1,13 +1,8 @@
-import { browser } from "$app/environment";
 import { emailApi, type Email } from "$lib/api";
 import type { PageLoad } from "./$types";
 
-export const load: PageLoad = async ({ params, url }) => {
-  if (!browser) {
-    return { email: null as Email | null, from: null as string | null };
-  }
-
-  const token = localStorage.getItem("token");
+export const load: PageLoad = async ({ params, url, parent }) => {
+  const { token } = await parent();
   if (!token)
     return { email: null as Email | null, from: null as string | null };
 

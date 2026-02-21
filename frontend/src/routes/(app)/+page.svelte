@@ -1,172 +1,85 @@
 <script lang="ts">
+  import { preloadData, pushState, goto } from "$app/navigation";
+  import { page } from "$app/state";
+  import type { Email } from "$lib/api";
+  import Modal from "$lib/components/Modal.svelte";
+  import InboxUID from "./inbox/[uid]/+page.svelte";
+  import InboxDeclutteringPreview from "./inbox/decluttering-your-inbox/+page.svelte";
+  import InboxHoldMyLinkPreview from "./inbox/hold-my-link/+page.svelte";
+  import InboxScreenshotsFromTheAppPreview from "./inbox/screenshots-from-the-app/+page.svelte";
   import SEO from "$lib/components/SEO.svelte";
 
   let frameLoaded = $state(false);
+  let uid_open = $state(false);
+  let staticPreviewOpen = $state(false);
+  type InboxPreviewData = { email: Email | null; from?: string };
+  let previewPath = $state<string | null>(null);
 
-  const mockDigestHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <title>Hold My Mail – Digest Preview</title>
-  <style>
-    @media (prefers-color-scheme: dark) {
-      body,
-      #digest-table {
-        background-color: #17120c !important;
-        color: #fefcf9 !important;
-      }
+  function isInboxPreviewData(value: unknown): value is InboxPreviewData {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "email" in (value as Record<string, unknown>)
+    );
+  }
 
-      a {
-        color: #fefcf9 !important;
-      }
-
-      h1,
-      h2 {
-        color: #fefcf9 !important;
-      }
-
-      .tag,
-      .button {
-        background-color: #af0621 !important;
-      }
-
-      .label {
-        color: #bbb !important;
-      }
+  async function openPreviewEmail(event: MouseEvent, href: string) {
+    if (window.innerWidth < 640) {
+      event.preventDefault();
+      goto(href);
+      return;
     }
-  </style>
-</head>
-<body style="margin: 0; padding: 0; background-color: #fefcf9; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table id="digest-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #fefcf9; padding: 32px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%;">
 
-          <tr>
-            <td align="center" style="padding: 0 24px 32px;">
-              <img
-                src="https://meedyuh.zachpatrick.com/hold-my-mail-logo.png"
-                alt="Hold My Mail"
-                width="180"
-                style="display: block; width: 150px; height: auto;"
-              />
-            </td>
-          </tr>
+    event.preventDefault();
+    previewPath = href;
+    if (
+      href === "/inbox/decluttering-your-inbox" ||
+      href === "/inbox/hold-my-link" ||
+      href === "/inbox/screenshots-from-the-app"
+    ) {
+      pushState(href, {});
+      staticPreviewOpen = true;
+      uid_open = true;
+      return;
+    }
 
-          <tr>
-            <td style="padding: 0 24px 8px;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #000;">
-                Your Daily Hold My Mail Digest
-              </h1>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px 18px;">
-              <p class="label" style="margin: 0; font-size: 14px; color: #888;">
-                Friday, February 20, 2026 &middot; 4 emails &middot; 2 links
-              </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px;">
-              <div style="border-top: 2px solid #000; margin-bottom: 18px;"></div>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px;">
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                <tr>
-                  <td style="padding: 0 0 16px 0;">
-                    <table cellpadding="0" cellspacing="0" role="presentation">
-                      <tr>
-                        <td class="tag" style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;">
-                          <span style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Work
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr><td style="padding: 0 0 24px 0;"><p class="label" style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">GitHub</p><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">Pull request approved: onboarding cleanup</a><p class="label" style="margin: 0; font-size: 12px; color: #888;">Feb 20, 2026, 9:14 AM</p></td></tr>
-                <tr><td style="padding: 0 0 24px 0;"><p class="label" style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">Linear</p><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">Issue assigned: Improve digest loading state</a><p class="label" style="margin: 0; font-size: 12px; color: #888;">Feb 20, 2026, 8:42 AM</p></td></tr>
-
-                <tr>
-                  <td style="padding: 0 0 16px 0;">
-                    <table cellpadding="0" cellspacing="0" role="presentation">
-                      <tr>
-                        <td class="tag" style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;">
-                          <span style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Personal
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr><td style="padding: 0 0 24px 0;"><p class="label" style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">Spotify</p><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">Your weekly discovery playlist is ready</a><p class="label" style="margin: 0; font-size: 12px; color: #888;">Feb 19, 2026, 10:03 PM</p></td></tr>
-                <tr><td style="padding: 0 0 24px 0;"><p class="label" style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;">Delta</p><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">Trip update: gate changed for your flight</a><p class="label" style="margin: 0; font-size: 12px; color: #888;">Feb 19, 2026, 6:21 PM</p></td></tr>
-              </table>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px;">
-              <div style="border-top: 2px solid #000; margin-bottom: 18px;"></div>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px 8px;">
-              <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #000;">
-                Saved Links
-              </h2>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px 18px;">
-              <p class="label" style="margin: 0; font-size: 14px; color: #888;">2 links since your last digest</p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding: 0 24px 8px;"><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">Designing Better Empty States</a><p class="label" style="margin: 0 0 2px 0; font-size: 12px; color: #666;">Smashing Magazine</p></td>
-          </tr>
-          <tr>
-            <td style="padding: 0 24px 18px;"><a href="#" style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;">SvelteKit Routing Patterns</a><p class="label" style="margin: 0 0 2px 0; font-size: 12px; color: #666;">Svelte Blog</p></td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
-
-  function handlePreviewLoad(e: Event): void {
-    frameLoaded = true;
-    const iframe = e.currentTarget as HTMLIFrameElement | null;
-    if (!iframe) return;
-    const doc = iframe.contentDocument;
-    if (!doc) return;
-
-    doc.body.style.margin = "0";
-    doc.documentElement.style.overflow = "hidden";
-    iframe.style.height = doc.documentElement.scrollHeight + 1 + "px";
-
-    doc.addEventListener("click", (clickEvent) => {
-      clickEvent.preventDefault();
-    });
+    const result = await preloadData(href);
+    if (
+      result.type === "loaded" &&
+      result.status === 200 &&
+      isInboxPreviewData(result.data)
+    ) {
+      pushState(href, { selected: result.data });
+      uid_open = true;
+    } else {
+      goto(href);
+    }
   }
 </script>
+
+<Modal
+  bind:isOpen={uid_open}
+  close={() => {
+    staticPreviewOpen = false;
+    history.back();
+  }}
+>
+  {#if staticPreviewOpen}
+    {#if previewPath === "/inbox/decluttering-your-inbox"}
+      <div class="shallow">
+        <InboxDeclutteringPreview shallow={true} />
+      </div>
+    {:else if previewPath === "/inbox/hold-my-link"}
+      <div class="shallow">
+        <InboxHoldMyLinkPreview shallow={true} />
+      </div>
+    {:else if previewPath === "/inbox/screenshots-from-the-app"}
+      <div class="shallow">
+        <InboxScreenshotsFromTheAppPreview shallow={true} />
+      </div>
+    {/if}
+  {/if}
+</Modal>
 
 <SEO
   path="/"
@@ -177,29 +90,366 @@
   }}
 />
 
-<main class="home">
-  <header class="hero">
+<div class="home">
+  <div class="hero">
     <h1 style="font-size: var(--fs-xxl);">Your mail, on your schedule.</h1>
     <p>
-      Hold My Mail collects newsletters, promotions, and other non-urgent
-      emails, then delivers them to your inbox on your schedule.
+      Take control of your inbox by scheduling your newsletters and other
+      non-urgent emails to arrive when you're ready to read them.
     </p>
-  </header>
+    <a href="/auth/register" class="btn-get-started btn btn-accent"
+      >Get started for free</a
+    >
+    <ul>
+      <li>
+        <a href="/privacy">Privacy Policy</a>
+      </li>
+      <li>
+        <a href="/terms-and-conditions">Terms and Conditions</a>
+      </li>
+    </ul>
+  </div>
 
   <section class="preview" aria-label="Digest preview">
     <article>
-      <div class="body">
-        <iframe
-          class:loaded={frameLoaded}
-          srcdoc={mockDigestHtml}
-          sandbox="allow-same-origin"
-          title="Example digest preview"
-          onload={handlePreviewLoad}
-        ></iframe>
+      <div
+        id="digest-container"
+        style="margin: 0; padding: 0; background-color: #fefcf9; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
+      >
+        <table
+          id="digest-table"
+          width="100%"
+          cellpadding="0"
+          cellspacing="0"
+          role="presentation"
+          style="background-color: #fefcf9; padding: 32px 0;"
+        >
+          <tbody>
+            <tr>
+              <td align="center">
+                <table
+                  width="600"
+                  cellpadding="0"
+                  cellspacing="0"
+                  role="presentation"
+                  style="max-width: 600px; width: 100%;"
+                >
+                  <tbody>
+                    <tr>
+                      <td align="center" style="padding: 0 24px 32px;">
+                        <img
+                          src="https://meedyuh.zachpatrick.com/hold-my-mail-logo.png"
+                          alt="Hold My Mail"
+                          width="180"
+                          style="display: block; width: 150px; height: auto;"
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px 8px;">
+                        <h1
+                          style="margin: 0; font-size: 28px; font-weight: 700; color: #000;"
+                        >
+                          Your Daily Hold My Mail Digest
+                        </h1>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px 18px;">
+                        <p
+                          class="label"
+                          style="margin: 0; font-size: 14px; color: #888;"
+                        >
+                          Friday, February 20, 2026 &middot; 3 emails &middot; 2
+                          links
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px;">
+                        <div
+                          style="border-top: 2px solid #000; margin-bottom: 18px;"
+                        ></div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px;">
+                        <table
+                          width="100%"
+                          cellpadding="0"
+                          cellspacing="0"
+                          role="presentation"
+                        >
+                          <tbody>
+                            <tr>
+                              <td style="padding: 0 0 16px 0;">
+                                <table
+                                  cellpadding="0"
+                                  cellspacing="0"
+                                  role="presentation"
+                                >
+                                  <tbody>
+                                    <tr>
+                                      <td
+                                        class="tag"
+                                        style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;"
+                                      >
+                                        <span
+                                          style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;"
+                                        >
+                                          Get Started
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                            <tr
+                              ><td style="padding: 0 0 24px 0;"
+                                ><p
+                                  class="label"
+                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
+                                >
+                                  Hold My Mail
+                                </p>
+                                <a
+                                  href="/inbox/decluttering-your-inbox"
+                                  onclick={(event) =>
+                                    openPreviewEmail(
+                                      event,
+                                      "/inbox/decluttering-your-inbox",
+                                    )}
+                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                                  >Decluttering your inbox</a
+                                >
+                                <p
+                                  class="label"
+                                  style="margin: 0; font-size: 12px; color: #888;"
+                                >
+                                  Feb 20, 2026, 9:14 AM
+                                </p></td
+                              ></tr
+                            >
+
+                            <tr
+                              ><td style="padding: 0 0 24px 0;"
+                                ><p
+                                  class="label"
+                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
+                                >
+                                  Hold My Mail
+                                </p>
+                                <a
+                                  href="/inbox/hold-my-link"
+                                  onclick={(event) =>
+                                    openPreviewEmail(
+                                      event,
+                                      "/inbox/hold-my-link",
+                                    )}
+                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                                  >Save links to your account, and read them
+                                  later</a
+                                >
+                                <p
+                                  class="label"
+                                  style="margin: 0; font-size: 12px; color: #888;"
+                                >
+                                  Feb 20, 2026, 8:42 AM
+                                </p></td
+                              ></tr
+                            >
+                            <tr
+                              ><td style="padding: 0 0 24px 0;"
+                                ><p
+                                  class="label"
+                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
+                                >
+                                  Hold My Mail
+                                </p>
+                                <a
+                                  href="/inbox/screenshots-from-the-app"
+                                  onclick={(event) =>
+                                    openPreviewEmail(
+                                      event,
+                                      "/inbox/screenshots-from-the-app",
+                                    )}
+                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                                  >Screenshots from the app</a
+                                >
+                                <p
+                                  class="label"
+                                  style="margin: 0; font-size: 12px; color: #888;"
+                                >
+                                  Feb 20, 2026, 8:42 AM
+                                </p></td
+                              ></tr
+                            >
+                            <!-- <tr
+                              ><td style="padding: 0 0 24px 0;"
+                                ><p
+                                  class="label"
+                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
+                                >
+                                  Zach Patrick
+                                </p>
+                                <a
+                                  href="/inbox/how-i-use-hold-my-mail"
+                                  onclick={(event) =>
+                                    openPreviewEmail(
+                                      event,
+                                      "/inbox/how-i-use-hold-my-mail",
+                                    )}
+                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                                  >How I use Hold My Mail</a
+                                >
+                                <p
+                                  class="label"
+                                  style="margin: 0; font-size: 12px; color: #888;"
+                                >
+                                  Feb 20, 2026, 8:42 AM
+                                </p></td
+                              ></tr
+                            > -->
+                            <!-- <tr>
+                              <td style="padding: 0 0 16px 0;">
+                                <table
+                                  cellpadding="0"
+                                  cellspacing="0"
+                                  role="presentation"
+                                >
+                                  <tbody>
+                                    <tr>
+                                      <td
+                                        class="tag"
+                                        style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;"
+                                      >
+                                        <span
+                                          style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;"
+                                        >
+                                          Updates
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+
+                            <tr
+                              ><td style="padding: 0 0 24px 0;"
+                                ><p
+                                  class="label"
+                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
+                                >
+                                  Spotify
+                                </p>
+                                <a
+                                  href="#"
+                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                                  >Your weekly discfovery playlist is ready</a
+                                >
+                                <p
+                                  class="label"
+                                  style="margin: 0; font-size: 12px; color: #888;"
+                                >
+                                  Feb 19, 2026, 10:03 PM
+                                </p></td
+                              ></tr
+                            > -->
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px;">
+                        <div
+                          style="border-top: 2px solid #000; margin-bottom: 18px;"
+                        ></div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px 8px;">
+                        <h2
+                          style="margin: 0; font-size: 22px; font-weight: 700; color: #000;"
+                        >
+                          Saved Links
+                        </h2>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px 18px;">
+                        <p
+                          class="label"
+                          style="margin: 0; font-size: 14px; color: #888;"
+                        >
+                          2 links since your last digest
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding: 0 24px 8px;"
+                        ><a
+                          href="https://zachpatrick.com/blog/tips-for-maintaining-inbox-zero"
+                          target="_blank"
+                          style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                          >Tips for Maintaining Inbox Zero</a
+                        >
+                        <p
+                          class="label"
+                          style="margin: 0 0 2px 0; font-size: 12px; color: #666;"
+                        >
+                          zachpatrick.com
+                        </p></td
+                      >
+                    </tr>
+                    <tr>
+                      <td style="padding: 0 24px 18px;"
+                        ><a
+                          href="https://x.com/holdmymail"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style="display: block; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
+                          >Follow Hold My Mail on X</a
+                        >
+                        <p
+                          class="label"
+                          style="margin: 0 0 2px 0; font-size: 12px; color: #666;"
+                        >
+                          X.com/holdmymail
+                        </p></td
+                      >
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <!-- CTA -->
+            <tr>
+              <td style="padding: 8px 24px 24px; text-align: center;">
+                <a
+                  class="btn btn-accent"
+                  href="/auth/register"
+                  style="width: 100%;max-width: 200px;margin: 0 auto;"
+                >
+                  Get started for free
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </article>
   </section>
-</main>
+</div>
 
 <style>
   .home {
@@ -210,7 +460,7 @@
 
   .hero {
     margin: 0 auto 2rem;
-    max-width: 40rem;
+    max-width: 38rem;
     text-align: center;
   }
 
@@ -222,6 +472,27 @@
   p {
     margin: 0.9rem 0 0;
     font-size: var(--fs-base);
+    line-height: 1.5;
+  }
+
+  .hero ul {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    font-size: var(--fs-xs);
+    list-style: none;
+    text-decoration: none;
+
+    a {
+      color: var(--text-color);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   article {
@@ -230,20 +501,18 @@
     overflow: hidden;
   }
 
-  .body {
-    padding: 0;
+  .btn-get-started {
+    margin: 1rem auto 0;
+    width: 13rem;
+  }
 
-    iframe {
-      display: block;
-      opacity: 0;
-      transition: opacity 180ms ease;
-      border: none;
-      width: 100%;
-      overflow: hidden;
-
-      &.loaded {
-        opacity: 1;
-      }
-    }
+  :global(#modal-children > div) {
+    position: relative;
+    margin: auto;
+    width: 100vw;
+    max-width: 48rem;
+    height: 100%;
+    overflow: auto;
+    overscroll-behavior-y: contain;
   }
 </style>

@@ -3,37 +3,16 @@
   import * as Fathom from "fathom-client";
   import "$lib/assets/css/main.css";
   import { setAuth } from "$lib/stores/auth";
-  import { authApi } from "$lib/api";
-  import { browser } from "$app/environment";
   import { onNavigate } from "$app/navigation";
   import { onMount } from "svelte";
 
-  let { children } = $props();
+  let { children, data } = $props();
 
-  onMount(async () => {
-    const token = browser ? localStorage.getItem("token") : null;
-    const userId = browser ? localStorage.getItem("userId") : null;
+  $effect(() => {
+    setAuth(data.user, data.token);
+  });
 
-    if (token && userId) {
-      try {
-        const user = await authApi.getUser(userId, token);
-        setAuth(
-          {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            timezone:
-              user.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-          token,
-        );
-      } catch {
-        setAuth(null, null);
-      }
-    } else {
-      setAuth(null, null);
-    }
-
+  onMount(() => {
     Fathom.load(PUBLIC_FATHOM_ID, {
       includedDomains: ["holdmymail.app", "www.holdmymail.app"],
     });

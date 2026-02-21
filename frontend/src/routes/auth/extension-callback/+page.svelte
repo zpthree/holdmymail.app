@@ -1,6 +1,11 @@
 <script lang="ts">
   import { authApi } from "$lib/api";
   import { browser } from "$app/environment";
+  import {
+    AUTH_TOKEN_COOKIE,
+    AUTH_USER_ID_COOKIE,
+    readCookie,
+  } from "$lib/auth-cookies";
   import { onMount } from "svelte";
   import SEO from "$lib/components/SEO.svelte";
 
@@ -14,8 +19,8 @@
   onMount(async () => {
     if (!browser) return;
 
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
+    const token = readCookie(AUTH_TOKEN_COOKIE);
+    const userId = readCookie(AUTH_USER_ID_COOKIE);
 
     if (token && userId) {
       try {

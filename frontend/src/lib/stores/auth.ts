@@ -1,5 +1,15 @@
 import { writable } from "svelte/store";
 import { browser } from "$app/environment";
+import {
+  AUTH_EMAIL_COOKIE,
+  AUTH_TIMEZONE_COOKIE,
+  AUTH_TOKEN_COOKIE,
+  AUTH_USER_ID_COOKIE,
+  AUTH_USERNAME_COOKIE,
+  clearCookie,
+  readCookie,
+  writeCookie,
+} from "$lib/auth-cookies";
 
 interface User {
   id: string;
@@ -16,7 +26,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: browser ? localStorage.getItem("token") : null,
+  token: browser ? readCookie(AUTH_TOKEN_COOKIE) : null,
   loading: true,
 };
 
@@ -25,12 +35,19 @@ export const auth = writable<AuthState>(initialState);
 export function setAuth(user: User | null, token: string | null) {
   if (browser) {
     if (token && user) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("userId", user.id);
-      localStorage.setItem("email", user.email);
-      localStorage.setItem("username", user.username);
-      localStorage.setItem("timezone", user.timezone || "");
+      writeCookie(AUTH_TOKEN_COOKIE, token);
+      writeCookie(AUTH_USER_ID_COOKIE, user.id);
+      writeCookie(AUTH_EMAIL_COOKIE, user.email);
+      writeCookie(AUTH_USERNAME_COOKIE, user.username);
+      writeCookie(AUTH_TIMEZONE_COOKIE, user.timezone || "");
     } else {
+      clearCookie(AUTH_TOKEN_COOKIE);
+      clearCookie(AUTH_USER_ID_COOKIE);
+      clearCookie(AUTH_EMAIL_COOKIE);
+      clearCookie(AUTH_USERNAME_COOKIE);
+      clearCookie(AUTH_TIMEZONE_COOKIE);
+
+      // Legacy cleanup for localStorage-based sessions.
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("email");
@@ -43,6 +60,13 @@ export function setAuth(user: User | null, token: string | null) {
 
 export function clearAuth() {
   if (browser) {
+    clearCookie(AUTH_TOKEN_COOKIE);
+    clearCookie(AUTH_USER_ID_COOKIE);
+    clearCookie(AUTH_EMAIL_COOKIE);
+    clearCookie(AUTH_USERNAME_COOKIE);
+    clearCookie(AUTH_TIMEZONE_COOKIE);
+
+    // Legacy cleanup for localStorage-based sessions.
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("email");

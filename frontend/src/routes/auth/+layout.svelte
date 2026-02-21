@@ -3,15 +3,16 @@
   import { goto } from "$app/navigation";
   import Logo from "$lib/components/Logo.svelte";
 
-  let { children } = $props();
+  let { children, data } = $props();
 
   const SKIP_REDIRECT = ["/auth/logout", "/auth/extension-callback"];
+  const hasAuthToken = $derived(Boolean($auth.token || data.token));
 
   // Redirect to home if already logged in (skip for logout & extension callback)
   $effect(() => {
     if (
       !$auth.loading &&
-      $auth.token &&
+      hasAuthToken &&
       !SKIP_REDIRECT.includes(window.location.pathname)
     ) {
       goto("/");
@@ -20,14 +21,12 @@
 </script>
 
 <main id="auth">
-  {#if $auth.loading || ($auth.token && !SKIP_REDIRECT.includes(window.location.pathname))}
+  {#if $auth.loading || (hasAuthToken && !SKIP_REDIRECT.includes(window.location.pathname))}
     <div class="loading"></div>
   {:else}
     <div class="auth-layout centered">
       <div class="auth-container">
-        <a href="/auth/login" id="logo" class="centered"
-          ><span><Logo /></span></a
-        >
+        <a href="/" id="logo" class="centered"><span><Logo /></span></a>
         {@render children()}
       </div>
     </div>
