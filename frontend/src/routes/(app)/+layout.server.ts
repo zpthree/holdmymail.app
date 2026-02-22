@@ -16,5 +16,9 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
     throw redirect(303, `/auth/login?next=${encodeURIComponent(url.pathname)}`);
   }
 
+  if (token && url.pathname === "/") {
+    throw redirect(303, "/digests");
+  }
+
   return {};
 };
