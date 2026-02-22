@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "";
+const DEFAULT_DEV_API_URL = "http://localhost:3000";
 
 interface ApiOptions {
   method?: string;
@@ -10,6 +11,13 @@ export async function api<T>(
   endpoint: string,
   options: ApiOptions = {},
 ): Promise<T> {
+  const baseUrl = API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "");
+  if (!baseUrl) {
+    throw new Error(
+      "VITE_API_URL is not set. Configure it in your deployment environment.",
+    );
+  }
+
   const { method = "GET", body, token } = options;
 
   const headers: Record<string, string> = {
@@ -20,7 +28,7 @@ export async function api<T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(`${baseUrl}${endpoint}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
