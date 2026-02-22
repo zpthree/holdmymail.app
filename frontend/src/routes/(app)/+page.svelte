@@ -113,7 +113,7 @@
           cellpadding="0"
           cellspacing="0"
           role="presentation"
-          style="background-color: #fefcf9; padding: 32px 0;"
+          style="padding: 32px 0;"
         >
           <tbody>
             <tr>
@@ -280,78 +280,6 @@
                                 </p></td
                               ></tr
                             >
-                            <!-- <tr
-                              ><td style="padding: 0 0 24px 0;"
-                                ><p
-                                  class="label"
-                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
-                                >
-                                  Zach Patrick
-                                </p>
-                                <a
-                                  href="/inbox/how-i-use-hold-my-mail"
-                                  onclick={(event) =>
-                                    openPreviewEmail(
-                                      event,
-                                      "/inbox/how-i-use-hold-my-mail",
-                                    )}
-                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
-                                  >How I use Hold My Mail</a
-                                >
-                                <p
-                                  class="label"
-                                  style="margin: 0; font-size: 12px; color: #888;"
-                                >
-                                  Feb 20, 2026, 8:42 AM
-                                </p></td
-                              ></tr
-                            > -->
-                            <!-- <tr>
-                              <td style="padding: 0 0 16px 0;">
-                                <table
-                                  cellpadding="0"
-                                  cellspacing="0"
-                                  role="presentation"
-                                >
-                                  <tbody>
-                                    <tr>
-                                      <td
-                                        class="tag"
-                                        style="background-color:#000;border-radius:4px;padding:3px 8px;display:flex;justify-content:center;align-items:center;text-align:center;"
-                                      >
-                                        <span
-                                          style="font-size: 10px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;"
-                                        >
-                                          Updates
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-
-                            <tr
-                              ><td style="padding: 0 0 24px 0;"
-                                ><p
-                                  class="label"
-                                  style="margin: 0 0 2px 0; font-size: 13px; font-weight: 500; color: #444;"
-                                >
-                                  Spotify
-                                </p>
-                                <a
-                                  href="#"
-                                  style="display: block; margin: 0 0 4px 0; font-size: 18px; font-weight: 600; color: #000; line-height: 1.3; text-decoration: none;"
-                                  >Your weekly discfovery playlist is ready</a
-                                >
-                                <p
-                                  class="label"
-                                  style="margin: 0; font-size: 12px; color: #888;"
-                                >
-                                  Feb 19, 2026, 10:03 PM
-                                </p></td
-                              ></tr
-                            > -->
                           </tbody>
                         </table>
                       </td>
@@ -509,10 +437,8 @@
 
   #digest-container {
     @media (prefers-color-scheme: dark) {
-      #digest-table {
-        background-color: #17120c !important;
-        color: #fefcf9 !important;
-      }
+      background-color: #17120c !important;
+      color: #fefcf9 !important;
 
       a {
         color: #fefcf9 !important;
