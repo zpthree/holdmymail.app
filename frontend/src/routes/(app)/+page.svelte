@@ -506,4 +506,30 @@
     overflow: auto;
     overscroll-behavior-y: contain;
   }
+
+  #digest-container {
+    @media (prefers-color-scheme: dark) {
+      #digest-table {
+        background-color: #17120c !important;
+        color: #fefcf9 !important;
+      }
+
+      a {
+        color: #fefcf9 !important;
+      }
+
+      h1,
+      h2 {
+        color: #fefcf9 !important;
+      }
+
+      .tag {
+        background-color: #af0621 !important;
+      }
+
+      .label {
+        color: #bbb !important;
+      }
+    }
+  }
 </style>

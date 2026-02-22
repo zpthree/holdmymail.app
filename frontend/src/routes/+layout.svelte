@@ -24,21 +24,7 @@
   });
 </script>
 
-<svelte:head>
-  {#if $auth.user?.username}
-    <style>
-      :root {
-        @media (prefers-color-scheme: dark) {
-          --bg-color: var(--black);
-          --bg-color-2: oklch(0.1868 0.0148 80.71);
-          --text-color: var(--offwhite);
-        }
-      }
-    </style>
-  {/if}
-</svelte:head>
-
-<div class="app-wrapper" data-logged-in={!!$auth.user?.username}>
+<div class="app-wrapper">
   {@render children()}
 </div>
 
