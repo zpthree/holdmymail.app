@@ -1,26 +1,14 @@
 <script lang="ts">
-  import { authApi } from "$lib/api";
+  import { enhance } from "$app/forms";
   import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
-  let submitted = $state(false);
   let loading = $state(false);
-  let error = $state("");
+  let { form } = $props();
 
-  async function handleSubmit(e: Event) {
-    e.preventDefault();
-    error = "";
-    loading = true;
-
-    try {
-      await authApi.forgotPassword(email);
-      submitted = true;
-    } catch (err) {
-      error = err instanceof Error ? err.message : "Something went wrong";
-    } finally {
-      loading = false;
-    }
-  }
+  $effect(() => {
+    if (form?.email) email = form.email;
+  });
 </script>
 
 <SEO
@@ -33,19 +21,28 @@
 
 <h1>Forgot Password</h1>
 
-{#if submitted}
+{#if form?.submitted}
   <p class="success">
     If an account exists with that email, you'll receive a password reset link.
   </p>
   <a href="/auth/login" class="back">Back to login</a>
 {:else}
-  <form onsubmit={handleSubmit}>
-    {#if error}
-      <p class="error">{error}</p>
+  <form
+    method="POST"
+    use:enhance={() => {
+      loading = true;
+      return async ({ update }) => {
+        await update();
+        loading = false;
+      };
+    }}
+  >
+    {#if form?.error}
+      <p class="error">{form.error}</p>
     {/if}
     <label>
       Email
-      <input type="email" bind:value={email} required />
+      <input type="email" name="email" bind:value={email} required />
     </label>
 
     <button type="submit" disabled={loading} class="btn btn-accent">

@@ -18,7 +18,8 @@
   const activeTab = $derived(
     fromParam ? "/" + fromParam.split("/")[1] : topLevel,
   );
-  const username = $derived($auth.user?.username ?? null);
+  // Avoid auth-state flicker during hydration by preferring server data fallback.
+  const username = $derived($auth.user?.username ?? page.data.user?.username ?? null);
 </script>
 
 <header>

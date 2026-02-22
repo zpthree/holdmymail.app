@@ -1,6 +1,5 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
-  import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import Header from "$lib/components/Header.svelte";
   import MobileMenu from "$lib/components/MobileMenu.svelte";
@@ -18,13 +17,6 @@
   );
   const hasAuthToken = $derived(Boolean($auth.token || data.token));
   const activeUserId = $derived($auth.user?.id || data.user?.id || null);
-
-  // Redirect to login if not authenticated
-  $effect(() => {
-    if (!$auth.loading && !hasAuthToken && !isHomepage && !isInboxPreviewPage) {
-      goto("/auth/login");
-    }
-  });
 
   // Subscribe to unread inbox count via Convex live query
   $effect(() => {

@@ -1,29 +1,16 @@
 <script lang="ts">
-  import { authApi } from "$lib/api";
+  import { enhance } from "$app/forms";
   import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
   let username = $state("");
-  let password = $state("");
-  let error = $state("");
   let loading = $state(false);
-  let registered = $state(false);
+  let { form } = $props();
 
-  async function handleSubmit(e: Event) {
-    e.preventDefault();
-    error = "";
-
-    loading = true;
-
-    try {
-      await authApi.register(email, password, username);
-      registered = true;
-    } catch (err) {
-      error = err instanceof Error ? err.message : "Registration failed";
-    } finally {
-      loading = false;
-    }
-  }
+  $effect(() => {
+    if (form?.email) email = form.email;
+    if (form?.username) username = form.username;
+  });
 </script>
 
 <SEO
@@ -35,34 +22,46 @@
   }}
 />
 
-{#if registered}
+{#if form?.registered}
   <h1>Check your email</h1>
   <p class="success">
-    We sent a verification link to <strong>{email}</strong>. Click the link in
-    the email to activate your account.
+    We sent a verification link to <strong>{form?.email || email}</strong>.
+    Click the link in the email to activate your account.
   </p>
-  <p class="hint centered">
-    Didn't get the email? Check your spam folder or <button
-      class="link-btn"
-      onclick={() => {
-        authApi.resendVerification(email);
-      }}>resend it</button
-    >.
-  </p>
+  <p class="hint centered">Didn't get the email? Check your spam folder.</p>
+  <form method="POST" use:enhance class="centered">
+    <input type="hidden" name="email" value={form?.email || ""} />
+    <button class="btn btn-black" formaction="?/resendVerification"
+      >Resend verification email</button
+    >
+  </form>
+  {#if form?.resent}
+    <p class="success centered">✓ Verification email sent!</p>
+  {/if}
   <p class="links">
     <a href="/auth/login">Back to login</a>
   </p>
 {:else}
   <h1>Create Account</h1>
 
-  <form onsubmit={handleSubmit}>
-    {#if error}
-      <p class="error">{error}</p>
+  <form
+    method="POST"
+    action="?/register"
+    use:enhance={() => {
+      loading = true;
+      return async ({ update }) => {
+        await update();
+        loading = false;
+      };
+    }}
+  >
+    {#if form?.error}
+      <p class="error">{form.error}</p>
     {/if}
 
     <label>
       Username
-      <input type="text" bind:value={username} required />
+      <input type="text" name="username" bind:value={username} required />
       <span class="hint"
         >This <u>cannot</u> be changed later. This will be your email address: {username ||
           "username"}@inbox.holdmymail.app.</span
@@ -71,12 +70,12 @@
 
     <label>
       Email
-      <input type="email" bind:value={email} required />
+      <input type="email" name="email" bind:value={email} required />
     </label>
 
     <label>
       Password
-      <input type="password" bind:value={password} required minlength="8" />
+      <input type="password" name="password" required minlength="8" />
     </label>
 
     <button type="submit" disabled={loading} class="btn btn-accent">
@@ -127,5 +126,9 @@
   .links {
     margin-top: 1rem;
     text-align: center;
+  }
+
+  .btn-black {
+    padding-inline: 2.5rem;
   }
 </style>

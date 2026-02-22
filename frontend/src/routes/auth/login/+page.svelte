@@ -1,59 +1,11 @@
 <script lang="ts">
-  import { authApi } from "$lib/api";
-  import { setAuth } from "$lib/stores/auth";
-  import { goto } from "$app/navigation";
+  import { enhance } from "$app/forms";
+  import { page } from "$app/state";
   import SEO from "$lib/components/SEO.svelte";
 
-  let email = $state("");
-  let password = $state("");
-  let error = $state("");
   let loading = $state(false);
-  let unverified = $state(false);
-  let resent = $state(false);
-
-  async function handleSubmit(e: Event) {
-    e.preventDefault();
-    error = "";
-    unverified = false;
-    resent = false;
-    loading = true;
-
-    try {
-      const { token, userId } = await authApi.login(email, password);
-      const user = await authApi.getUser(userId, token);
-      setAuth(
-        {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          timezone:
-            user.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-        token,
-      );
-      // Cookies are set client-side in setAuth(); force load invalidation so
-      // parent layout data reflects the authenticated session immediately.
-      goto("/", { invalidateAll: true });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Login failed";
-      if (msg.toLowerCase().includes("verify your email")) {
-        unverified = true;
-      }
-      error = msg;
-    } finally {
-      loading = false;
-    }
-  }
-
-  async function resendVerification() {
-    if (!email) return;
-    try {
-      await authApi.resendVerification(email);
-      resent = true;
-    } catch {
-      // silent
-    }
-  }
+  let { form } = $props();
+  const next = $derived(form?.next || page.url.searchParams.get("next") || "");
 </script>
 
 <SEO
@@ -66,16 +18,31 @@
 
 <h1>Login</h1>
 
-<form onsubmit={handleSubmit}>
-  {#if error}
-    <p class="error">
-      {error}
-      {#if unverified && !resent}
-        <button type="button" class="link-btn" onclick={resendVerification}
+<form
+  method="POST"
+  action="?/login"
+  use:enhance={() => {
+    loading = true;
+    return async ({ update }) => {
+      await update();
+      loading = false;
+    };
+  }}
+>
+  {#if form?.error || form?.resent}
+    <p class={form?.error ? "error" : ""}>
+      {#if form?.error}
+        {form.error}
+      {/if}
+      {#if form?.unverified && !form?.resent}
+        <button
+          type="submit"
+          class="link-btn"
+          formaction="?/resendVerification"
           >Resend verification email</button
         >
       {/if}
-      {#if resent}
+      {#if form?.resent}
         <span class="resent">✓ Verification email sent!</span>
       {/if}
     </p>
@@ -83,12 +50,14 @@
 
   <label>
     Email
-    <input type="email" bind:value={email} required />
+    <input type="email" name="email" value={form?.email || ""} required />
   </label>
+
+  <input type="hidden" name="next" value={next} />
 
   <label>
     Password
-    <input type="password" bind:value={password} required />
+    <input type="password" name="password" required />
   </label>
 
   <button type="submit" disabled={loading} class="btn btn-accent">
