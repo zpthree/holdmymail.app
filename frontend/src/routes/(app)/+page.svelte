@@ -1,15 +1,12 @@
 <script lang="ts">
   import { preloadData, pushState, goto } from "$app/navigation";
-  import { page } from "$app/state";
   import type { Email } from "$lib/api";
   import Modal from "$lib/components/Modal.svelte";
-  import InboxUID from "./inbox/[uid]/+page.svelte";
   import InboxDeclutteringPreview from "./inbox/decluttering-your-inbox/+page.svelte";
   import InboxHoldMyLinkPreview from "./inbox/hold-my-link/+page.svelte";
   import InboxScreenshotsFromTheAppPreview from "./inbox/screenshots-from-the-app/+page.svelte";
   import SEO from "$lib/components/SEO.svelte";
 
-  let frameLoaded = $state(false);
   let uid_open = $state(false);
   let staticPreviewOpen = $state(false);
   type InboxPreviewData = { email: Email | null; from?: string };

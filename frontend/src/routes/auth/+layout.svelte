@@ -48,10 +48,6 @@
       background-color: var(--bg-color-2);
     }
 
-    @media (prefers-color-scheme: dark) {
-      background-color: var(--bg-color);
-    }
-
     @media screen and (width > 480px) {
       border: 0.15rem solid oklch(from var(--text-color) 0.25 c h);
     }
@@ -62,12 +58,9 @@
   }
 
   #logo span {
+    background-color: var(--black);
     padding: 0.5rem 1rem;
     color: var(--white);
-
-    @media (prefers-color-scheme: light) {
-      background-color: var(--black);
-    }
   }
 
   #logo :global(svg) {

@@ -2,9 +2,10 @@
   import { PUBLIC_FATHOM_ID } from "$env/static/public";
   import * as Fathom from "fathom-client";
   import "$lib/assets/css/main.css";
-  import { setAuth } from "$lib/stores/auth";
+  import { auth, setAuth } from "$lib/stores/auth";
   import { onNavigate } from "$app/navigation";
   import { onMount } from "svelte";
+  import { authApi } from "$lib/api.js";
 
   let { children, data } = $props();
 
@@ -23,7 +24,21 @@
   });
 </script>
 
-<div class="app-wrapper">
+<svelte:head>
+  {#if $auth.user?.username}
+    <style>
+      :root {
+        @media (prefers-color-scheme: dark) {
+          --bg-color: var(--black);
+          --bg-color-2: oklch(0.1868 0.0148 80.71);
+          --text-color: var(--offwhite);
+        }
+      }
+    </style>
+  {/if}
+</svelte:head>
+
+<div class="app-wrapper" data-logged-in={!!$auth.user?.username}>
   {@render children()}
 </div>
 

@@ -127,7 +127,6 @@
     justify-content: flex-end;
     align-items: center;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
     padding-bottom: 1rem;
   }
 
