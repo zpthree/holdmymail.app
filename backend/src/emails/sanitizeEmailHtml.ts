@@ -1,3 +1,5 @@
+import { DOMParser as ServerDOMParser } from "linkedom";
+
 const REDIRECT_PARAM_KEYS = [
   "url",
   "u",
@@ -33,6 +35,7 @@ const TRACKING_HOST_PATTERNS = [
   /(^|\.)eventtracking\./i,
   /(^|\.)tracking\./i,
   /(^|\.)trk\./i,
+  /(^|\.)hubapi\.com$/i,
   /(^|\.)mandrillapp\.com$/i,
   /(^|\.)mailtrack\./i,
 ];
@@ -75,19 +78,41 @@ function isLikelyTrackingUrl(url: URL): boolean {
   );
 }
 
-export function sanitizeEmailHtml(html: string): string {
-  if (typeof DOMParser === "undefined") {
-    return html;
-  }
+function sanitizeStyleUrls(style: string): string {
+  return style.replace(/url\((['"]?)(.*?)\1\)/gi, (fullMatch, quote, rawUrl) => {
+    const normalized = String(rawUrl || "").trim();
+    if (!normalized || !isHttpUrl(normalized)) return fullMatch;
 
-  const parser = new DOMParser();
+    try {
+      const parsed = new URL(normalized);
+      if (isLikelyTrackingUrl(parsed)) {
+        return "none";
+      }
+
+      const cleaned = stripTrackingParams(parsed).toString();
+      const q = quote || "";
+      return `url(${q}${cleaned}${q})`;
+    } catch {
+      return fullMatch;
+    }
+  });
+}
+
+export function sanitizeEmailHtml(html: string): string {
+  const parser = new ServerDOMParser();
   const doc = parser.parseFromString(html, "text/html");
 
   doc
     .querySelectorAll("script, object, embed")
-    .forEach((node) => node.remove());
+    .forEach((node: any) => node.remove());
 
-  doc.querySelectorAll("a[href]").forEach((node) => {
+  doc.querySelectorAll("[style]").forEach((node: any) => {
+    const style = node.getAttribute("style");
+    if (!style) return;
+    node.setAttribute("style", sanitizeStyleUrls(style));
+  });
+
+  doc.querySelectorAll("a[href]").forEach((node: any) => {
     const href = node.getAttribute("href");
     if (!href) return;
 
@@ -102,7 +127,7 @@ export function sanitizeEmailHtml(html: string): string {
     }
   });
 
-  doc.querySelectorAll("img").forEach((img) => {
+  doc.querySelectorAll("img").forEach((img: any) => {
     const width = Number(img.getAttribute("width") || "0");
     const height = Number(img.getAttribute("height") || "0");
     const style = (img.getAttribute("style") || "").toLowerCase();
@@ -133,15 +158,15 @@ export function sanitizeEmailHtml(html: string): string {
     }
   });
 
-  doc.querySelectorAll("source[srcset], img[srcset]").forEach((el) => {
+  doc.querySelectorAll("source[srcset], img[srcset]").forEach((el: any) => {
     const srcset = el.getAttribute("srcset");
     if (!srcset) return;
 
     const cleaned = srcset
       .split(",")
-      .map((part) => part.trim())
+      .map((part: string) => part.trim())
       .filter(Boolean)
-      .map((entry) => {
+      .map((entry: string) => {
         const [rawUrl, descriptor] = entry.split(/\s+/, 2);
         try {
           const parsed = new URL(rawUrl);
@@ -157,6 +182,11 @@ export function sanitizeEmailHtml(html: string): string {
 
     if (cleaned) el.setAttribute("srcset", cleaned);
     else el.removeAttribute("srcset");
+  });
+
+  doc.querySelectorAll("style").forEach((node: any) => {
+    const content = node.textContent || "";
+    node.textContent = sanitizeStyleUrls(content);
   });
 
   return doc.documentElement.outerHTML;
