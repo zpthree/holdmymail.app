@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
+  import { applyAction, enhance } from "$app/forms";
   import SEO from "$lib/components/SEO.svelte";
 
   let email = $state("");
@@ -31,8 +31,8 @@
     method="POST"
     use:enhance={() => {
       loading = true;
-      return async ({ update }) => {
-        await update();
+      return async ({ result }) => {
+        await applyAction(result);
         loading = false;
       };
     }}

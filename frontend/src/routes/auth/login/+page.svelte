@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
+  import { applyAction, enhance } from "$app/forms";
   import { page } from "$app/state";
   import SEO from "$lib/components/SEO.svelte";
 
@@ -23,8 +23,8 @@
   action="?/login"
   use:enhance={() => {
     loading = true;
-    return async ({ update }) => {
-      await update();
+    return async ({ result }) => {
+      await applyAction(result);
       loading = false;
     };
   }}
