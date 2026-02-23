@@ -17,18 +17,6 @@
   let digest = $derived<Digest | null>(data.digest);
   const uid = $derived(page.params.uid);
   let uid_open = $state(false);
-
-  function formatDate(ts: number): string {
-    return new Date(ts).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone: $auth.user?.timezone || undefined,
-    });
-  }
 </script>
 
 <Modal bind:isOpen={uid_open} close={() => history.back()}>
@@ -55,7 +43,7 @@
       <div class="body">
         <iframe
           srcdoc={digest.htmlBody}
-          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-scripts"
           title="Digest content"
           onload={(e) => {
             const iframe = /** @type {HTMLIFrameElement} */ (e.currentTarget);
@@ -82,14 +70,6 @@
               }
 
               const { href } = anchor;
-
-              if (
-                window.innerWidth < 640 ||
-                target?.classList?.contains("button")
-              ) {
-                goto(href);
-                return;
-              }
 
               // prevent navigation
               clickEvent.preventDefault();
