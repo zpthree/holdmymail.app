@@ -5,7 +5,7 @@ const crons = cronJobs();
 
 crons.interval(
   "deliver scheduled emails",
-  { minutes: 1 },
+  { hours: 1 },
   internal.emails.deliverDueEmails,
 );
 
