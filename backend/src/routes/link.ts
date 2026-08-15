@@ -1,8 +1,7 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
+import { links } from "../db";
 import { authMiddleware } from "../middleware/auth";
 import { resolveTagNames, hydrateItem, hydrateItems } from "../tags";
-import type { Id } from "../../convex/_generated/dataModel";
 
 type Env = {
   Variables: {
@@ -120,7 +119,7 @@ async function fetchOgMetadata(url: string): Promise<OgMetadata> {
 
 // POST /link - Create a new link
 linkRoutes.post("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const { url, title, description, tags = [] } = await c.req.json();
 
   if (!url) {
@@ -134,7 +133,7 @@ linkRoutes.post("/", async (c) => {
   const tagIds =
     tags.length > 0 ? await resolveTagNames(userId, tags) : undefined;
 
-  const link = await convex.mutation(api.links.create, {
+  const link = await links.create({
     userId,
     url,
     title: title || metadata.ogTitle,
@@ -148,16 +147,13 @@ linkRoutes.post("/", async (c) => {
 
 // GET /link - List all links for the user
 linkRoutes.get("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const limitParam = c.req.query("limit");
 
   if (limitParam) {
     const numItems = Math.min(parseInt(limitParam) || 25, 100);
     const cursor = c.req.query("cursor") || null;
-    const result = await convex.query(api.links.paginatedListByUser, {
-      userId,
-      paginationOpts: { numItems, cursor },
-    });
+    const result = await links.paginatedListByUser(userId, numItems, cursor);
     return c.json({
       items: await hydrateItems(result.page),
       cursor: result.continueCursor,
@@ -165,17 +161,17 @@ linkRoutes.get("/", async (c) => {
     });
   }
 
-  const links = await convex.query(api.links.listByUser, { userId });
-  return c.json(await hydrateItems(links));
+  const allLinks = await links.listByUser(userId);
+  return c.json(await hydrateItems(allLinks));
 });
 
 // GET /link/:id - Get a specific link
 linkRoutes.get("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"links">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const link = await convex.query(api.links.getById, { id });
+    const link = await links.getById(id);
 
     if (!link || link.userId !== userId) {
       return c.json({ error: "Link not found" }, 404);
@@ -189,11 +185,11 @@ linkRoutes.get("/:id", async (c) => {
 
 // PUT /link/:id - Update a link
 linkRoutes.put("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"links">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const existing = await convex.query(api.links.getById, { id });
+    const existing = await links.getById(id);
 
     if (!existing || existing.userId !== userId) {
       return c.json({ error: "Link not found" }, 404);
@@ -206,8 +202,7 @@ linkRoutes.put("/:id", async (c) => {
       ? await resolveTagNames(userId, body.tags)
       : undefined;
 
-    const link = await convex.mutation(api.links.update, {
-      id,
+    const link = await links.update(id, {
       url: body.url,
       title: body.title,
       description: body.description,
@@ -223,7 +218,7 @@ linkRoutes.put("/:id", async (c) => {
 
 // DELETE /link/bulk - Bulk delete links
 linkRoutes.delete("/bulk", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const { ids } = await c.req.json();
 
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
@@ -233,11 +228,9 @@ linkRoutes.delete("/bulk", async (c) => {
   let deleted = 0;
   for (const id of ids) {
     try {
-      const link = await convex.query(api.links.getById, {
-        id: id as Id<"links">,
-      });
+      const link = await links.getById(id);
       if (link && link.userId === userId) {
-        await convex.mutation(api.links.remove, { id: id as Id<"links"> });
+        await links.remove(id);
         deleted++;
       }
     } catch {
@@ -250,17 +243,17 @@ linkRoutes.delete("/bulk", async (c) => {
 
 // DELETE /link/:id - Delete a link
 linkRoutes.delete("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"links">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const link = await convex.query(api.links.getById, { id });
+    const link = await links.getById(id);
 
     if (!link || link.userId !== userId) {
       return c.json({ error: "Link not found" }, 404);
     }
 
-    await convex.mutation(api.links.remove, { id });
+    await links.remove(id);
     return c.json({ message: "Link deleted" });
   } catch {
     return c.json({ error: "Link not found" }, 404);

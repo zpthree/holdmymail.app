@@ -1,6 +1,10 @@
-import type { Doc } from "../../convex/_generated/dataModel";
-
-type EmailDoc = Doc<"emails">;
+type EmailDoc = {
+  subject: string;
+  fromName: string;
+  fromEmail: string;
+  date: string;
+  senderId?: string;
+};
 
 export interface DigestEmail {
   _id: string;

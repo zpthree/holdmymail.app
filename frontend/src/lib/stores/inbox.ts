@@ -1,34 +1,37 @@
-import { writable } from "svelte/store";
+import { writable, get } from "svelte/store";
 import { browser } from "$app/environment";
-import { getConvexClient } from "$lib/convex";
-import { anyApi } from "convex/server";
+import { auth } from "$lib/stores/auth";
+import { emailApi } from "$lib/api";
 
 export const unreadCount = writable(0);
 
-let unsubscribe: (() => void) | null = null;
+let pollTimer: ReturnType<typeof setInterval> | null = null;
 
-export function subscribeToUnread(userId: string) {
+async function refreshUnread() {
+  const token = get(auth).token;
+  if (!token) {
+    unreadCount.set(0);
+    return;
+  }
+  try {
+    const { count } = await emailApi.countUnread(token);
+    unreadCount.set(count);
+  } catch {
+    // ignore polling errors
+  }
+}
+
+export function subscribeToUnread(_userId: string) {
   if (!browser) return;
 
-  // Clean up previous subscription
-  if (unsubscribe) {
-    unsubscribe();
-    unsubscribe = null;
-  }
-
-  const client = getConvexClient();
-  unsubscribe = client.onUpdate(
-    anyApi.emails.countUnread,
-    { userId },
-    (count: number) => {
-      unreadCount.set(count);
-    },
-  );
+  unsubscribeFromUnread();
+  refreshUnread();
+  pollTimer = setInterval(refreshUnread, 30_000);
 }
 
 export function unsubscribeFromUnread() {
-  if (unsubscribe) {
-    unsubscribe();
-    unsubscribe = null;
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
   }
 }

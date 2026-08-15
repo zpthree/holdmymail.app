@@ -88,11 +88,8 @@
     <section>
       <h2>Data Storage</h2>
       <p>
-        Your data is stored securely using <a
-          href="https://convex.dev"
-          target="_blank"
-          rel="noopener noreferrer">Convex</a
-        >, a cloud database platform. Email delivery is handled through
+        Your data is stored securely in a self-hosted MongoDB database. Email
+        delivery is handled through
         <a
           href="https://postmarkapp.com"
           target="_blank"

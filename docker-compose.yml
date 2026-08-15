@@ -1,0 +1,49 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017/holdmymail}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      POSTMARK_SERVER_TOKEN: ${POSTMARK_SERVER_TOKEN}
+      PORT: "3000"
+    networks:
+      - app
+      - mongo
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+        PUBLIC_FATHOM_ID: ${PUBLIC_FATHOM_ID:-}
+    restart: unless-stopped
+    ports:
+      - "5173:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app
+
+networks:
+  app:
+  mongo:
+    external: true
+    name: ${MONGO_NETWORK:?Set MONGO_NETWORK to the Docker network that already has the mongodb service}

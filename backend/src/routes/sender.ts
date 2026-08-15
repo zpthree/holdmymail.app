@@ -1,8 +1,7 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
+import { senders } from "../db";
 import { authMiddleware } from "../middleware/auth";
 import { resolveTagNames, hydrateItem, hydrateItems } from "../tags";
-import type { Id } from "../../convex/_generated/dataModel";
 
 type Env = {
   Variables: {
@@ -17,7 +16,7 @@ senderRoutes.use("*", authMiddleware);
 
 // POST /sender
 senderRoutes.post("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const {
     email,
     name,
@@ -36,7 +35,7 @@ senderRoutes.post("/", async (c) => {
   const tagIds =
     tags.length > 0 ? await resolveTagNames(userId, tags) : undefined;
 
-  const sender = await convex.mutation(api.senders.create, {
+  const sender = await senders.create({
     userId,
     email,
     name,
@@ -52,18 +51,18 @@ senderRoutes.post("/", async (c) => {
 
 // GET /sender
 senderRoutes.get("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const senders = await convex.query(api.senders.listByUser, { userId });
-  return c.json(await hydrateItems(senders));
+  const userId = c.get("userId");
+  const sendersList = await senders.listByUser(userId);
+  return c.json(await hydrateItems(sendersList));
 });
 
 // GET /sender/:id
 senderRoutes.get("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"senders">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const sender = await convex.query(api.senders.getById, { id });
+    const sender = await senders.getById(id);
 
     if (!sender || sender.userId !== userId) {
       return c.json({ error: "Sender not found" }, 404);
@@ -77,11 +76,11 @@ senderRoutes.get("/:id", async (c) => {
 
 // PUT /sender/:id
 senderRoutes.put("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"senders">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const existing = await convex.query(api.senders.getById, { id });
+    const existing = await senders.getById(id);
 
     if (!existing || existing.userId !== userId) {
       return c.json({ error: "Sender not found" }, 404);
@@ -94,8 +93,7 @@ senderRoutes.put("/:id", async (c) => {
       ? await resolveTagNames(userId, body.tags)
       : undefined;
 
-    const sender = await convex.mutation(api.senders.update, {
-      id,
+    const sender = await senders.update(id, {
       email: body.email,
       name: body.name,
       color: body.color,
@@ -114,17 +112,17 @@ senderRoutes.put("/:id", async (c) => {
 
 // DELETE /sender/:id
 senderRoutes.delete("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"senders">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
   try {
-    const sender = await convex.query(api.senders.getById, { id });
+    const sender = await senders.getById(id);
 
     if (!sender || sender.userId !== userId) {
       return c.json({ error: "Sender not found" }, 404);
     }
 
-    await convex.mutation(api.senders.remove, { id });
+    await senders.remove(id);
     return c.json({ message: "Sender deleted" });
   } catch {
     return c.json({ error: "Sender not found" }, 404);

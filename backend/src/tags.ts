@@ -1,5 +1,4 @@
-import { convex, api } from "./convex";
-import type { Id } from "../convex/_generated/dataModel";
+import { tags } from "./db";
 
 export interface HydratedTag {
   _id: string;
@@ -12,29 +11,23 @@ export interface HydratedTag {
  * Creates any tags that don't exist yet.
  */
 export async function resolveTagNames(
-  userId: Id<"users">,
+  userId: string,
   tagNames: string[],
-): Promise<Id<"tags">[]> {
-  const ids = await convex.mutation(api.tags.resolveNames, {
-    userId,
-    names: tagNames,
-  });
-  return ids as Id<"tags">[];
+): Promise<string[]> {
+  return tags.resolveNames(userId, tagNames);
 }
 
 /**
  * Hydrate an array of tag IDs into full tag objects.
  */
 export async function hydrateTags(
-  tagIds: Id<"tags">[] | undefined,
+  tagIds: string[] | undefined,
 ): Promise<HydratedTag[]> {
   if (!tagIds || tagIds.length === 0) return [];
 
-  const tags = await Promise.all(
-    tagIds.map((id) => convex.query(api.tags.getById, { id })),
-  );
+  const found = await Promise.all(tagIds.map((id) => tags.getById(id)));
 
-  return tags
+  return found
     .filter(Boolean)
     .map((t) => ({ _id: t!._id, name: t!.name, color: t!.color }));
 }
@@ -42,7 +35,7 @@ export async function hydrateTags(
 /**
  * Take a raw sender/link doc and replace tagIds with hydrated tags array.
  */
-export async function hydrateItem<T extends { tagIds?: Id<"tags">[] }>(
+export async function hydrateItem<T extends { tagIds?: string[] }>(
   item: T,
 ): Promise<Omit<T, "tagIds"> & { tags: HydratedTag[] }> {
   const tags = await hydrateTags(item.tagIds);
@@ -53,7 +46,7 @@ export async function hydrateItem<T extends { tagIds?: Id<"tags">[] }>(
 /**
  * Hydrate an array of items.
  */
-export async function hydrateItems<T extends { tagIds?: Id<"tags">[] }>(
+export async function hydrateItems<T extends { tagIds?: string[] }>(
   items: T[],
 ): Promise<(Omit<T, "tagIds"> & { tags: HydratedTag[] })[]> {
   return Promise.all(items.map(hydrateItem));

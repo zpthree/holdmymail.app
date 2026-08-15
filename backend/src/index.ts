@@ -8,6 +8,8 @@ import { digestRoutes } from "./routes/digest";
 import { linkRoutes } from "./routes/link";
 import { tagRoutes } from "./routes/tag";
 import { buildDigestHtml, type DigestLink } from "./emails/digest";
+import { connectMongo } from "./db";
+import { deliverDueEmails } from "./jobs/deliverDueEmails";
 
 const app = new Hono();
 
@@ -107,9 +109,21 @@ app.route("/digest", digestRoutes);
 app.route("/link", linkRoutes);
 app.route("/tag", tagRoutes);
 
+await connectMongo();
+
+const HOUR_MS = 60 * 60 * 1000;
+setInterval(() => {
+  deliverDueEmails().catch((err) => {
+    console.error("deliverDueEmails failed:", err);
+  });
+}, HOUR_MS);
+
+const port = Number(process.env.PORT) || 3000;
+
 export default {
-  port: 3000,
+  port,
+  hostname: "0.0.0.0",
   fetch: app.fetch.bind(app),
 };
 
-console.log("🚀 Server running at http://localhost:3000");
+console.log(`🚀 Server running at http://0.0.0.0:${port}`);

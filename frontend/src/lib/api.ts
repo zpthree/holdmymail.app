@@ -190,6 +190,9 @@ export const emailApi = {
       { token },
     ),
 
+  countUnread: (token: string) =>
+    api<{ count: number }>("/email/unread-count", { token }),
+
   get: (id: string, token: string) => api<Email>(`/email/${id}`, { token }),
 
   delete: (id: string, token: string) =>

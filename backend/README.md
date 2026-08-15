@@ -36,7 +36,7 @@ A Hono + Bun API server that receives inbound email via Postmark webhooks, holds
 | --------- | ------------------------------------ |
 | Runtime   | [Bun](https://bun.sh)                |
 | Framework | [Hono](https://hono.dev) v4          |
-| Database  | [Convex](https://convex.dev) (cloud) |
+| Database  | [MongoDB](https://www.mongodb.com) (self-hosted) |
 | Email     | [Postmark](https://postmarkapp.com)  |
 | Language  | TypeScript (ES2022)                  |
 
@@ -227,7 +227,7 @@ Both produce the same visual layout: logo → header → date/count → tag-grou
 
 | Variable                | Description                            |
 | ----------------------- | -------------------------------------- |
-| `CONVEX_URL`            | Convex deployment URL (required)       |
+| `MONGODB_URI`           | MongoDB connection string (default: `mongodb://mongodb:27017/holdmymail`) |
 | `POSTMARK_SERVER_TOKEN` | Postmark API token for sending digests |
 | `FRONTEND_URL`          | Frontend URL for digest email links    |
 

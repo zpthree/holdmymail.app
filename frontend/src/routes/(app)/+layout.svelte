@@ -18,7 +18,7 @@
   const hasAuthToken = $derived(Boolean($auth.token || data.token));
   const activeUserId = $derived($auth.user?.id || data.user?.id || null);
 
-  // Subscribe to unread inbox count via Convex live query
+  // Poll unread inbox count
   $effect(() => {
     const userId = activeUserId;
     if (userId) {

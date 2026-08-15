@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
-import type { Id } from "../../convex/_generated/dataModel";
+import { users, senders, emails } from "../db";
 import { sanitizeEmailHtml } from "../emails/sanitizeEmailHtml";
 
 // Postmark inbound webhook payload
@@ -171,21 +170,18 @@ mailRoutes.post("/", async (c) => {
   const username = toMatch[1];
 
   // Find the user by their username
-  const user = await convex.query(api.users.getByUsername, { username });
+  const user = await users.getByUsername(username);
   if (!user) {
     return c.json({ error: "Unknown recipient" }, 404);
   }
 
   // Check if sender exists, create if not
-  let sender = await convex.query(api.senders.getByUserAndEmail, {
-    userId: user._id,
-    email: payload.From,
-  });
+  let sender = await senders.getByUserAndEmail(user._id, payload.From);
 
-  let senderId: Id<"senders"> | undefined;
+  let senderId: string | undefined;
   if (!sender) {
     // Auto-create sender
-    const newSender = await convex.mutation(api.senders.create, {
+    const newSender = await senders.create({
       userId: user._id,
       email: payload.From,
       name: payload.FromName || payload.From,
@@ -228,7 +224,7 @@ mailRoutes.post("/", async (c) => {
   }
 
   // Store the email
-  const email = await convex.mutation(api.emails.create, {
+  const email = await emails.create({
     userId: user._id,
     senderId,
     fromEmail: payload.From,

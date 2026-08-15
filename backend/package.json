@@ -4,13 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "start": "bun run src/index.ts",
-    "convex": "convex dev"
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "convex": "^1.31.7",
     "hono": "^4.0.0",
     "linkedom": "^0.18.12",
+    "mongodb": "6",
     "postmark": "^4.0.5"
   },
   "devDependencies": {

@@ -1,7 +1,6 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
+import { emails } from "../db";
 import { authMiddleware } from "../middleware/auth";
-import type { Id } from "../../convex/_generated/dataModel";
 import { sanitizeEmailHtml } from "../emails/sanitizeEmailHtml";
 
 type Env = {
@@ -12,12 +11,10 @@ type Env = {
 
 export const emailRoutes = new Hono<Env>();
 
-// Apply auth middleware to all email routes
 emailRoutes.use("*", authMiddleware);
 
-// POST /email
 emailRoutes.post("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const {
     senderId,
     fromEmail,
@@ -36,9 +33,9 @@ emailRoutes.post("/", async (c) => {
 
   const sanitizedHtmlBody = htmlBody ? sanitizeEmailHtml(htmlBody) : "";
 
-  const email = await convex.mutation(api.emails.create, {
+  const email = await emails.create({
     userId,
-    senderId: senderId as Id<"senders"> | undefined,
+    senderId,
     fromEmail,
     fromName: fromName || "",
     to: to || "",
@@ -52,18 +49,14 @@ emailRoutes.post("/", async (c) => {
   return c.json(email, 201);
 });
 
-// GET /email
 emailRoutes.get("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const limitParam = c.req.query("limit");
 
   if (limitParam) {
     const numItems = Math.min(parseInt(limitParam) || 25, 100);
     const cursor = c.req.query("cursor") || null;
-    const result = await convex.query(api.emails.paginatedListByUser, {
-      userId,
-      paginationOpts: { numItems, cursor },
-    });
+    const result = await emails.paginatedListByUser(userId, numItems, cursor);
     return c.json({
       items: result.page,
       cursor: result.continueCursor,
@@ -71,13 +64,17 @@ emailRoutes.get("/", async (c) => {
     });
   }
 
-  const emails = await convex.query(api.emails.listByUser, { userId });
-  return c.json(emails);
+  return c.json(await emails.listByUser(userId));
 });
 
-// POST /email/schedule
+emailRoutes.get("/unread-count", async (c) => {
+  const userId = c.get("userId");
+  const count = await emails.countUnread(userId);
+  return c.json({ count });
+});
+
 emailRoutes.post("/schedule", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const { emailIds, scheduledFor } = await c.req.json();
 
   if (!emailIds || !scheduledFor) {
@@ -85,55 +82,40 @@ emailRoutes.post("/schedule", async (c) => {
   }
 
   const scheduledDate = new Date(scheduledFor).getTime();
-  const updated = await convex.mutation(api.emails.schedule, {
-    emailIds: emailIds as Id<"emails">[],
-    scheduledFor: scheduledDate,
-    userId,
-  });
+  const updated = await emails.schedule(emailIds, scheduledDate, userId);
 
   return c.json({ scheduled: updated.length, emails: updated });
 });
 
-// GET /email/:id
 emailRoutes.get("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"emails">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
-  try {
-    const email = await convex.query(api.emails.getById, { id });
+  const email = await emails.getById(id);
 
-    if (!email || email.userId !== userId) {
-      return c.json({ error: "Email not found" }, 404);
-    }
-
-    return c.json(email);
-  } catch {
+  if (!email || email.userId !== userId) {
     return c.json({ error: "Email not found" }, 404);
   }
+
+  return c.json(email);
 });
 
-// PATCH /email/:id/read
 emailRoutes.patch("/:id/read", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"emails">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
-  try {
-    const email = await convex.query(api.emails.getById, { id });
+  const email = await emails.getById(id);
 
-    if (!email || email.userId !== userId) {
-      return c.json({ error: "Email not found" }, 404);
-    }
-
-    const updated = await convex.mutation(api.emails.markRead, { id });
-    return c.json(updated);
-  } catch {
+  if (!email || email.userId !== userId) {
     return c.json({ error: "Email not found" }, 404);
   }
+
+  const updated = await emails.markRead(id);
+  return c.json(updated);
 });
 
-// DELETE /email/bulk - Bulk delete emails
 emailRoutes.delete("/bulk", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const { ids } = await c.req.json();
 
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
@@ -142,37 +124,26 @@ emailRoutes.delete("/bulk", async (c) => {
 
   let deleted = 0;
   for (const id of ids) {
-    try {
-      const email = await convex.query(api.emails.getById, {
-        id: id as Id<"emails">,
-      });
-      if (email && email.userId === userId) {
-        await convex.mutation(api.emails.remove, { id: id as Id<"emails"> });
-        deleted++;
-      }
-    } catch {
-      // skip invalid ids
+    const email = await emails.getById(id);
+    if (email && email.userId === userId) {
+      await emails.remove(id);
+      deleted++;
     }
   }
 
   return c.json({ deleted });
 });
 
-// DELETE /email/:id
 emailRoutes.delete("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"emails">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
-  try {
-    const email = await convex.query(api.emails.getById, { id });
+  const email = await emails.getById(id);
 
-    if (!email || email.userId !== userId) {
-      return c.json({ error: "Email not found" }, 404);
-    }
-
-    await convex.mutation(api.emails.remove, { id });
-    return c.json({ message: "Email deleted" });
-  } catch {
+  if (!email || email.userId !== userId) {
     return c.json({ error: "Email not found" }, 404);
   }
+
+  await emails.remove(id);
+  return c.json({ message: "Email deleted" });
 });

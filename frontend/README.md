@@ -377,7 +377,6 @@ The `<Header>` component is a fixed top bar with a pill-shaped nav:
 | Variable          | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `VITE_API_URL`    | Backend API URL (default: `http://localhost:3000`)            |
-| `VITE_CONVEX_URL` | Convex deployment URL for live queries (WebSocket connection) |
 
 ## Getting Started
 

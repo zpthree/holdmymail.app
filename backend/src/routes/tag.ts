@@ -1,7 +1,6 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
+import { tags } from "../db";
 import { authMiddleware } from "../middleware/auth";
-import type { Id } from "../../convex/_generated/dataModel";
 
 type Env = {
   Variables: {
@@ -13,23 +12,20 @@ export const tagRoutes = new Hono<Env>();
 
 tagRoutes.use("*", authMiddleware);
 
-// GET /tag - List all tags for the user
 tagRoutes.get("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const tags = await convex.query(api.tags.listByUser, { userId });
-  return c.json(tags);
+  const userId = c.get("userId");
+  return c.json(await tags.listByUser(userId));
 });
 
-// POST /tag - Create a new tag
 tagRoutes.post("/", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
+  const userId = c.get("userId");
   const { name, color } = await c.req.json();
 
   if (!name?.trim()) {
     return c.json({ error: "Tag name is required" }, 400);
   }
 
-  const tag = await convex.mutation(api.tags.create, {
+  const tag = await tags.create({
     userId,
     name: name.trim(),
     color,
@@ -38,44 +34,33 @@ tagRoutes.post("/", async (c) => {
   return c.json(tag, 201);
 });
 
-// PUT /tag/:id - Update a tag
 tagRoutes.put("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"tags">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
-  try {
-    const existing = await convex.query(api.tags.getById, { id });
-    if (!existing || existing.userId !== userId) {
-      return c.json({ error: "Tag not found" }, 404);
-    }
-
-    const body = await c.req.json();
-    const tag = await convex.mutation(api.tags.update, {
-      id,
-      name: body.name,
-      color: body.color,
-    });
-
-    return c.json(tag);
-  } catch {
+  const existing = await tags.getById(id);
+  if (!existing || existing.userId !== userId) {
     return c.json({ error: "Tag not found" }, 404);
   }
+
+  const body = await c.req.json();
+  const tag = await tags.update(id, {
+    name: body.name,
+    color: body.color,
+  });
+
+  return c.json(tag);
 });
 
-// DELETE /tag/:id - Delete a tag
 tagRoutes.delete("/:id", async (c) => {
-  const userId = c.get("userId") as Id<"users">;
-  const id = c.req.param("id") as Id<"tags">;
+  const userId = c.get("userId");
+  const id = c.req.param("id");
 
-  try {
-    const existing = await convex.query(api.tags.getById, { id });
-    if (!existing || existing.userId !== userId) {
-      return c.json({ error: "Tag not found" }, 404);
-    }
-
-    await convex.mutation(api.tags.remove, { id });
-    return c.json({ message: "Tag deleted" });
-  } catch {
+  const existing = await tags.getById(id);
+  if (!existing || existing.userId !== userId) {
     return c.json({ error: "Tag not found" }, 404);
   }
+
+  await tags.remove(id);
+  return c.json({ message: "Tag deleted" });
 });

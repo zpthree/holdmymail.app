@@ -1,7 +1,6 @@
 import { Hono } from "hono";
-import { convex, api } from "../convex";
+import { users } from "../db";
 import { authMiddleware } from "../middleware/auth";
-import type { Id } from "../../convex/_generated/dataModel";
 
 type Env = {
   Variables: {
@@ -60,7 +59,7 @@ authRoutes.post("/register", async (c) => {
 
   try {
     const passwordHash = await Bun.password.hash(password);
-    const user = await convex.mutation(api.users.register, {
+    const user = await users.register({
       email,
       passwordHash,
       username,
@@ -68,9 +67,9 @@ authRoutes.post("/register", async (c) => {
 
     // Create verification token and send email
     const verificationToken = crypto.randomUUID();
-    await convex.mutation(api.users.createVerificationToken, {
+    await users.createVerificationToken({
       token: verificationToken,
-      userId: user.id as Id<"users">,
+      userId: user.id,
       expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
 
@@ -92,7 +91,7 @@ authRoutes.post("/register", async (c) => {
 authRoutes.post("/login", async (c) => {
   const { email, password } = await c.req.json();
 
-  const user = await convex.query(api.users.getByEmail, { email });
+  const user = await users.getByEmail(email);
 
   if (!user) {
     return c.json({ error: "Invalid credentials" }, 401);
@@ -114,7 +113,7 @@ authRoutes.post("/login", async (c) => {
   }
 
   const token = crypto.randomUUID();
-  await convex.mutation(api.users.createToken, {
+  await users.createToken({
     token,
     userId: user._id,
     expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -131,26 +130,22 @@ authRoutes.post("/verify-email", async (c) => {
     return c.json({ error: "Token is required" }, 400);
   }
 
-  const verificationToken = await convex.query(api.users.getVerificationToken, {
-    token,
-  });
+  const verificationToken = await users.getVerificationToken(token);
 
   if (!verificationToken) {
     return c.json({ error: "Invalid or expired verification link" }, 400);
   }
 
   if (verificationToken.expiresAt < Date.now()) {
-    await convex.mutation(api.users.deleteVerificationToken, { token });
+    await users.deleteVerificationToken(token);
     return c.json(
       { error: "Verification link has expired. Please request a new one." },
       400,
     );
   }
 
-  await convex.mutation(api.users.verifyEmail, {
-    userId: verificationToken.userId,
-  });
-  await convex.mutation(api.users.deleteVerificationToken, { token });
+  await users.verifyEmail(verificationToken.userId);
+  await users.deleteVerificationToken(token);
 
   return c.json({ message: "Email verified successfully" });
 });
@@ -163,7 +158,7 @@ authRoutes.post("/resend-verification", async (c) => {
     return c.json({ error: "Email is required" }, 400);
   }
 
-  const user = await convex.query(api.users.getByEmail, { email });
+  const user = await users.getByEmail(email);
 
   if (!user) {
     // Don't reveal whether the email exists
@@ -181,7 +176,7 @@ authRoutes.post("/resend-verification", async (c) => {
   }
 
   const verificationToken = crypto.randomUUID();
-  await convex.mutation(api.users.createVerificationToken, {
+  await users.createVerificationToken({
     token: verificationToken,
     userId: user._id,
     expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
@@ -207,13 +202,13 @@ authRoutes.post("/forgot-password", async (c) => {
   const successMsg =
     "If an account with that email exists, a password reset link has been sent.";
 
-  const user = await convex.query(api.users.getByEmail, { email });
+  const user = await users.getByEmail(email);
   if (!user) {
     return c.json({ message: successMsg });
   }
 
   const resetToken = crypto.randomUUID();
-  await convex.mutation(api.users.createPasswordResetToken, {
+  await users.createPasswordResetToken({
     token: resetToken,
     userId: user._id,
     expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
@@ -263,16 +258,14 @@ authRoutes.post("/reset-password", async (c) => {
     return c.json({ error: "Password must be at least 8 characters" }, 400);
   }
 
-  const resetToken = await convex.query(api.users.getPasswordResetToken, {
-    token,
-  });
+  const resetToken = await users.getPasswordResetToken(token);
 
   if (!resetToken) {
     return c.json({ error: "Invalid or expired reset link" }, 400);
   }
 
   if (resetToken.expiresAt < Date.now()) {
-    await convex.mutation(api.users.deletePasswordResetToken, { token });
+    await users.deletePasswordResetToken(token);
     return c.json(
       { error: "Reset link has expired. Please request a new one." },
       400,
@@ -280,11 +273,8 @@ authRoutes.post("/reset-password", async (c) => {
   }
 
   const passwordHash = await Bun.password.hash(password);
-  await convex.mutation(api.users.updatePassword, {
-    userId: resetToken.userId,
-    passwordHash,
-  });
-  await convex.mutation(api.users.deletePasswordResetToken, { token });
+  await users.updatePassword(resetToken.userId, passwordHash);
+  await users.deletePasswordResetToken(token);
 
   return c.json({ message: "Password has been reset successfully" });
 });
@@ -295,7 +285,7 @@ authRoutes.post("/logout", async (c) => {
   const token = authHeader?.replace("Bearer ", "");
 
   if (token) {
-    await convex.mutation(api.users.deleteToken, { token });
+    await users.deleteToken(token);
   }
 
   return c.json({ message: "Logged out" });
@@ -309,16 +299,14 @@ authRoutes.post("/token", async (c) => {
   }
 
   const existingToken = authHeader.replace("Bearer ", "");
-  const authToken = await convex.query(api.users.getToken, {
-    token: existingToken,
-  });
+  const authToken = await users.getToken(existingToken);
 
   if (!authToken || authToken.expiresAt < Date.now()) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   const newToken = crypto.randomUUID();
-  await convex.mutation(api.users.createToken, {
+  await users.createToken({
     token: newToken,
     userId: authToken.userId,
     expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -329,7 +317,7 @@ authRoutes.post("/token", async (c) => {
 
 // GET /auth/:id
 authRoutes.get("/:id", authMiddleware, async (c) => {
-  const id = c.req.param("id") as Id<"users">;
+  const id = c.req.param("id");
   const authenticatedUserId = c.get("userId");
 
   if (id !== authenticatedUserId) {
@@ -337,7 +325,7 @@ authRoutes.get("/:id", authMiddleware, async (c) => {
   }
 
   try {
-    const user = await convex.query(api.users.getById, { id });
+    const user = await users.getById(id);
 
     if (!user) {
       return c.json({ error: "User not found" }, 404);
@@ -361,7 +349,7 @@ authRoutes.get("/:id", authMiddleware, async (c) => {
 
 // PUT /auth/:id
 authRoutes.put("/:id", authMiddleware, async (c) => {
-  const id = c.req.param("id") as Id<"users">;
+  const id = c.req.param("id");
   const authenticatedUserId = c.get("userId");
 
   if (id !== authenticatedUserId) {
@@ -377,7 +365,7 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
       if (!body.currentPassword) {
         return c.json({ error: "Current password is required" }, 400);
       }
-      const user = await convex.query(api.users.getById, { id });
+      const user = await users.getById(id);
       if (!user) {
         return c.json({ error: "User not found" }, 404);
       }
@@ -397,10 +385,7 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
     if (body.digestTime) updates.digestTime = body.digestTime;
     if (body.timezone !== undefined) updates.timezone = body.timezone;
 
-    const user = await convex.mutation(api.users.update, {
-      id,
-      ...updates,
-    } as any);
+    const user = await users.update(id, updates);
 
     if (!user) {
       return c.json({ error: "User not found" }, 404);
@@ -414,7 +399,7 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
 
 // DELETE /auth/:id
 authRoutes.delete("/:id", authMiddleware, async (c) => {
-  const id = c.req.param("id") as Id<"users">;
+  const id = c.req.param("id");
   const authenticatedUserId = c.get("userId");
 
   if (id !== authenticatedUserId) {
@@ -422,7 +407,7 @@ authRoutes.delete("/:id", authMiddleware, async (c) => {
   }
 
   try {
-    await convex.mutation(api.users.remove, { id });
+    await users.remove(id);
     return c.json({ message: "User deleted" });
   } catch {
     return c.json({ error: "User not found" }, 404);
