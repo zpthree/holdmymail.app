@@ -1,49 +1,57 @@
 services:
-  backend:
+  holdmymail-api:
     build: ./backend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "2910:2910"
     environment:
       MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017/holdmymail}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-https://holdmymail.app}
       POSTMARK_SERVER_TOKEN: ${POSTMARK_SERVER_TOKEN}
-      PORT: "3000"
+      PORT: "2910"
     networks:
-      - app
-      - mongo
+      - holdmymail
     healthcheck:
       test:
         [
           "CMD",
           "bun",
           "-e",
-          "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+          "fetch('http://127.0.0.1:2910/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 5  
 
-  frontend:
+  holdmymail:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+        VITE_API_URL: ${VITE_API_URL:-https://api.holdmymail.app}
         PUBLIC_FATHOM_ID: ${PUBLIC_FATHOM_ID:-}
     restart: unless-stopped
     ports:
-      - "5173:3000"
+      - "2911:2911"
     environment:
       HOST: 0.0.0.0
-      PORT: "3000"
-    depends_on:
-      backend:
-        condition: service_healthy
+      PORT: "2911"
+      INTERNAL_API_URL: http://holdmymail-api:2910
     networks:
-      - app
+      - holdmymail
+    depends_on:
+      holdmymail-api:
+        condition: service_healthy
+
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: >
+      tunnel --no-autoupdate run
+      --token eyJhIjoiOTZjMzQ1YWJjMGU3OGNjYzRkNzRmNDcxMjk5MjEyNDUiLCJ0IjoiNjg0ZWZkM2MtODExMy00MzBkLTg0MzQtNDM2NTBmZGEyZjdhIiwicyI6IllqQTJaVFF3TURjdE5HUm1aQzAwTkRSaUxXSTNaakF0Wm1RMk9ERmlNVEUwWW1NeCJ9
+    networks:
+      - holdmymail
 
 networks:
-  app:
-  mongo:
-    external: true
-    name: ${MONGO_NETWORK:?Set MONGO_NETWORK to the Docker network that already has the mongodb service}
+  holdmymail:
+    name: holdmymail

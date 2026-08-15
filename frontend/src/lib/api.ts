@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || "";
+import { browser } from "$app/environment";
+
+const PUBLIC_API_URL = import.meta.env.VITE_API_URL || "";
+const INTERNAL_API_URL = process.env.INTERNAL_API_URL || "";
 const DEFAULT_DEV_API_URL = "http://localhost:3000";
 
 interface ApiOptions {
@@ -11,10 +14,13 @@ export async function api<T>(
   endpoint: string,
   options: ApiOptions = {},
 ): Promise<T> {
-  const baseUrl = API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "");
+  const baseUrl = browser
+    ? PUBLIC_API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "")
+    : INTERNAL_API_URL || PUBLIC_API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "");
+
   if (!baseUrl) {
     throw new Error(
-      "VITE_API_URL is not set. Configure it in your deployment environment.",
+      "Configure VITE_API_URL for browser requests and INTERNAL_API_URL for server-side requests.",
     );
   }
 
