@@ -133,6 +133,7 @@ async function ensureIndexes(database: Db) {
     { key: { userId: 1 } },
     { key: { senderId: 1 } },
     { key: { delivered: 1, scheduledFor: 1 } },
+    { key: { messageId: 1 }, unique: true, sparse: true },
   ]);
   await database.collection("digests").createIndex({ userId: 1 });
   await database.collection("links").createIndex({ userId: 1 });

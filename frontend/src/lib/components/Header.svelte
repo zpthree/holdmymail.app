@@ -20,6 +20,7 @@
   );
   // Avoid auth-state flicker during hydration by preferring server data fallback.
   const username = $derived($auth.user?.username ?? page.data.user?.username ?? null);
+  const isAdmin = $derived(Boolean($auth.user?.isAdmin ?? page.data.user?.isAdmin));
 </script>
 
 <header>
@@ -43,6 +44,11 @@
         <li>
           <a href="/links" class:selected={activeTab === "/links"}>Links</a>
         </li>
+        {#if isAdmin}
+          <li>
+            <a href="/admin" class:selected={activeTab === "/admin"}>Admin</a>
+          </li>
+        {/if}
       </ul>
     {/if}
     <div class="header-right" data-logged-in={!!username}>

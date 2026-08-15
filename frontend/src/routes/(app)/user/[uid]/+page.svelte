@@ -190,6 +190,13 @@
     <a href="/auth/logout" class="btn btn-accent">Log out</a>
   </section>
 
+  {#if loadedUser?.isAdmin}
+    <section class="card flex">
+      <h2>Admin</h2>
+      <a href="/admin" class="btn btn-black">Open admin tools</a>
+    </section>
+  {/if}
+
   <!-- Email Section -->
   <section class="card">
     <h2>Email Address</h2>

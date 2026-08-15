@@ -8,6 +8,8 @@ services:
       MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017/holdmymail}
       FRONTEND_URL: ${FRONTEND_URL:-https://holdmymail.app}
       POSTMARK_SERVER_TOKEN: ${POSTMARK_SERVER_TOKEN}
+      ADMIN_USERNAMES: ${ADMIN_USERNAMES:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       PORT: "2910"
     networks:
       - holdmymail

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { users } from "../db";
 import { authMiddleware } from "../middleware/auth";
+import { isAdmin } from "../admin";
 
 type Env = {
   Variables: {
@@ -341,6 +342,7 @@ authRoutes.get("/:id", authMiddleware, async (c) => {
       digestTime: user.digestTime || "09:00",
       timezone: user.timezone || "",
       createdAt: user._creationTime,
+      isAdmin: isAdmin(user.username, user.email),
     });
   } catch {
     return c.json({ error: "User not found" }, 404);

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "start": "bun run src/index.ts"
+    "start": "bun run src/index.ts",
+    "replay-inbound": "bun run src/jobs/replayInbound.ts"
   },
   "dependencies": {
     "hono": "^4.0.0",

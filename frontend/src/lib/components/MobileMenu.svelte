@@ -1,8 +1,10 @@
 <script lang="ts">
   import { page, navigating } from "$app/stores";
   import Modal from "$lib/components/Modal.svelte";
+  import { auth } from "$lib/stores/auth";
 
   let { isMobileMenuOpen = $bindable(false) } = $props();
+  const isAdmin = $derived(Boolean($auth.user?.isAdmin));
 
   $effect(() => {
     if ($navigating) isMobileMenuOpen = false;
@@ -40,6 +42,14 @@
             href="/links">Links</a
           >
         </li>
+        {#if isAdmin}
+          <li class="mb-6">
+            <a
+              class:border-primary={$page.url.pathname === "/admin"}
+              href="/admin">Admin</a
+            >
+          </li>
+        {/if}
       </ul>
     </nav>
     <button onclick={() => (isMobileMenuOpen = false)}>

@@ -16,6 +16,7 @@ interface User {
   email: string;
   username: string;
   timezone: string;
+  isAdmin?: boolean;
 }
 
 interface AuthState {

@@ -87,6 +87,7 @@ export const authApi = {
       digestTime: string;
       timezone: string;
       createdAt: number;
+      isAdmin: boolean;
     }>(`/auth/${id}`, { token }),
 
   updateUser: (
@@ -351,4 +352,25 @@ export const digestApi = {
     ),
 
   get: (id: string, token: string) => api<Digest>(`/digest/${id}`, { token }),
+};
+
+export interface ReplaySummary {
+  scanned: number;
+  stored: number;
+  duplicate: number;
+  unknownRecipient: number;
+  invalid: number;
+  errors: number;
+}
+
+export const adminApi = {
+  replayInbound: (
+    token: string,
+    range: { fromdate?: string; todate?: string } = {},
+  ) =>
+    api<ReplaySummary>("/mail/replay", {
+      method: "POST",
+      body: range,
+      token,
+    }),
 };

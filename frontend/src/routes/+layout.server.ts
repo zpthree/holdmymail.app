@@ -36,6 +36,7 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
         username: user.username,
         timezone:
           user.timezone || cookies.get(AUTH_TIMEZONE_COOKIE) || "UTC",
+        isAdmin: Boolean(user.isAdmin),
       },
     };
   } catch {

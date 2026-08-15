@@ -38,6 +38,11 @@ export async function paginatedListByUser(
   return paginateByUser(emails(), userId, numItems, cursor);
 }
 
+export async function getByMessageId(messageId: string) {
+  if (!messageId) return null;
+  return serialize(await emails().findOne({ messageId }));
+}
+
 export async function getById(id: string) {
   const oid = toId(id);
   if (!oid) return null;
