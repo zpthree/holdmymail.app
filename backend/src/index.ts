@@ -111,12 +111,12 @@ app.route("/tag", tagRoutes);
 
 await connectMongo();
 
-const HOUR_MS = 60 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
 setInterval(() => {
   deliverDueEmails().catch((err) => {
     console.error("deliverDueEmails failed:", err);
   });
-}, HOUR_MS);
+}, MINUTE_MS);
 
 const port = Number(process.env.PORT) || 3000;
 
