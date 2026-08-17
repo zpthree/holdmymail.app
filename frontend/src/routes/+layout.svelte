@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { PUBLIC_FATHOM_ID } from "$env/static/public";
-  import * as Fathom from "fathom-client";
   import "$lib/assets/css/main.css";
   import { auth, setAuth } from "$lib/stores/auth";
   import { onNavigate } from "$app/navigation";
@@ -11,16 +9,6 @@
 
   $effect(() => {
     setAuth(data.user, data.token);
-  });
-
-  onMount(() => {
-    Fathom.load(PUBLIC_FATHOM_ID, {
-      includedDomains: ["holdmymail.app", "www.holdmymail.app"],
-    });
-  });
-
-  onNavigate(() => {
-    Fathom.trackPageview();
   });
 </script>
 

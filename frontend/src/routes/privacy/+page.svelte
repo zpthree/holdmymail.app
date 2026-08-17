@@ -17,14 +17,15 @@
 
   <div class="privacy">
     <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: February 21, 2026</p>
+    <p class="updated">Last updated: August 16, 2026</p>
 
     <section>
       <h2>Introduction</h2>
       <p>
-        Hold My Mail ("we", "us", "our") operates the holdmymail.app website and
-        related services. This Privacy Policy explains how we collect, use, and
-        protect your personal information when you use our service.
+        Hold My Mail ("we", "us", "our") is a personal project operated by
+        Zach Patrick. It is not a company or commercial product. This Privacy
+        Policy explains how information is collected, used, and protected when
+        you use holdmymail.app and related services.
       </p>
     </section>
 
@@ -55,20 +56,9 @@
 
       <h3>Usage Data</h3>
       <p>
-        We collect analytics data about your interactions with our website using
-        <a
-          href="https://usefathom.com"
-          target="_blank"
-          rel="noopener noreferrer">Fathom Analytics</a
-        >. Fathom collects information such as pages visited, time spent, and
-        referral source — but does not track personal information, use cookies,
-        or share data with third parties. See
-        <a
-          href="https://usefathom.com/privacy"
-          target="_blank"
-          rel="noopener noreferrer">Fathom's privacy policy</a
-        >
-        for details.
+        We do not use analytics, advertising pixels, or other tracking tools. We
+        do not collect browsing statistics, referral sources, or similar usage
+        analytics.
       </p>
     </section>
 
@@ -88,8 +78,9 @@
     <section>
       <h2>Data Storage</h2>
       <p>
-        Your data is stored securely in a self-hosted MongoDB database. Email
-        delivery is handled through
+        Hold My Mail is self-hosted on personal infrastructure. Your data is
+        stored in a MongoDB database that we operate. Email delivery is handled
+        through
         <a
           href="https://postmarkapp.com"
           target="_blank"
@@ -134,31 +125,26 @@
       <h2>Cookies</h2>
       <p>
         Hold My Mail uses first-party cookies for authentication and session
-        management. We do not use third-party advertising or tracking cookies.
+        management only. We do not use analytics, advertising, or other tracking
+        cookies.
       </p>
     </section>
 
     <section>
       <h2>Third-Party Services</h2>
-      <p>We use the following third-party services to operate Hold My Mail:</p>
+      <p>
+        The site and database run on self-hosted infrastructure. The only
+        third-party service used to operate Hold My Mail is:
+      </p>
       <ul>
-        <li>
-          <strong>Fathom Analytics</strong> — privacy-friendly website analytics
-        </li>
-        <li>
-          <strong>Convex</strong> — database and backend infrastructure
-        </li>
         <li>
           <strong>Postmark</strong> — inbound email receiving and outbound digest
           delivery
         </li>
-        <li>
-          <strong>Vercel</strong> — frontend hosting
-        </li>
       </ul>
       <p>
-        Each of these services has their own privacy policies governing how they
-        handle data.
+        Postmark has its own privacy policy governing how it handles email data
+        in transit.
       </p>
     </section>
 

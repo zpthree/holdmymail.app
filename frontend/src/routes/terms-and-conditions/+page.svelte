@@ -17,14 +17,15 @@
 
   <div class="terms">
     <h1>Terms and Conditions</h1>
-    <p class="updated">Last updated: February 15, 2026</p>
+    <p class="updated">Last updated: August 16, 2026</p>
 
     <section>
       <h2>Agreement to Terms</h2>
       <p>
-        By accessing and using Hold My Mail ("Service"), you accept and agree to
-        be bound by the terms and provision of this agreement. If you do not
-        agree to abide by the above, please do not use this service.
+        Hold My Mail is a personal project operated by Zach Patrick. By
+        accessing and using Hold My Mail ("Service"), you accept and agree to be
+        bound by these terms. If you do not agree, please do not use this
+        service.
       </p>
     </section>
 
@@ -181,10 +182,17 @@
     <section>
       <h2>Service Availability</h2>
       <p>
-        Hold My Mail makes no guarantee regarding the availability or uptime of
-        the service. While we strive for high availability, we do not guarantee
-        uninterrupted access. We are not liable for any damages resulting from
-        service interruptions or data loss.
+        Hold My Mail is a personal, self-hosted project provided as a
+        convenience, not a commercial service. There is no uptime guarantee,
+        service-level agreement, or promise of uninterrupted access. The service
+        may be slow, interrupted, changed, or taken offline at any time —
+        including for maintenance, hardware issues, power or network outages, or
+        because the operator is unavailable.
+      </p>
+      <p>
+        We are not liable for any damages resulting from downtime, delayed
+        email delivery, or data loss. You should not rely on Hold My Mail as
+        your only copy of important mail.
       </p>
     </section>
 

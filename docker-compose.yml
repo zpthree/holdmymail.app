@@ -23,14 +23,13 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 5  
+      retries: 5
 
   holdmymail:
     build:
       context: ./frontend
       args:
         VITE_API_URL: ${VITE_API_URL:-https://api.holdmymail.app}
-        PUBLIC_FATHOM_ID: ${PUBLIC_FATHOM_ID:-}
     restart: unless-stopped
     ports:
       - "2911:2911"
@@ -43,7 +42,6 @@ services:
     depends_on:
       holdmymail-api:
         condition: service_healthy
-
 
   tunnel:
     image: cloudflare/cloudflared:latest
