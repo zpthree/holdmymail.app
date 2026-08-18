@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { ingestInboundEmail } from "../inbound/ingest";
 import { replayInboundFromPostmark } from "../jobs/replayInbound";
+import { deliverDueEmails } from "../jobs/deliverDueEmails";
 import { authMiddleware } from "../middleware/auth";
 import { users } from "../db";
 import { isAdmin } from "../admin";
@@ -30,6 +31,21 @@ mailRoutes.post("/replay", authMiddleware, async (c) => {
   });
 
   return c.json(summary);
+});
+
+mailRoutes.post("/deliver-digests", authMiddleware, async (c) => {
+  const user = await users.getById(c.get("userId"));
+  if (!user || !isAdmin(user.username, user.email)) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
+  try {
+    const result = await deliverDueEmails();
+    return c.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Digest delivery failed";
+    return c.json({ error: message }, 500);
+  }
 });
 
 mailRoutes.post("/", async (c) => {

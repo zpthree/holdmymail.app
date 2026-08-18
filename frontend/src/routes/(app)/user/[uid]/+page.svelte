@@ -248,7 +248,9 @@
   <section class="card">
     <h2>Mail Delivery</h2>
     <p class="hint">
-      Configure how and when your held emails are delivered to you.
+      Configure how and when your held emails are delivered to you. If you
+      choose a time that has already passed today, held mail is sent right
+      away.
     </p>
     <form
       onsubmit={(e) => {

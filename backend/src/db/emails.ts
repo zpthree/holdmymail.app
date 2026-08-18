@@ -57,9 +57,12 @@ export async function schedule(
   const updated = [];
   for (const emailId of emailIds) {
     const email = await getById(emailId);
-    if (email && email.userId === userId) {
+    if (email && email.userId === userId && email.delivered !== true) {
       const oid = toId(emailId)!;
-      await emails().updateOne({ _id: oid }, { $set: { scheduledFor } });
+      await emails().updateOne(
+        { _id: oid, delivered: { $ne: true } },
+        { $set: { scheduledFor } },
+      );
       updated.push(await getById(emailId));
     }
   }
@@ -91,11 +94,34 @@ export async function getDueEmails() {
   const now = Date.now();
   const docs = await emails()
     .find({
-      delivered: false,
-      scheduledFor: { $exists: true, $ne: null, $lte: now },
+      delivered: { $ne: true },
+      scheduledFor: { $lte: now },
     })
     .toArray();
   return serializeMany(docs);
+}
+
+export async function listUndeliveredByUser(userId: string) {
+  const docs = await emails()
+    .find({ userId, delivered: { $ne: true } })
+    .toArray();
+  return serializeMany(docs);
+}
+
+export async function setScheduledFor(
+  emailIds: string[],
+  scheduledFor: number | undefined,
+) {
+  const oids = emailIds
+    .map(toId)
+    .filter((id): id is NonNullable<typeof id> => !!id);
+  if (oids.length === 0) return;
+  const filter = { _id: { $in: oids }, delivered: { $ne: true } };
+  if (scheduledFor === undefined) {
+    await emails().updateMany(filter, { $unset: { scheduledFor: "" } });
+    return;
+  }
+  await emails().updateMany(filter, { $set: { scheduledFor } });
 }
 
 export async function markEmailsDelivered(emailIds: string[]) {

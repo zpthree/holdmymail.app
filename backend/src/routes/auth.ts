@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { users } from "../db";
 import { authMiddleware } from "../middleware/auth";
 import { isAdmin } from "../admin";
+import { rescheduleUndeliveredForUser } from "../inbound/ingest";
+import { deliverDueEmails } from "../jobs/deliverDueEmails";
 
 type Env = {
   Variables: {
@@ -391,6 +393,21 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
 
     if (!user) {
       return c.json({ error: "User not found" }, 404);
+    }
+
+    const digestSettingsChanged =
+      body.digestFrequency !== undefined ||
+      body.digestDay !== undefined ||
+      body.digestTime !== undefined ||
+      body.timezone !== undefined;
+
+    if (digestSettingsChanged) {
+      try {
+        await rescheduleUndeliveredForUser(id);
+        await deliverDueEmails();
+      } catch (err) {
+        console.error("[digest] deliver after settings save failed:", err);
+      }
     }
 
     return c.json({ id: user._id, email: user.email });

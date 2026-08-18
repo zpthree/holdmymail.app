@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { senders } from "../db";
 import { authMiddleware } from "../middleware/auth";
 import { resolveTagNames, hydrateItem, hydrateItems } from "../tags";
+import { rescheduleUndeliveredForUser } from "../inbound/ingest";
+import { deliverDueEmails } from "../jobs/deliverDueEmails";
 
 type Env = {
   Variables: {
@@ -102,6 +104,20 @@ senderRoutes.put("/:id", async (c) => {
       digestDay: body.digestDay,
       digestTime: body.digestTime,
     });
+
+    const digestSettingsChanged =
+      body.digestFrequency !== undefined ||
+      body.digestDay !== undefined ||
+      body.digestTime !== undefined;
+
+    if (digestSettingsChanged) {
+      try {
+        await rescheduleUndeliveredForUser(userId);
+        await deliverDueEmails();
+      } catch (err) {
+        console.error("[digest] deliver after sender settings save failed:", err);
+      }
+    }
 
     return c.json(sender ? await hydrateItem(sender) : null);
   } catch (err) {

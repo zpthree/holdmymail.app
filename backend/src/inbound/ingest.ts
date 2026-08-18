@@ -23,15 +23,23 @@ export type IngestResult =
  * Returns undefined if frequency is "realtime" or not set.
  * All scheduling is done in the user's timezone so "09:00" means 9 AM local.
  */
-export function computeScheduledFor(prefs: {
-  digestFrequency?: string;
-  digestDay?: string;
-  digestTime?: string;
-  timezone?: string;
-}): number | undefined {
+export function computeScheduledFor(
+  prefs: {
+    digestFrequency?: string;
+    digestDay?: string;
+    digestTime?: string;
+    timezone?: string;
+  },
+  options: { ifPast?: "next" | "now" } = {},
+): number | undefined {
   const { digestFrequency, digestDay, digestTime, timezone } = prefs;
+  const ifPast = options.ifPast ?? "next";
 
-  if (!digestFrequency || digestFrequency === "realtime") {
+  if (
+    !digestFrequency ||
+    digestFrequency === "realtime" ||
+    digestFrequency === "none"
+  ) {
     return undefined;
   }
 
@@ -79,6 +87,7 @@ export function computeScheduledFor(prefs: {
   if (digestFrequency === "daily") {
     const target = todayAtTime();
     if (target.getTime() <= now.getTime()) {
+      if (ifPast === "now") return Date.now();
       target.setDate(target.getDate() + 1);
     }
     return target.getTime();
@@ -100,7 +109,10 @@ export function computeScheduledFor(prefs: {
     const nowDow = currentDow();
     let daysUntil = targetDow - nowDow;
     if (daysUntil < 0) daysUntil += 7;
-    if (daysUntil === 0 && target.getTime() <= now.getTime()) daysUntil = 7;
+    if (daysUntil === 0 && target.getTime() <= now.getTime()) {
+      if (ifPast === "now") return Date.now();
+      daysUntil = 7;
+    }
 
     target.setDate(target.getDate() + daysUntil);
     return target.getTime();
@@ -129,6 +141,77 @@ export function computeScheduledFor(prefs: {
   }
 
   return undefined;
+}
+
+type DigestPrefSource = {
+  digestFrequency?: string;
+  digestDay?: string;
+  digestTime?: string;
+  timezone?: string;
+};
+
+function prefsForEmail(
+  user: DigestPrefSource,
+  sender?: DigestPrefSource | null,
+) {
+  if (sender?.digestFrequency) {
+    return {
+      digestFrequency: sender.digestFrequency,
+      digestDay: sender.digestDay,
+      digestTime: sender.digestTime,
+      timezone: user.timezone,
+    };
+  }
+  return {
+    digestFrequency: user.digestFrequency,
+    digestDay: user.digestDay,
+    digestTime: user.digestTime,
+    timezone: user.timezone,
+  };
+}
+
+export async function rescheduleUndeliveredForUser(userId: string) {
+  const user = await users.getById(userId);
+  if (!user) return 0;
+
+  const undelivered = await emails.listUndeliveredByUser(userId);
+  if (undelivered.length === 0) return 0;
+
+  const senderList = await senders.listByUser(userId);
+  const senderMap = new Map(senderList.map((s) => [s._id, s]));
+
+  const dueNow = Date.now();
+  const groups = new Map<number | "unset", string[]>();
+  for (const email of undelivered) {
+    if (email.delivered) continue;
+    const sender = email.senderId ? senderMap.get(email.senderId) : undefined;
+    let scheduledFor = computeScheduledFor(prefsForEmail(user, sender), {
+      ifPast: "now",
+    });
+    if (scheduledFor !== undefined && scheduledFor <= dueNow) {
+      scheduledFor = dueNow;
+    }
+    const key = scheduledFor === undefined ? "unset" : scheduledFor;
+    const ids = groups.get(key) ?? [];
+    ids.push(email._id);
+    groups.set(key, ids);
+  }
+
+  for (const [key, ids] of groups) {
+    await emails.setScheduledFor(ids, key === "unset" ? undefined : key);
+  }
+
+  const earliest = [...groups.keys()]
+    .filter((key): key is number => key !== "unset")
+    .sort((a, b) => a - b)[0];
+  console.log(
+    `[digest] rescheduled ${undelivered.length} undelivered email(s) for user ${userId}` +
+      (earliest !== undefined
+        ? `, earliest=${new Date(earliest).toISOString()}`
+        : ", none scheduled"),
+  );
+
+  return undelivered.length;
 }
 
 export async function ingestInboundEmail(
@@ -167,26 +250,9 @@ export async function ingestInboundEmail(
     senderId = sender._id;
   }
 
-  const senderPrefs = sender
-    ? {
-        digestFrequency: sender.digestFrequency,
-        digestDay: sender.digestDay,
-        digestTime: sender.digestTime,
-      }
-    : null;
-
-  const userPrefs = {
-    digestFrequency: user.digestFrequency,
-    digestDay: user.digestDay,
-    digestTime: user.digestTime,
-    timezone: user.timezone,
-  };
-
-  const activePrefs = senderPrefs?.digestFrequency ? senderPrefs : userPrefs;
-  const scheduledFor = computeScheduledFor({
-    ...activePrefs,
-    timezone: user.timezone,
-  });
+  const scheduledFor = computeScheduledFor(
+    prefsForEmail(user, sender ?? undefined),
+  );
 
   let sanitizedHtmlBody = payload.HtmlBody || "";
   if (sanitizedHtmlBody) {

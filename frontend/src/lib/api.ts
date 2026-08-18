@@ -373,4 +373,10 @@ export const adminApi = {
       body: range,
       token,
     }),
+
+  deliverDigests: (token: string) =>
+    api<{ due: number; delivered: number }>("/mail/deliver-digests", {
+      method: "POST",
+      token,
+    }),
 };

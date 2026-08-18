@@ -6,8 +6,10 @@
   let fromdate = $state("");
   let todate = $state("");
   let running = $state(false);
+  let delivering = $state(false);
   let error = $state("");
   let summary = $state<ReplaySummary | null>(null);
+  let digestResult = $state<{ due: number; delivered: number } | null>(null);
 
   async function replayInbound() {
     if (!$auth.token) return;
@@ -25,6 +27,20 @@
       running = false;
     }
   }
+
+  async function deliverDigests() {
+    if (!$auth.token) return;
+    delivering = true;
+    error = "";
+    digestResult = null;
+    try {
+      digestResult = await adminApi.deliverDigests($auth.token);
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Digest delivery failed";
+    } finally {
+      delivering = false;
+    }
+  }
 </script>
 
 <SEO
@@ -38,16 +54,38 @@
 <div class="admin-page">
   <h1>Admin</h1>
 
+  {#if error}
+    <p class="toast error">{error}</p>
+  {/if}
+
+  <section class="card">
+    <h2>Send due digests</h2>
+    <p class="hint">
+      Sends any held mail whose scheduled time has already passed. Does not
+      change delivery settings or reschedule future mail.
+    </p>
+    {#if digestResult}
+      <ul class="summary">
+        <li>Due: {digestResult.due}</li>
+        <li>Delivered: {digestResult.delivered}</li>
+      </ul>
+    {/if}
+    <button
+      type="button"
+      class="btn btn-accent"
+      disabled={delivering}
+      onclick={deliverDigests}
+    >
+      {delivering ? "Sending…" : "Send due digests now"}
+    </button>
+  </section>
+
   <section class="card">
     <h2>Replay inbound mail</h2>
     <p class="hint">
       Pulls inbound messages from Postmark and stores any that were missed while
       the API was down. Messages already in the database are skipped.
     </p>
-
-    {#if error}
-      <p class="toast error">{error}</p>
-    {/if}
 
     {#if summary}
       <ul class="summary">

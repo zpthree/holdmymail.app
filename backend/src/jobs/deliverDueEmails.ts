@@ -1,12 +1,30 @@
 import { emails, users, senders, tags, links, digests } from "../db";
 import { buildDigestHtml, type DigestLink } from "../emails/digest";
 
-export async function deliverDueEmails(): Promise<{ delivered: number }> {
+let digestQueue: Promise<unknown> = Promise.resolve();
+
+export function deliverDueEmails(): Promise<{
+  due: number;
+  delivered: number;
+}> {
+  const run = digestQueue.then(
+    () => deliverDueEmailsInner(),
+    () => deliverDueEmailsInner(),
+  );
+  digestQueue = run;
+  return run;
+}
+
+async function deliverDueEmailsInner(): Promise<{
+  due: number;
+  delivered: number;
+}> {
   const due = await emails.getDueEmails();
-  if (due.length === 0) return { delivered: 0 };
+  if (due.length === 0) return { due: 0, delivered: 0 };
 
   const byUser = new Map<string, typeof due>();
   for (const email of due) {
+    if (email.delivered) continue;
     if (!byUser.has(email.userId)) byUser.set(email.userId, []);
     byUser.get(email.userId)!.push(email);
   }
@@ -21,6 +39,11 @@ export async function deliverDueEmails(): Promise<{ delivered: number }> {
   for (const [userId, userEmails] of byUser) {
     const user = await users.getById(userId);
     if (!user) continue;
+
+    const to = user.deliveryEmail || user.email;
+    console.log(
+      `[digest] sending ${userEmails.length} email(s) for user ${userId} to ${to}`,
+    );
 
     const senderIds = [
       ...new Set(userEmails.map((e) => e.senderId).filter(Boolean)),
@@ -88,7 +111,7 @@ export async function deliverDueEmails(): Promise<{ delivered: number }> {
       digestLinks,
     );
 
-    await fetch("https://api.postmarkapp.com/email", {
+    const postmarkRes = await fetch("https://api.postmarkapp.com/email", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -97,17 +120,22 @@ export async function deliverDueEmails(): Promise<{ delivered: number }> {
       },
       body: JSON.stringify({
         From: "Hold My Mail <digest@holdmymail.app>",
-        To: user.email,
+        To: to,
         Subject: subject,
         HtmlBody: html,
         MessageStream: "outbound",
       }),
     });
 
+    if (!postmarkRes.ok) {
+      const body = await postmarkRes.text();
+      throw new Error(`Postmark send failed (${postmarkRes.status}): ${body}`);
+    }
+
     await digests.updateHtmlBody(digest._id, html);
     await emails.markEmailsDelivered(userEmails.map((e) => e._id));
     totalDelivered += userEmails.length;
   }
 
-  return { delivered: totalDelivered };
+  return { due: due.length, delivered: totalDelivered };
 }

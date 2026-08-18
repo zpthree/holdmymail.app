@@ -112,18 +112,15 @@ app.route("/tag", tagRoutes);
 await connectMongo();
 
 const MINUTE_MS = 60 * 1000;
-let digestRunInFlight = false;
 
 async function runDeliverDueEmails() {
-  if (digestRunInFlight) return;
-  digestRunInFlight = true;
   try {
     const result = await deliverDueEmails();
-    console.log(`[digest] checked, delivered=${result.delivered}`);
+    console.log(
+      `[digest] checked, due=${result.due}, delivered=${result.delivered}`,
+    );
   } catch (err) {
     console.error("[digest] deliverDueEmails failed:", err);
-  } finally {
-    digestRunInFlight = false;
   }
 }
 
