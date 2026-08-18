@@ -112,18 +112,30 @@ app.route("/tag", tagRoutes);
 await connectMongo();
 
 const MINUTE_MS = 60 * 1000;
-setInterval(() => {
-  deliverDueEmails().catch((err) => {
-    console.error("deliverDueEmails failed:", err);
-  });
-}, MINUTE_MS);
+let digestRunInFlight = false;
+
+async function runDeliverDueEmails() {
+  if (digestRunInFlight) return;
+  digestRunInFlight = true;
+  try {
+    const result = await deliverDueEmails();
+    console.log(`[digest] checked, delivered=${result.delivered}`);
+  } catch (err) {
+    console.error("[digest] deliverDueEmails failed:", err);
+  } finally {
+    digestRunInFlight = false;
+  }
+}
+
+runDeliverDueEmails();
+setInterval(runDeliverDueEmails, MINUTE_MS);
 
 const port = Number(process.env.PORT) || 3000;
 
-export default {
+Bun.serve({
   port,
   hostname: "0.0.0.0",
   fetch: app.fetch.bind(app),
-};
+});
 
 console.log(`🚀 Server running at http://0.0.0.0:${port}`);

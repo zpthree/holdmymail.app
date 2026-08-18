@@ -62,12 +62,6 @@ a:not(.btn) {
   &:hover {
     --link-color: var(--black);
   }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover {
-      --link-color: var(--white);
-    }
-  }
 }
 
 /* notices */

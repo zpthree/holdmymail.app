@@ -183,33 +183,6 @@ export function buildDigestHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <title>Hold My Mail – Digest for ${escapeHtml(formattedDate)}</title>
-
-  <style>
-    @media (prefers-color-scheme: dark) {
-      body,
-      #digest-table {
-        background-color: #17120c !important;
-        color: #f6f0e6 !important;
-      }
-
-      a {
-        color: #f6f0e6 !important;
-      }
-
-      h1,
-      h2 {
-        color: #f6f0e6 !important;
-      }
-
-      .tag,
-      .button {
-        background-color: #af0621 !important;
-      }
-
-      .label {
-        color: #bbb !important;}
-    }
-  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f6f0e6; font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table id="digest-table" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f6f0e6; padding: 32px 0;">
