@@ -300,7 +300,7 @@
     display: flex;
     gap: 0.25rem;
     border-radius: var(--br-full);
-    background: oklch(from var(--white) 0.2 c h);
+    background: oklch(from var(--text-color) 0.2 c h);
     padding: 0.2rem;
   }
 
@@ -313,7 +313,7 @@
     border-radius: var(--br-full);
     background: transparent;
     padding: 0.3rem 0.75rem;
-    color: var(--text-color);
+    color: var(--white);
     font-weight: 600;
     font-size: var(--fs-sm);
 
