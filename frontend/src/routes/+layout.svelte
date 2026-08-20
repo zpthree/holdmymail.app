@@ -1,15 +1,19 @@
 <script lang="ts">
   import "$lib/assets/css/main.css";
-  import { auth, setAuth } from "$lib/stores/auth";
-  import { onNavigate } from "$app/navigation";
+  import { setAuth } from "$lib/stores/auth";
   import { onMount } from "svelte";
-  import { authApi } from "$lib/api.js";
+  import { subscribeToLatency } from "$lib/latency";
 
   let { children, data } = $props();
+  let latencyMs = $state<number | null>(null);
 
   $effect(() => {
     setAuth(data.user, data.token);
   });
+
+  onMount(() => subscribeToLatency((ms) => {
+    latencyMs = ms;
+  }));
 </script>
 
 <div class="app-wrapper">
@@ -27,6 +31,9 @@
     <li>
       <a href="/terms-and-conditions">Terms and Conditions</a>
     </li>
+    {#if latencyMs !== null}
+      <li class="latency" title="Round-trip time to the API">{latencyMs}ms</li>
+    {/if}
   </ul>
 </footer>
 
@@ -57,6 +64,10 @@
       &:hover {
         text-decoration: underline;
       }
+    }
+
+    .latency {
+      color: hsl(from var(--text-color) h s l / 0.55);
     }
   }
 </style>

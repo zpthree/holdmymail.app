@@ -8,7 +8,7 @@
   data={{
     meta_title: "Hold My Link Privacy Policy",
     meta_description:
-      "Privacy policy for the Hold My Link Chrome extension — what data we collect and how we handle it.",
+      "Privacy policy for the Hold My Link Chrome extension — what data I collect and how I handle it.",
   }}
 />
 
@@ -17,25 +17,26 @@
 
   <div class="privacy">
     <h1>Hold My Link Privacy Policy</h1>
-    <p class="updated">Last updated: February 15, 2026</p>
+    <p class="updated">Last updated: August 20, 2026</p>
 
     <section>
       <h2>Overview</h2>
       <p>
-        Hold My Link is a Chrome extension that allows you to quickly save web
-        links to your Hold My Mail account. This privacy policy explains what
-        data we collect and how we handle it.
+        Hold My Link is a Chrome extension that lets you quickly save web links
+        to your Hold My Mail account. I am Zach Patrick, one person, not a
+        company. This privacy policy explains what data I collect and how I
+        handle it.
       </p>
     </section>
 
     <section>
-      <h2>Data We Collect</h2>
+      <h2>Data I Collect</h2>
 
       <h3>Web History</h3>
       <p>
-        When you click the Hold My Link extension icon, we capture the URL and
-        page title of the current tab. This allows you to save links with
-        pre-filled information.
+        When you click the Hold My Link extension icon, I capture the URL and
+        page title of the current tab. That lets you save links with pre-filled
+        information.
       </p>
 
       <h3>Authentication Information</h3>
@@ -54,11 +55,11 @@
     </section>
 
     <section>
-      <h2>How We Use Your Data</h2>
+      <h2>How I Use Your Data</h2>
       <ul>
-        <li>To authenticate you with the Hold My Mail service</li>
+        <li>To authenticate you with Hold My Mail</li>
         <li>To save links you submit to your Hold My Mail account</li>
-        <li>To improve and maintain the extension's functionality</li>
+        <li>To keep the extension working</li>
       </ul>
     </section>
 
@@ -68,19 +69,20 @@
         Your authentication credentials are stored only in your browser's local
         storage. No data is stored on your device outside of local storage. When
         you save a link, it is sent to the Hold My Mail API and stored in the
-        Convex database according to the Hold My Mail privacy policy.
+        MongoDB database I operate, as described in the Hold My Mail privacy
+        policy.
       </p>
     </section>
 
     <section>
-      <h2>What We Don't Collect</h2>
+      <h2>What I Don't Collect</h2>
       <ul>
-        <li>We do not track your browsing history beyond the current tab</li>
-        <li>We do not monitor your keystrokes or mouse movements</li>
-        <li>We do not access page content or website data</li>
-        <li>We do not store your passwords or sensitive data</li>
-        <li>We do not use third-party analytics or tracking</li>
-        <li>We do not share your data with third parties</li>
+        <li>I do not track your browsing history beyond the current tab</li>
+        <li>I do not monitor your keystrokes or mouse movements</li>
+        <li>I do not access page content or website data</li>
+        <li>I do not store your passwords or sensitive data</li>
+        <li>I do not use third-party analytics or tracking</li>
+        <li>I do not share your data with third parties</li>
       </ul>
     </section>
 
@@ -96,7 +98,7 @@
       <h3>tabs</h3>
       <p>
         Allows the extension to query information about the currently active tab
-        so we can prefill the link URL and page title.
+        so I can prefill the link URL and page title.
       </p>
 
       <h3>storage</h3>
@@ -135,7 +137,7 @@
     <section>
       <h2>Changes to This Policy</h2>
       <p>
-        We may update this privacy policy from time to time. Changes will be
+        I may update this privacy policy from time to time. Changes will be
         posted here with an updated "Last updated" date. Continued use of the
         extension constitutes acceptance of the updated policy.
       </p>
@@ -145,7 +147,7 @@
       <h2>Contact</h2>
       <p>
         If you have any questions about this privacy policy or the Hold My Link
-        extension, please contact us at
+        extension, please contact me at
         <a href="mailto:zach@zachpatrick.com">zach@zachpatrick.com</a>.
       </p>
     </section>

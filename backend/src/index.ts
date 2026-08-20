@@ -19,13 +19,17 @@ app.use(
   cors({
     origin: "*",
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
 );
 
 // Base routes
 app.get("/", (c) => c.text("Welcome to Hold My Mail!"));
 app.get("/health", (c) => c.json({ status: "ok" }));
+app.get("/ping", (c) => {
+  c.header("Cache-Control", "no-store");
+  return c.body(null, 204);
+});
 
 // Email template preview (dev only)
 app.get("/preview/digest", (c) => {

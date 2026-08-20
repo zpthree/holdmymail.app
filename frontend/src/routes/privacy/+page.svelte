@@ -8,7 +8,7 @@
   data={{
     meta_title: "Privacy Policy",
     meta_description:
-      "Privacy policy for Hold My Mail — how we collect, use, and protect your data.",
+      "Privacy policy for Hold My Mail — how I collect, use, and protect your data.",
   }}
 />
 
@@ -17,55 +17,54 @@
 
   <div class="privacy">
     <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: August 16, 2026</p>
+    <p class="updated">Last updated: August 20, 2026</p>
 
     <section>
       <h2>Introduction</h2>
       <p>
-        Hold My Mail ("we", "us", "our") is a personal project operated by
-        Zach Patrick. It is not a company or commercial product. This Privacy
-        Policy explains how information is collected, used, and protected when
-        you use holdmymail.app and related services.
+        Hold My Mail is my personal project. I am Zach Patrick, one person, not
+        a company. This Privacy Policy explains how I collect, use, and protect
+        information when you use holdmymail.app and related services.
       </p>
     </section>
 
     <section>
-      <h2>Information We Collect</h2>
+      <h2>Information I Collect</h2>
 
       <h3>Account Information</h3>
       <p>
-        When you create an account, we collect your email address, username, and
+        When you create an account, I collect your email address, username, and
         password. Your password is securely encrypted and is never stored in
         plain text.
       </p>
 
       <h3>Email Data</h3>
       <p>
-        When emails are sent to your @inbox.holdmymail.app address, we receive
+        When emails are sent to your @inbox.holdmymail.app address, I receive
         and store the full email content including sender information, subject,
-        message body, and any metadata. This is the core functionality of the
-        service — holding your emails until you're ready to view them.
+        message body, and any metadata. That is the core of the service —
+        holding your emails until you're ready to view them.
       </p>
 
       <h3>Saved Links</h3>
       <p>
-        When you save links via the website or Chrome extension, we store the
+        When you save links via the website or Chrome extension, I store the
         URL, page title, description, and publicly available Open Graph metadata
         (images, site name) fetched from the linked page.
       </p>
 
       <h3>Usage Data</h3>
       <p>
-        We do not use analytics, advertising pixels, or other tracking tools. We
+        I do not use analytics, advertising pixels, or other tracking tools. I
         do not collect browsing statistics, referral sources, or similar usage
         analytics.
       </p>
     </section>
 
     <section>
-      <h2>How We Use Your Information</h2>
+      <h2>How I Use Your Information</h2>
       <ul>
-        <li>To provide and maintain the Hold My Mail service</li>
+        <li>To provide and maintain Hold My Mail</li>
         <li>
           To receive, store, and deliver your emails on your preferred schedule
         </li>
@@ -78,14 +77,14 @@
     <section>
       <h2>Data Storage</h2>
       <p>
-        Hold My Mail is self-hosted on personal infrastructure. Your data is
-        stored in a MongoDB database that we operate. Email delivery is handled
+        Hold My Mail is self-hosted on my own infrastructure. Your data is
+        stored in a MongoDB database that I operate. Email delivery is handled
         through
         <a
           href="https://postmarkapp.com"
           target="_blank"
           rel="noopener noreferrer">Postmark</a
-        >. We do not sell, rent, or share your personal data with any third
+        >. I do not sell, rent, or share your personal data with any third
         parties for marketing purposes.
       </p>
     </section>
@@ -93,7 +92,7 @@
     <section>
       <h2>Authentication &amp; Security</h2>
       <p>
-        We use token-based authentication. Session credentials are stored in
+        I use token-based authentication. Session credentials are stored in
         first-party cookies with a 30-day expiration and are scoped to this
         site. All API communication occurs over HTTPS.
       </p>
@@ -125,7 +124,7 @@
       <h2>Cookies</h2>
       <p>
         Hold My Mail uses first-party cookies for authentication and session
-        management only. We do not use analytics, advertising, or other tracking
+        management only. I do not use analytics, advertising, or other tracking
         cookies.
       </p>
     </section>
@@ -133,8 +132,8 @@
     <section>
       <h2>Third-Party Services</h2>
       <p>
-        The site and database run on self-hosted infrastructure. The only
-        third-party service used to operate Hold My Mail is:
+        The site and database run on infrastructure I host myself. The only
+        third-party service I use to operate Hold My Mail is:
       </p>
       <ul>
         <li>
@@ -151,7 +150,7 @@
     <section>
       <h2>Children's Privacy</h2>
       <p>
-        Hold My Mail is not intended for use by children under the age of 13. We
+        Hold My Mail is not intended for use by children under the age of 13. I
         do not knowingly collect personal information from children.
       </p>
     </section>
@@ -159,16 +158,16 @@
     <section>
       <h2>Changes to This Policy</h2>
       <p>
-        We may update this Privacy Policy from time to time. We will notify
-        users of any material changes by posting the updated policy on this page
-        with a revised "Last updated" date.
+        I may update this Privacy Policy from time to time. I will note
+        material changes by posting the updated policy on this page with a
+        revised "Last updated" date.
       </p>
     </section>
 
     <section>
       <h2>Contact</h2>
       <p>
-        If you have any questions about this Privacy Policy, please contact us
+        If you have any questions about this Privacy Policy, please contact me
         at
         <a href="mailto:zach@zachpatrick.com">zach@zachpatrick.com</a>.
       </p>
