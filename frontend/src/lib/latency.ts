@@ -1,6 +1,6 @@
 const PUBLIC_API_URL = import.meta.env.VITE_API_URL || "";
 const DEFAULT_DEV_API_URL = "http://localhost:3000";
-const SAMPLE_INTERVAL_MS = 2000;
+const SAMPLE_INTERVAL_MS = 10000;
 const ROLLING_WINDOW = 3;
 
 function apiBaseUrl(): string {
