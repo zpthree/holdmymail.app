@@ -1,31 +1,52 @@
 <script lang="ts">
   import "$lib/assets/css/main.css";
   import "nprogress/nprogress.css";
-  import NProgress from "nprogress";
-  import { browser } from "$app/environment";
-  import { navigating } from "$app/state";
+  import { afterNavigate, beforeNavigate } from "$app/navigation";
   import { setAuth } from "$lib/stores/auth";
   import { onMount } from "svelte";
-  import { subscribeToLatency } from "$lib/latency";
+  import { getPageLoadMs, subscribeToLatency } from "$lib/latency";
+  import type NProgressType from "nprogress";
 
   let { children, data } = $props();
   let latencyMs = $state<number | null>(null);
-
-  NProgress.configure({ showSpinner: false, minimum: 0.16 });
+  let loadMs = $state<number | null>(null);
+  let nprogress: typeof NProgressType | null = null;
+  let navStartedAt = 0;
 
   $effect(() => {
     setAuth(data.user, data.token);
   });
 
-  $effect(() => {
-    if (!browser) return;
-    if (navigating.to) NProgress.start();
-    else NProgress.done();
+  beforeNavigate(() => {
+    navStartedAt = performance.now();
+    nprogress?.start();
   });
 
-  onMount(() => subscribeToLatency((ms) => {
-    latencyMs = ms;
-  }));
+  afterNavigate(() => {
+    nprogress?.done();
+    if (navStartedAt) {
+      loadMs = Math.round(performance.now() - navStartedAt);
+      navStartedAt = 0;
+    }
+  });
+
+  onMount(() => {
+    void import("nprogress")
+      .then((mod) => {
+        nprogress = mod.default;
+        nprogress.configure({ showSpinner: false, minimum: 0.16 });
+      })
+      .catch(() => {});
+
+    const stopLatency = subscribeToLatency((ms) => {
+      latencyMs = ms;
+    });
+
+    const ms = getPageLoadMs();
+    if (ms !== null) loadMs = ms;
+
+    return stopLatency;
+  });
 </script>
 
 <div class="app-wrapper">
@@ -35,61 +56,69 @@
 <!-- Portal slot for Modals -->
 <div id="modals"></div>
 
-{#if latencyMs !== null}
-  <p class="ping" title="Round-trip time to the API">ping: {latencyMs}ms</p>
-{/if}
-
-<footer>
-  <ul>
-    <li>
-      <a href="/privacy">Privacy Policy</a>
-    </li>
-    <li>
-      <a href="/terms-and-conditions">Terms and Conditions</a>
-    </li>
-  </ul>
+<footer class="status-bar">
+  <p class="stats">
+    <span title="Round-trip time to the API">
+      connection: {latencyMs === null ? "—" : `${latencyMs}ms`}
+    </span>
+    <span title="Time to load this page">
+      load: {loadMs === null ? "—" : `${loadMs}ms`}
+    </span>
+    <span title="Third-party trackers on this page">trackers: 0</span>
+  </p>
+  <nav>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms-and-conditions">Terms</a>
+  </nav>
 </footer>
 
 <style>
   .app-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 4rem);
+    padding-bottom: 2.25rem;
+    min-height: 100vh;
   }
 
-  footer {
-    padding: 0 0 1rem;
-    font-size: var(--fs-xs);
-
-    ul {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    a {
-      color: var(--text-color);
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .ping {
+  .status-bar {
+    display: flex;
     position: fixed;
-    top: 0.5rem;
-    right: 0.75rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
     z-index: 20;
-    margin: 0;
-    pointer-events: none;
+    border-top: 1px solid hsl(from var(--text-color) h s l / 0.12);
+    background: var(--bg-color);
+    padding: 0.35rem 0.75rem;
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
     color: hsl(from var(--text-color) h s l / 0.55);
     font-size: var(--fs-xs);
     font-variant-numeric: tabular-nums;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.85rem;
+  }
+
+  nav a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   :global(#nprogress .bar) {

@@ -24,6 +24,18 @@ export async function measureLatency(): Promise<number | null> {
   }
 }
 
+export function getPageLoadMs(): number | null {
+  try {
+    const [nav] = performance.getEntriesByType(
+      "navigation",
+    ) as PerformanceNavigationTiming[];
+    if (!nav || nav.loadEventEnd <= 0) return null;
+    return Math.round(nav.loadEventEnd);
+  } catch {
+    return null;
+  }
+}
+
 export function subscribeToLatency(
   onReading: (ms: number) => void,
 ): () => void {
