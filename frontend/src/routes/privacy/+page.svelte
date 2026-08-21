@@ -22,9 +22,9 @@
     <section>
       <h2>Introduction</h2>
       <p>
-        Hold My Mail is my personal project. I am Zach Patrick, one person, not
-        a company. This Privacy Policy explains how I collect, use, and protect
-        information when you use holdmymail.app and related services.
+        Hold My Mail is my personal project. This Privacy Policy explains how I
+        collect, use, and protect information when you use holdmymail.app and
+        related services.
       </p>
     </section>
 

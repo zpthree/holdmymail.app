@@ -23,9 +23,8 @@
       <h2>Overview</h2>
       <p>
         Hold My Link is a Chrome extension that lets you quickly save web links
-        to your Hold My Mail account. I am Zach Patrick, one person, not a
-        company. This privacy policy explains what data I collect and how I
-        handle it.
+        to your Hold My Mail account. This privacy policy explains what data I
+        collect and how I handle it.
       </p>
     </section>
 

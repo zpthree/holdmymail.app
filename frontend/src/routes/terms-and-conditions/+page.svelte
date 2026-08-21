@@ -22,10 +22,9 @@
     <section>
       <h2>Agreement to Terms</h2>
       <p>
-        Hold My Mail is my personal project. I am Zach Patrick, one person, not
-        a company. By accessing and using Hold My Mail ("Service"), you accept
-        and agree to be bound by these terms. If you do not agree, please do not
-        use this service.
+        Hold My Mail is my personal project. By accessing and using Hold My Mail
+        ("Service"), you accept and agree to be bound by these terms. If you do
+        not agree, please do not use this service.
       </p>
     </section>
 
