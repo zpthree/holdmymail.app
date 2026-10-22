@@ -7,6 +7,7 @@ import { mailRoutes } from "./routes/mail";
 import { digestRoutes } from "./routes/digest";
 import { linkRoutes } from "./routes/link";
 import { tagRoutes } from "./routes/tag";
+import { publicRoutes } from "./routes/public";
 import { buildDigestHtml, type DigestLink } from "./emails/digest";
 import { connectMongo } from "./db";
 import { deliverDueEmails } from "./jobs/deliverDueEmails";
@@ -112,6 +113,7 @@ app.route("/mail", mailRoutes);
 app.route("/digest", digestRoutes);
 app.route("/link", linkRoutes);
 app.route("/tag", tagRoutes);
+app.route("/public", publicRoutes);
 
 await connectMongo();
 

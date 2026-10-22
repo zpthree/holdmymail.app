@@ -30,6 +30,28 @@ export async function listByUser(userId: string) {
   return serializeMany(docs);
 }
 
+/** Lightweight listing (no bodies) of a user's emails from one sender */
+export async function listSummariesBySender(
+  userId: string,
+  senderId: string,
+  fromEmail: string,
+) {
+  const docs = await emails()
+    .find(
+      { userId, $or: [{ senderId }, { fromEmail }] },
+      { projection: { subject: 1, date: 1, read: 1, _creationTime: 1 } },
+    )
+    .sort({ _id: -1 })
+    .toArray();
+  return docs.map((d) => ({
+    _id: d._id.toString(),
+    subject: d.subject,
+    date: d.date,
+    read: Boolean(d.read),
+    _creationTime: d._creationTime ?? d._id.getTimestamp().getTime(),
+  }));
+}
+
 export async function paginatedListByUser(
   userId: string,
   numItems: number,

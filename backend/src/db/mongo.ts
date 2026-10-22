@@ -84,12 +84,13 @@ export async function paginateByUser<T extends Document>(
   userId: string,
   numItems: number,
   cursor: string | null,
+  extraFilter: Record<string, unknown> = {},
 ): Promise<{
   page: Serialized<T>[];
   continueCursor: string;
   isDone: boolean;
 }> {
-  const filter: Record<string, unknown> = { userId };
+  const filter: Record<string, unknown> = { ...extraFilter, userId };
   if (cursor) {
     const oid = toId(cursor);
     if (oid) filter._id = { $lt: oid };
@@ -132,9 +133,14 @@ async function ensureIndexes(database: Db) {
   await database.collection("emails").createIndexes([
     { key: { userId: 1 } },
     { key: { senderId: 1 } },
+    { key: { userId: 1, senderId: 1 } },
+    { key: { userId: 1, fromEmail: 1 } },
     { key: { delivered: 1, scheduledFor: 1 } },
     { key: { messageId: 1 }, unique: true, sparse: true },
   ]);
   await database.collection("digests").createIndex({ userId: 1 });
-  await database.collection("links").createIndex({ userId: 1 });
+  await database.collection("links").createIndexes([
+    { key: { userId: 1 } },
+    { key: { userId: 1, tagIds: 1 } },
+  ]);
 }

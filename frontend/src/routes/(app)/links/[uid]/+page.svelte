@@ -4,11 +4,14 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import SEO from "$lib/components/SEO.svelte";
+  import { tagFilterHref } from "$lib/tagFilter";
 
   let { data } = $props();
   let link = $derived<Link | null>(data.link);
   let error = $state("");
   let deleting = $state(false);
+  let updatingVisibility = $state(false);
+  let linksPublic = $derived(Boolean(data.user?.linksPublic));
 
   const uid = $derived($page.params.uid);
 
@@ -26,6 +29,20 @@
       return new URL(url).hostname.replace(/^www\./, "");
     } catch {
       return url;
+    }
+  }
+
+  async function toggleHidden() {
+    if (!$auth.token || !uid || !link) return;
+
+    updatingVisibility = true;
+    error = "";
+    try {
+      link = await linkApi.update(uid, { hidden: !link.hidden }, $auth.token);
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Failed to update link";
+    } finally {
+      updatingVisibility = false;
     }
   }
 
@@ -103,7 +120,9 @@
     {#if link.tags.length > 0}
       <div class="tags">
         {#each link.tags as tag}
-          <span class="tag">{tag.name}</span>
+          <a href={tagFilterHref("/links", [tag.name])} class="tag"
+            >{tag.name}</a
+          >
         {/each}
       </div>
     {/if}
@@ -123,10 +142,28 @@
       >
         Open Link
       </a>
+      <button
+        class="btn btn-black"
+        onclick={toggleHidden}
+        disabled={updatingVisibility}
+      >
+        {link.hidden ? "Show on public feed" : "Hide from public feed"}
+      </button>
       <button class="btn btn-accent" onclick={handleDelete} disabled={deleting}>
         {deleting ? "Deleting…" : "Delete"}
       </button>
     </div>
+
+    <p class="visibility">
+      {#if link.hidden}
+        Hidden from your public feed.
+      {:else if linksPublic}
+        Visible on your <a href="/feed/{data.user?.username}">public feed</a>.
+      {:else}
+        Your links feed is private. You can share it from your
+        <a href="/user/{data.user?.username}">account settings</a>.
+      {/if}
+    </p>
 
     {#if error}
       <p class="error">{error}</p>
@@ -233,7 +270,18 @@
 
   .actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.75rem;
+  }
+
+  .visibility {
+    margin-top: 1rem;
+    color: var(--gray);
+    font-size: var(--fs-sm);
+  }
+
+  .visibility a {
+    color: var(--text-color);
   }
 
   .btn {

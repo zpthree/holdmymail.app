@@ -318,6 +318,31 @@ authRoutes.post("/token", async (c) => {
   return c.json({ token: newToken, userId: authToken.userId });
 });
 
+// GET /auth/users
+authRoutes.get("/users", authMiddleware, async (c) => {
+  const authenticatedUser = await users.getById(c.get("userId"));
+  if (
+    !authenticatedUser ||
+    !isAdmin(authenticatedUser.username, authenticatedUser.email)
+  ) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
+  const allUsers = await users.list();
+  return c.json(
+    allUsers.map((user) => ({
+      id: user._id,
+      email: user.email,
+      username: user.username,
+      deliveryEmail: user.deliveryEmail || "",
+      emailVerified: Boolean(user.emailVerified),
+      digestFrequency: user.digestFrequency || "none",
+      createdAt: user._creationTime,
+      isAdmin: isAdmin(user.username, user.email),
+    })),
+  );
+});
+
 // GET /auth/:id
 authRoutes.get("/:id", authMiddleware, async (c) => {
   const id = c.req.param("id");
@@ -343,6 +368,7 @@ authRoutes.get("/:id", authMiddleware, async (c) => {
       digestDay: user.digestDay || "monday",
       digestTime: user.digestTime || "09:00",
       timezone: user.timezone || "",
+      linksPublic: Boolean(user.linksPublic),
       createdAt: user._creationTime,
       isAdmin: isAdmin(user.username, user.email),
     });
@@ -362,7 +388,7 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
 
   try {
     const body = await c.req.json();
-    const updates: Record<string, string> = {};
+    const updates: Record<string, string | boolean> = {};
 
     if (body.email) updates.email = body.email;
     if (body.password) {
@@ -388,6 +414,8 @@ authRoutes.put("/:id", authMiddleware, async (c) => {
     if (body.digestDay) updates.digestDay = body.digestDay;
     if (body.digestTime) updates.digestTime = body.digestTime;
     if (body.timezone !== undefined) updates.timezone = body.timezone;
+    if (typeof body.linksPublic === "boolean")
+      updates.linksPublic = body.linksPublic;
 
     const user = await users.update(id, updates);
 

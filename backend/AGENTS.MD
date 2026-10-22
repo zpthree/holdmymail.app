@@ -37,6 +37,7 @@ The Hono backend handles authentication, REST API endpoints (with cursor-based p
 - `GET /sender` - Retrieves all registered senders.
 - `GET /sender/:id` - Retrieves a specific sender.
 - `DELETE /sender/:id` - Deletes a specific sender (cascade-deletes emails).
+- `GET /sender/:id/emails` - Lightweight list (subject/date, no bodies) of emails from a sender.
 - `PUT /sender/:id` - Updates a specific sender. Can add tags to group senders.
 
 ## Email Handling
@@ -58,11 +59,20 @@ The Hono backend handles authentication, REST API endpoints (with cursor-based p
 ## Links
 
 - `POST /link` - Receives a link and saves it in the database.
-- `GET /link` - Retrieves all saved links. Supports pagination via `?limit=N&cursor=C`.
+- `GET /link` - Retrieves all saved links. Supports pagination via `?limit=N&cursor=C`; with `?limit`, `?tag=name` (repeatable) filters to links with any of those tags.
+- `GET /link/tags` - Retrieves the tags used across the user's links.
+- `PATCH /link/bulk/visibility` - Hides/shows links on the public feed (`{ ids, hidden }`).
 - `GET /link/:id` - Retrieves a specific saved link.
 - `DELETE /link/:id` - Deletes a specific saved link.
 - `DELETE /link/bulk` - Bulk deletes saved links.
-- `PUT /link/:id` - Updates a specific saved link -- can add tags to group common links.
+- `PUT /link/:id` - Updates a specific saved link -- can add tags to group common links, or set `hidden` to hide it from the public feed.
+
+## Public Links Feed
+
+Users can make their links feed public by setting `linksPublic: true` via `PUT /auth/:id`. These endpoints need no auth and return 404 unless the feed is public. Links with `hidden: true` are excluded.
+
+- `GET /public/:username` - Returns the username and the tags used on visible links.
+- `GET /public/:username/links` - Paginated visible links (`?limit=N&cursor=C`, `?tag=name` repeatable).
 
 ## Pagination
 

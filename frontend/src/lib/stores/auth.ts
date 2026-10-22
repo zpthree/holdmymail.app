@@ -17,6 +17,7 @@ interface User {
   username: string;
   timezone: string;
   isAdmin?: boolean;
+  linksPublic?: boolean;
 }
 
 interface AuthState {

@@ -1,7 +1,12 @@
 import { Hono } from "hono";
-import { links } from "../db";
+import { links, tags } from "../db";
 import { authMiddleware } from "../middleware/auth";
-import { resolveTagNames, hydrateItem, hydrateItems } from "../tags";
+import {
+  resolveTagNames,
+  hydrateItem,
+  hydrateItems,
+  hydrateTags,
+} from "../tags";
 
 type Env = {
   Variables: {
@@ -146,6 +151,7 @@ linkRoutes.post("/", async (c) => {
 });
 
 // GET /link - List all links for the user
+// Optional `?tag=name` (repeatable) filters to links with any of those tags.
 linkRoutes.get("/", async (c) => {
   const userId = c.get("userId");
   const limitParam = c.req.query("limit");
@@ -153,7 +159,13 @@ linkRoutes.get("/", async (c) => {
   if (limitParam) {
     const numItems = Math.min(parseInt(limitParam) || 25, 100);
     const cursor = c.req.query("cursor") || null;
-    const result = await links.paginatedListByUser(userId, numItems, cursor);
+    const tagNames = c.req.queries("tag");
+    const tagIds = tagNames?.length
+      ? await tags.findIdsByNames(userId, tagNames)
+      : undefined;
+    const result = await links.paginatedListByUser(userId, numItems, cursor, {
+      tagIds,
+    });
     return c.json({
       items: await hydrateItems(result.page),
       cursor: result.continueCursor,
@@ -163,6 +175,30 @@ linkRoutes.get("/", async (c) => {
 
   const allLinks = await links.listByUser(userId);
   return c.json(await hydrateItems(allLinks));
+});
+
+// GET /link/tags - Tags used across the user's links
+linkRoutes.get("/tags", async (c) => {
+  const userId = c.get("userId");
+  const tagIds = await links.distinctTagIds(userId);
+  const used = await hydrateTags(tagIds);
+  return c.json(used.sort((a, b) => a.name.localeCompare(b.name)));
+});
+
+// PATCH /link/bulk/visibility - Hide or show links on the public feed
+linkRoutes.patch("/bulk/visibility", async (c) => {
+  const userId = c.get("userId");
+  const { ids, hidden } = await c.req.json();
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return c.json({ error: "ids array is required" }, 400);
+  }
+  if (typeof hidden !== "boolean") {
+    return c.json({ error: "hidden must be a boolean" }, 400);
+  }
+
+  const updated = await links.setHidden(userId, ids, hidden);
+  return c.json({ updated });
 });
 
 // GET /link/:id - Get a specific link
@@ -207,6 +243,7 @@ linkRoutes.put("/:id", async (c) => {
       title: body.title,
       description: body.description,
       tagIds,
+      hidden: typeof body.hidden === "boolean" ? body.hidden : undefined,
     });
 
     return c.json(link ? await hydrateItem(link) : null);

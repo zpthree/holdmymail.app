@@ -15,6 +15,10 @@
       page.url.pathname === "/inbox/hold-my-link" ||
       page.url.pathname === "/inbox/screenshots-from-the-app",
   );
+  const isPublicFeed = $derived(page.url.pathname.startsWith("/feed/"));
+  const isPublicPage = $derived(
+    isHomepage || isInboxPreviewPage || isPublicFeed,
+  );
   const hasAuthToken = $derived(Boolean($auth.token || data.token));
   const activeUserId = $derived($auth.user?.id || data.user?.id || null);
 
@@ -34,11 +38,11 @@
 <Header bind:isMobileMenuOpen gravatarUrl={data.gravatarUrl} />
 <MobileMenu bind:isMobileMenuOpen />
 
-{#if $auth.loading && !hasAuthToken && !isHomepage && !isInboxPreviewPage}
+{#if $auth.loading && !hasAuthToken && !isPublicPage}
   <div class="loading">Loading...</div>
 {:else if hasAuthToken}
   <main id="app">{@render children()}</main>
-{:else if isHomepage || isInboxPreviewPage}
+{:else if isPublicPage}
   <main id="app">{@render children()}</main>
 {/if}
 

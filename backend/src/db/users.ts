@@ -1,4 +1,4 @@
-import { col, serialize, toId, type Serialized } from "./mongo";
+import { col, serialize, serializeMany, toId, type Serialized } from "./mongo";
 import type { TokenDoc, UserDoc } from "./types";
 
 const users = () => col<UserDoc>("users");
@@ -47,12 +47,15 @@ export async function getByUsername(
   return serialize(await users().findOne({ username }));
 }
 
-export async function getById(
-  id: string,
-): Promise<Serialized<UserDoc> | null> {
+export async function getById(id: string): Promise<Serialized<UserDoc> | null> {
   const oid = toId(id);
   if (!oid) return null;
   return serialize(await users().findOne({ _id: oid }));
+}
+
+export async function list(): Promise<Serialized<UserDoc>[]> {
+  const results = await users().find().sort({ _creationTime: -1 }).toArray();
+  return serializeMany(results);
 }
 
 export async function update(

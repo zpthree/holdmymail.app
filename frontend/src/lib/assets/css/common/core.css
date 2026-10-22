@@ -88,3 +88,16 @@ a:not(.btn) {
   font-weight: 500;
   font-size: var(--fs-xs);
 }
+
+a.tag {
+  transition:
+    background-color 150ms,
+    color 150ms;
+  color: var(--white);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--accent);
+    color: var(--white);
+  }
+}

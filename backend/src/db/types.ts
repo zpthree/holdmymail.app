@@ -8,6 +8,7 @@ export interface UserDoc {
   digestDay?: string;
   digestTime?: string;
   timezone?: string;
+  linksPublic?: boolean;
   _creationTime: number;
 }
 
@@ -75,5 +76,6 @@ export interface LinkDoc {
   ogImage?: string;
   ogSiteName?: string;
   favicon?: string;
+  hidden?: boolean;
   _creationTime: number;
 }

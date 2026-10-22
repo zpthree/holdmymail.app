@@ -1,13 +1,13 @@
 <script lang="ts">
   import { auth } from "$lib/stores/auth";
-  import { senderApi, type Sender, type Email } from "$lib/api";
+  import { senderApi, type Sender, type EmailSummary } from "$lib/api";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import SEO from "$lib/components/SEO.svelte";
 
   let { data } = $props();
   let sender = $derived<Sender | null>(data.sender);
-  let emails = $derived<Email[]>(data.emails);
+  let emails = $derived<EmailSummary[]>(data.emails);
   let error = $state("");
   let deleting = $state(false);
 

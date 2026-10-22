@@ -71,3 +71,23 @@ export async function resolveNames(
   }
   return tagIds;
 }
+
+export async function getByIds(ids: string[]) {
+  const oids = ids
+    .map(toId)
+    .filter((id): id is NonNullable<typeof id> => !!id);
+  if (oids.length === 0) return [];
+  return serializeMany(await tags().find({ _id: { $in: oids } }).toArray());
+}
+
+export async function findIdsByNames(
+  userId: string,
+  names: string[],
+): Promise<string[]> {
+  const trimmed = names.map((n) => n.trim()).filter(Boolean);
+  if (trimmed.length === 0) return [];
+  const docs = await tags()
+    .find({ userId, name: { $in: trimmed } }, { projection: { _id: 1 } })
+    .toArray();
+  return docs.map((d) => d._id.toString());
+}

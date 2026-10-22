@@ -11,8 +11,10 @@ const NON_AUTH_ROUTES = [
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
   const token = cookies.get("hmm_token");
 
+  const isPublicFeed = url.pathname.startsWith("/feed/");
+
   // if not logged in, redirect to login
-  if (!token && !NON_AUTH_ROUTES.includes(url.pathname)) {
+  if (!token && !isPublicFeed && !NON_AUTH_ROUTES.includes(url.pathname)) {
     throw redirect(303, `/auth/login?next=${encodeURIComponent(url.pathname)}`);
   }
 

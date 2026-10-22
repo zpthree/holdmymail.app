@@ -1,7 +1,12 @@
 import { browser } from "$app/environment";
 
 const PUBLIC_API_URL = import.meta.env.VITE_API_URL || "";
-const INTERNAL_API_URL = process.env.INTERNAL_API_URL || "";
+const INTERNAL_API_URL =
+  (
+    globalThis as typeof globalThis & {
+      process?: { env?: Record<string, string | undefined> };
+    }
+  ).process?.env?.INTERNAL_API_URL || "";
 const DEFAULT_DEV_API_URL = "http://localhost:3000";
 
 interface ApiOptions {
@@ -16,7 +21,9 @@ export async function api<T>(
 ): Promise<T> {
   const baseUrl = browser
     ? PUBLIC_API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "")
-    : INTERNAL_API_URL || PUBLIC_API_URL || (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "");
+    : INTERNAL_API_URL ||
+      PUBLIC_API_URL ||
+      (import.meta.env.DEV ? DEFAULT_DEV_API_URL : "");
 
   if (!baseUrl) {
     throw new Error(
@@ -86,6 +93,7 @@ export const authApi = {
       digestDay: string;
       digestTime: string;
       timezone: string;
+      linksPublic: boolean;
       createdAt: number;
       isAdmin: boolean;
     }>(`/auth/${id}`, { token }),
@@ -101,6 +109,7 @@ export const authApi = {
       digestDay?: string;
       digestTime?: string;
       timezone?: string;
+      linksPublic?: boolean;
     },
     token: string,
   ) =>
@@ -223,11 +232,23 @@ export const emailApi = {
     }),
 };
 
+/** Lightweight email listing (no bodies) used on source pages */
+export interface EmailSummary {
+  _id: string;
+  subject: string;
+  date: string;
+  read: boolean;
+  _creationTime: number;
+}
+
 // Sender API
 export const senderApi = {
   list: (token: string) => api<Sender[]>("/sender", { token }),
 
   get: (id: string, token: string) => api<Sender>(`/sender/${id}`, { token }),
+
+  listEmails: (id: string, token: string) =>
+    api<EmailSummary[]>(`/sender/${id}/emails`, { token }),
 
   create: (
     data: { email: string; name: string; tags?: string[] },
@@ -265,18 +286,42 @@ export interface Link {
   ogImage?: string;
   ogSiteName?: string;
   favicon?: string;
+  hidden?: boolean;
   _creationTime: number;
+}
+
+/** Tag as embedded on links/senders */
+export type LinkTag = Pick<Tag, "_id" | "name" | "color">;
+
+/** Link as returned by the public feed (no owner fields) */
+export type PublicLink = Omit<Link, "userId" | "hidden" | "tags"> & {
+  tags: LinkTag[];
+};
+
+function linkListQuery(limit: number, cursor?: string, tags: string[] = []) {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (cursor) params.set("cursor", cursor);
+  for (const tag of tags) params.append("tag", tag);
+  return params.toString();
 }
 
 // Link API
 export const linkApi = {
   list: (token: string) => api<Link[]>("/link", { token }),
 
-  listPaginated: (token: string, limit = 25, cursor?: string) =>
+  listPaginated: (
+    token: string,
+    limit = 25,
+    cursor?: string,
+    tags: string[] = [],
+  ) =>
     api<PaginatedResponse<Link>>(
-      `/link?limit=${limit}${cursor ? `&cursor=${cursor}` : ""}`,
+      `/link?${linkListQuery(limit, cursor, tags)}`,
       { token },
     ),
+
+  /** Tags used across the user's links */
+  listTags: (token: string) => api<LinkTag[]>("/link/tags", { token }),
 
   get: (id: string, token: string) => api<Link>(`/link/${id}`, { token }),
 
@@ -297,9 +342,17 @@ export const linkApi = {
       title?: string;
       description?: string;
       tags?: string[];
+      hidden?: boolean;
     },
     token: string,
   ) => api<Link>(`/link/${id}`, { method: "PUT", body: data, token }),
+
+  bulkSetHidden: (ids: string[], hidden: boolean, token: string) =>
+    api<{ updated: number }>("/link/bulk/visibility", {
+      method: "PATCH",
+      body: { ids, hidden },
+      token,
+    }),
 
   delete: (id: string, token: string) =>
     api<{ message: string }>(`/link/${id}`, { method: "DELETE", token }),
@@ -310,6 +363,24 @@ export const linkApi = {
       body: { ids },
       token,
     }),
+};
+
+// Public (shared) links feed API — no auth required
+export const publicApi = {
+  getFeed: (username: string) =>
+    api<{ username: string; tags: LinkTag[] }>(
+      `/public/${encodeURIComponent(username)}`,
+    ),
+
+  listLinks: (
+    username: string,
+    limit = 25,
+    cursor?: string,
+    tags: string[] = [],
+  ) =>
+    api<PaginatedResponse<PublicLink>>(
+      `/public/${encodeURIComponent(username)}/links?${linkListQuery(limit, cursor, tags)}`,
+    ),
 };
 
 // Tag API
@@ -363,7 +434,20 @@ export interface ReplaySummary {
   errors: number;
 }
 
+export interface AdminUser {
+  id: string;
+  email: string;
+  username: string;
+  deliveryEmail: string;
+  emailVerified: boolean;
+  digestFrequency: string;
+  createdAt: number;
+  isAdmin: boolean;
+}
+
 export const adminApi = {
+  listUsers: (token: string) => api<AdminUser[]>("/auth/users", { token }),
+
   replayInbound: (
     token: string,
     range: { fromdate?: string; todate?: string } = {},

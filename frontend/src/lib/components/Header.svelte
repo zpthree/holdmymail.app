@@ -27,7 +27,6 @@
   <nav>
     <div class="header-left">
       <a id="header-logo" href="/"><Logo /></a>
-      <p id="beta">Beta</p>
     </div>
     {#if username}
       <ul>
@@ -145,17 +144,6 @@
     :global(svg) {
       color: var(--text-color);
     }
-  }
-
-  #beta {
-    margin-left: 0.5rem;
-    border-radius: var(--br-lg);
-    background-color: var(--accent);
-    padding: 0.25rem 0.5rem;
-    color: var(--white);
-    font-weight: 600;
-    font-size: 0.65rem;
-    text-transform: uppercase;
   }
 
   .header-right {

@@ -25,11 +25,13 @@ export async function hydrateTags(
 ): Promise<HydratedTag[]> {
   if (!tagIds || tagIds.length === 0) return [];
 
-  const found = await Promise.all(tagIds.map((id) => tags.getById(id)));
+  const found = await tags.getByIds(tagIds);
+  const byId = new Map(found.map((t) => [t._id, t]));
 
-  return found
-    .filter(Boolean)
-    .map((t) => ({ _id: t!._id, name: t!.name, color: t!.color }));
+  return tagIds
+    .map((id) => byId.get(id))
+    .filter((t) => t !== undefined)
+    .map((t) => ({ _id: t._id, name: t.name, color: t.color }));
 }
 
 /**
@@ -38,16 +40,29 @@ export async function hydrateTags(
 export async function hydrateItem<T extends { tagIds?: string[] }>(
   item: T,
 ): Promise<Omit<T, "tagIds"> & { tags: HydratedTag[] }> {
-  const tags = await hydrateTags(item.tagIds);
-  const { tagIds, ...rest } = item;
-  return { ...rest, tags } as Omit<T, "tagIds"> & { tags: HydratedTag[] };
+  const [hydrated] = await hydrateItems([item]);
+  return hydrated;
 }
 
 /**
- * Hydrate an array of items.
+ * Hydrate an array of items, fetching all referenced tags in a single query.
  */
 export async function hydrateItems<T extends { tagIds?: string[] }>(
   items: T[],
 ): Promise<(Omit<T, "tagIds"> & { tags: HydratedTag[] })[]> {
-  return Promise.all(items.map(hydrateItem));
+  const allIds = [...new Set(items.flatMap((item) => item.tagIds ?? []))];
+  const found = allIds.length > 0 ? await tags.getByIds(allIds) : [];
+  const byId = new Map(
+    found.map((t) => [t._id, { _id: t._id, name: t.name, color: t.color }]),
+  );
+
+  return items.map((item) => {
+    const { tagIds, ...rest } = item;
+    const itemTags = (tagIds ?? [])
+      .map((id) => byId.get(id))
+      .filter((t) => t !== undefined);
+    return { ...rest, tags: itemTags } as Omit<T, "tagIds"> & {
+      tags: HydratedTag[];
+    };
+  });
 }

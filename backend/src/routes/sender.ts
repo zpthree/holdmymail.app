@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { senders } from "../db";
+import { emails, senders } from "../db";
 import { authMiddleware } from "../middleware/auth";
 import { resolveTagNames, hydrateItem, hydrateItems } from "../tags";
 import { rescheduleUndeliveredForUser } from "../inbound/ingest";
@@ -74,6 +74,19 @@ senderRoutes.get("/:id", async (c) => {
   } catch {
     return c.json({ error: "Sender not found" }, 404);
   }
+});
+
+// GET /sender/:id/emails - Subject/date summaries of mail from this sender
+senderRoutes.get("/:id/emails", async (c) => {
+  const userId = c.get("userId");
+  const id = c.req.param("id");
+
+  const sender = await senders.getById(id);
+  if (!sender || sender.userId !== userId) {
+    return c.json({ error: "Sender not found" }, 404);
+  }
+
+  return c.json(await emails.listSummariesBySender(userId, id, sender.email));
 });
 
 // PUT /sender/:id

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { auth, clearAuth } from "$lib/stores/auth";
   import { authApi } from "$lib/api";
-  import { goto } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
   import { page } from "$app/stores";
   import SEO from "$lib/components/SEO.svelte";
 
@@ -45,6 +45,17 @@
   let timezone = $state(
     initialTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
+
+  // Shareable links
+  let linksPublic = $state(Boolean(loadedUser?.linksPublic));
+  let savingSharing = $state(false);
+  let copied = $state(false);
+  const feedPath = `/feed/${username}`;
+  let feedUrl = $state(feedPath);
+
+  $effect(() => {
+    feedUrl = `${window.location.origin}${feedPath}`;
+  });
 
   // UI state
   let saving = $state(false);
@@ -137,6 +148,40 @@
     }
   }
 
+  async function saveSharing(enabled: boolean) {
+    if (!$auth.token || !$auth.user) return;
+
+    savingSharing = true;
+    error = "";
+    try {
+      await authApi.updateUser(
+        $auth.user.id,
+        { linksPublic: enabled },
+        $auth.token,
+      );
+      linksPublic = enabled;
+      showMessage(enabled ? "Links feed is now public" : "Links feed is now private");
+      await invalidateAll();
+    } catch (err) {
+      linksPublic = !enabled;
+      showError(
+        err instanceof Error ? err.message : "Failed to update sharing",
+      );
+    } finally {
+      savingSharing = false;
+    }
+  }
+
+  async function copyFeedUrl() {
+    try {
+      await navigator.clipboard.writeText(feedUrl);
+      copied = true;
+      setTimeout(() => (copied = false), 2000);
+    } catch {
+      showError("Could not copy link");
+    }
+  }
+
   async function deleteAccount() {
     if (!$auth.token || !$auth.user) return;
     if (
@@ -196,6 +241,34 @@
       <a href="/admin" class="btn btn-black">Open admin tools</a>
     </section>
   {/if}
+
+  <!-- Shareable Links Section -->
+  <section class="card">
+    <h2>Shareable Links</h2>
+    <p class="hint">
+      Make your saved links viewable by anyone with the link. You can hide
+      individual links from your feed on the Links page.
+    </p>
+    <label class="toggle">
+      <input
+        type="checkbox"
+        checked={linksPublic}
+        disabled={savingSharing}
+        onchange={(e) => saveSharing(e.currentTarget.checked)}
+      />
+      <span>Make my links feed public</span>
+    </label>
+    {#if linksPublic}
+      <div class="share-url">
+        <a href={feedPath} target="_blank" rel="noopener noreferrer"
+          >{feedUrl}</a
+        >
+        <button type="button" class="btn btn-white" onclick={copyFeedUrl}>
+          {copied ? "Copied" : "Copy link"}
+        </button>
+      </div>
+    {/if}
+  </section>
 
   <!-- Email Section -->
   <section class="card">
@@ -444,6 +517,37 @@
   select {
     cursor: pointer;
     background: var(--white, #fff);
+  }
+
+  label.toggle {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  label.toggle input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--accent);
+  }
+
+  .share-url {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    font-size: var(--fs-sm);
+  }
+
+  .share-url a {
+    color: var(--text-color);
+    overflow-wrap: anywhere;
+  }
+
+  .share-url .btn {
+    padding-block: 0.25rem;
   }
 
   .info-grid {
